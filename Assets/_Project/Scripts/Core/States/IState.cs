@@ -4,5 +4,6 @@ namespace CityRush.Core.States
     {
         void Enter();
         void Exit();
+        void Update(float deltaTime);
     }
 }

@@ -1,26 +1,31 @@
 using System;
-using System.Collections.Generic;
+using CityRush.Core;
 using CityRush.Core.States;
+using System.Collections.Generic;
 
-namespace CityRush.Core
+public class GameStateMachine
 {
-    public class GameStateMachine
+    private readonly Dictionary<Type, IState> _states;
+    private IState _activeState;
+
+    public GameStateMachine(GameContext context)
     {
-        private Dictionary<Type, IState> _states;
-        private IState _activeState;
+        _states = new Dictionary<Type, IState> {
+            { typeof(BootstrapState), new BootstrapState(this, context) },
+            { typeof(LoadLevelState), new LoadLevelState(this, context) },
+            { typeof(GameLoopState), new GameLoopState() }
+        };
+    }
 
-        public GameStateMachine()
-        {
-            _states = new Dictionary<Type, IState> {
-                { typeof(BootstrapState), new BootstrapState(this) }
-            };
-        }
+    public void Enter<TState>() where TState : class, IState
+    {
+        _activeState?.Exit();
+        _activeState = _states[typeof(TState)];
+        _activeState.Enter();
+    }
 
-        public void Enter<TState>() where TState : class, IState
-        {
-            _activeState?.Exit();
-            _activeState = _states[typeof(TState)];
-            _activeState.Enter();
-        }
+    public void Update(float deltaTime)
+    {
+        _activeState?.Update(deltaTime);
     }
 }

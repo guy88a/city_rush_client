@@ -9,5 +9,10 @@ namespace CityRush.Core
             DontDestroyOnLoad(this);
             Main.Start();
         }
+
+        private void Update()
+        {
+            Main.Update(Time.deltaTime); // Delegate to Main
+        }
     }
 }
