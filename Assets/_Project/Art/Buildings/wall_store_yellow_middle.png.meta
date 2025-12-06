@@ -3,8 +3,8 @@ guid: 65daf1563b9e1d544a7ac6c4dc22ec9b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1107724357271974301
-    second: wall_store_yellow_middle_0
+      213: -6466596168555219108
+    second: Wall_Store_Yellow_Middle_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 0
+  alignment: 6
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_store_yellow_middle_0
+      name: Wall_Store_Yellow_Middle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 36e81c7e09290a0f0800000000000000
-      internalID: -1107724357271974301
+      spriteID: c573d53db090246a0800000000000000
+      internalID: -6466596168555219108
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_store_yellow_middle_0: -1107724357271974301
+      Wall_Store_Yellow_Middle_0: -6466596168555219108
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

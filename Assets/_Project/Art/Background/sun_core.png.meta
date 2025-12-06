@@ -3,8 +3,8 @@ guid: eab88d5e3a17ab24fa5dcdb011d00c31
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6493320917209021410
-    second: sun_core_0
+      213: 5677553879618981618
+    second: Sun_Core_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sun_core_0
+      name: Sun_Core_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e148425670713e5a0800000000000000
-      internalID: -6493320917209021410
+      spriteID: 2fe84db2c29bace40800000000000000
+      internalID: 5677553879618981618
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sun_core_0: -6493320917209021410
+      Sun_Core_0: 5677553879618981618
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

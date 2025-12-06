@@ -3,8 +3,8 @@ guid: bd68e3a416c244a46bcc52a53c5b8cb4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7280974281754845514
-    second: wall_brick_slate_middle_0
+      213: -2758210241184747424
+    second: Wall_Brick_Slate_Middle_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 0
+  alignment: 6
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_brick_slate_middle_0
+      name: Wall_Brick_Slate_Middle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6be5f3d8778c4fa90800000000000000
-      internalID: -7280974281754845514
+      spriteID: 060b656366ed8b9d0800000000000000
+      internalID: -2758210241184747424
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_brick_slate_middle_0: -7280974281754845514
+      Wall_Brick_Slate_Middle_0: -2758210241184747424
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

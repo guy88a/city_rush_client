@@ -3,8 +3,8 @@ guid: 6c45c7d19c26dac46833db315cbe5cf0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 335679288786237059
-    second: wall_store_pink_middle_0
+      213: -6412017405901048401
+    second: Wall_Store_Pink_Middle_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 0
+  alignment: 6
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_store_pink_middle_0
+      name: Wall_Store_Pink_Middle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3863f8ed88298a400800000000000000
-      internalID: 335679288786237059
+      spriteID: fa575a34420f307a0800000000000000
+      internalID: -6412017405901048401
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_store_pink_middle_0: 335679288786237059
+      Wall_Store_Pink_Middle_0: -6412017405901048401
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

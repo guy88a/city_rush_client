@@ -3,8 +3,8 @@ guid: 83537a9de4ecfed48b8d3f33103627c9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9027243535875669295
-    second: floor_seperator_middle_0
+      213: -2616982189982239760
+    second: Floor_Seperator_Middle_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: floor_seperator_middle_0
+      name: Floor_Seperator_Middle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f2d7fc0ea26374d70800000000000000
-      internalID: 9027243535875669295
+      spriteID: 0f3b596409c9eabd0800000000000000
+      internalID: -2616982189982239760
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      floor_seperator_middle_0: 9027243535875669295
+      Floor_Seperator_Middle_0: -2616982189982239760
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

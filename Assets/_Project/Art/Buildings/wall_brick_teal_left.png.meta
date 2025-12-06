@@ -3,8 +3,8 @@ guid: 21927ce65858af34e83dffe643957c92
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8638078931589838553
-    second: wall_brick_teal_left_0
+      213: 7443147595381598656
+    second: Wall_Brick_Teal_Left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 0
+  alignment: 6
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_brick_teal_left_0
+      name: Wall_Brick_Teal_Left_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7294dcc6af06f1880800000000000000
-      internalID: -8638078931589838553
+      spriteID: 0c9e5817d4f5b4760800000000000000
+      internalID: 7443147595381598656
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_brick_teal_left_0: -8638078931589838553
+      Wall_Brick_Teal_Left_0: 7443147595381598656
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

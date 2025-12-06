@@ -3,8 +3,8 @@ guid: 68a10845303a3b14dab9b3eabf67df54
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6592842371262504854
-    second: window_round_closed_0
+      213: 819672636337173869
+    second: Window_Round_Closed_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 0
-  alignment: 0
+  alignment: 7
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: window_round_closed_0
+      name: Window_Round_Closed_0
       rect:
         serializedVersion: 2
         x: 36
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6021c03bc48184a0800000000000000
-      internalID: -6592842371262504854
+      spriteID: d653cf08bef006b00800000000000000
+      internalID: 819672636337173869
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      window_round_closed_0: -6592842371262504854
+      Window_Round_Closed_0: 819672636337173869
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
