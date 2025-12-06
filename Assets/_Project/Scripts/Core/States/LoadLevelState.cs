@@ -8,7 +8,7 @@ namespace CityRush.Core.States
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly GameContext _context;
-        private const string SceneToLoad = "PrototypeLevel"; // Change this to your actual scene name
+        private const string SceneToLoad = "PrototypeLevel";
         private readonly ISceneLoaderService _sceneLoader;
 
         public LoadLevelState(GameStateMachine gameStateMachine, GameContext context)
@@ -31,7 +31,7 @@ namespace CityRush.Core.States
 
         public void Update(float deltaTime)
         {
-            // No update needed here yet
+            // probably no update needed here yet
         }
 
 

@@ -26,6 +26,7 @@ public class Game
 
     private void RegisterServices()
     {
+        _context.Register<ILoggerService>(new LoggerService());
         _context.Register<ISceneLoaderService>(new SceneLoaderService());
     }
 }
