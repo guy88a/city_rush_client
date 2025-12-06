@@ -9,7 +9,7 @@ SpriteAtlasImporter:
     maxTextureSize: 2048
     textureCompression: 0
     filterMode: 1
-    generateMipMaps: 1
+    generateMipMaps: 0
     readable: 0
     crunchedCompression: 0
     sRGB: 1
@@ -18,7 +18,7 @@ SpriteAtlasImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 4096
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
