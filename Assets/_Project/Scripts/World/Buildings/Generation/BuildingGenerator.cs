@@ -48,7 +48,7 @@ namespace CityRush.World.Buildings.Generation
             if (entranceFloor != null)
             {
                 entranceFloor.WidthModules = Definition.Width;
-                entranceFloor.Initialize(Definition);
+                entranceFloor.Initialize(Definition, true);
             }
 
             // REGULAR FLOORS ---------------------------------------------------
@@ -63,7 +63,7 @@ namespace CityRush.World.Buildings.Generation
                 if (fc != null)
                 {
                     fc.WidthModules = Definition.Width;
-                    fc.Initialize(Definition);
+                    fc.Initialize(Definition, false);
                 }
             }
 
