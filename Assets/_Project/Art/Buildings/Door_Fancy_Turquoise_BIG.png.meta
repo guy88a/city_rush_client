@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1188d00ead23db847b5050981ed39874
+guid: d4aed22d9ba3b584aa243cab7d8c103b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5460242008277672664
-    second: road_sewer_bot_0
+      213: -6825155623187616544
+    second: Door_Fancy_Turquoise_BIG_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: road_sewer_bot_0
+      name: Door_Fancy_Turquoise_BIG_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 200
-        height: 253
+        width: 210
+        height: 318
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 82d91f4b2d25934b0800000000000000
-      internalID: -5460242008277672664
+      spriteID: 0ec64273f1d2841a0800000000000000
+      internalID: -6825155623187616544
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      road_sewer_bot_0: -5460242008277672664
+      Door_Fancy_Turquoise_BIG_0: -6825155623187616544
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d54c019dc2646ef418e72d74fa516cd4
+guid: 198bdcbbe1893c142bb1cfd14cc6e8b0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8761694020066874395
-    second: door_fancy_wide_188_dark_0
+      213: 6511976062774338324
+    second: Door_Fancy_Brown_BIG_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_fancy_wide_188_dark_0
+      name: Door_Fancy_Brown_BIG_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 188
-        height: 260
+        width: 210
+        height: 318
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b1410c03a4ac79970800000000000000
-      internalID: 8761694020066874395
+      spriteID: 413e2872abf2f5a50800000000000000
+      internalID: 6511976062774338324
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_fancy_wide_188_dark_0: 8761694020066874395
+      Door_Fancy_Brown_BIG_0: 6511976062774338324
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

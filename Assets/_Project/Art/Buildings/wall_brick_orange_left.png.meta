@@ -3,8 +3,8 @@ guid: 2f37d412f722e10459ce8c7e4bd56f0f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6913728504610215120
-    second: wall_brick_orange_left_0
+      213: -2241638273487480826
+    second: Wall_Brick_Orange_Left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_brick_orange_left_0
+      name: Wall_Brick_Orange_Left_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 03b27393e808d00a0800000000000000
-      internalID: -6913728504610215120
+      spriteID: 608dbd1fdd914e0e0800000000000000
+      internalID: -2241638273487480826
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_brick_orange_left_0: -6913728504610215120
+      Wall_Brick_Orange_Left_0: -2241638273487480826
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

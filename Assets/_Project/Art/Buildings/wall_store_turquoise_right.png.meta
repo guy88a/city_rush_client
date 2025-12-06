@@ -3,8 +3,8 @@ guid: 4750a5f00efec2a43a2b5a766337e335
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8998438684661664151
-    second: wall_store_turquoise_right_0
+      213: 6183738841956690214
+    second: Wall_Store_Turquoise_Right_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_store_turquoise_right_0
+      name: Wall_Store_Turquoise_Right_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 966bb9b21bf1f1380800000000000000
-      internalID: -8998438684661664151
+      spriteID: 6292d92c6bd01d550800000000000000
+      internalID: 6183738841956690214
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_store_turquoise_right_0: -8998438684661664151
+      Wall_Store_Turquoise_Right_0: 6183738841956690214
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

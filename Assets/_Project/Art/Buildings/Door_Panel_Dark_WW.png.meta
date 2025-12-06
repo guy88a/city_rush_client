@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f2b5a1e65f7149f429bec7081a022e58
+guid: 1c6cfdf01098fb348aeb099e278dee98
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8653430698578960914
-    second: door_fancy_stairs_210x318_brown_0
+      213: -2078983958265879137
+    second: Door_Panel_Dark_WW_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_fancy_stairs_210x318_brown_0
+      name: Door_Panel_Dark_WW_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 210
-        height: 318
+        width: 188
+        height: 260
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 212624d5f59271870800000000000000
-      internalID: 8653430698578960914
+      spriteID: f95a3d9da17f523e0800000000000000
+      internalID: -2078983958265879137
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_fancy_stairs_210x318_brown_0: 8653430698578960914
+      Door_Panel_Dark_WW_0: -2078983958265879137
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

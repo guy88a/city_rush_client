@@ -3,8 +3,8 @@ guid: a57610d4eeb301d4eabedf5d1b03b48d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8906336605230145849
-    second: chimney_brick_orange_0
+      213: -5194188036675774725
+    second: Chimney_Brick_Orange_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: chimney_brick_orange_0
+      name: Chimney_Brick_Orange_0
       rect:
         serializedVersion: 2
         x: 4
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7ced23b9b06566480800000000000000
-      internalID: -8906336605230145849
+      spriteID: bf65b5920898ae7b0800000000000000
+      internalID: -5194188036675774725
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      chimney_brick_orange_0: -8906336605230145849
+      Chimney_Brick_Orange_0: -5194188036675774725
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

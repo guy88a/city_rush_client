@@ -3,8 +3,8 @@ guid: 7337680394862174a8c77f16051d01db
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8139162376628508498
-    second: road_sewer_top_0
+      213: -2852547605070483161
+    second: Road_Sewer_Top_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: road_sewer_top_0
+      name: Road_Sewer_Top_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ea865db01f2eb0f80800000000000000
-      internalID: -8139162376628508498
+      spriteID: 721f1ee0117b968d0800000000000000
+      internalID: -2852547605070483161
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      road_sewer_top_0: -8139162376628508498
+      Road_Sewer_Top_0: -2852547605070483161
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

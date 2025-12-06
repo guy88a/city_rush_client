@@ -3,8 +3,8 @@ guid: eeefc873875bace4faf528053a660408
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4984283391026217151
-    second: wall_brick_olive_left_0
+      213: -7835516234849085406
+    second: Wall_Brick_Olive_Left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_brick_olive_left_0
+      name: Wall_Brick_Olive_Left_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14fb00ae9a444dab0800000000000000
-      internalID: -4984283391026217151
+      spriteID: 228930eaf77a24390800000000000000
+      internalID: -7835516234849085406
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_brick_olive_left_0: -4984283391026217151
+      Wall_Brick_Olive_Left_0: -7835516234849085406
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

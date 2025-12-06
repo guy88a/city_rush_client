@@ -3,8 +3,8 @@ guid: f440caa8133ff6c40af219c63a04a84e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -56046673634017467
-    second: door_small_metal_0
+      213: -4183936207858991944
+    second: Door_Small_Metal_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_small_metal_0
+      name: Door_Small_Metal_0
       rect:
         serializedVersion: 2
         x: 30
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 54fb337e8d1e83ff0800000000000000
-      internalID: -56046673634017467
+      spriteID: 8bc7ba7bf2cafe5c0800000000000000
+      internalID: -4183936207858991944
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_small_metal_0: -56046673634017467
+      Door_Small_Metal_0: -4183936207858991944
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

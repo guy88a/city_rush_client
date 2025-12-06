@@ -3,8 +3,8 @@ guid: c53b620b2c93d254e986b2409b8d7180
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3524386615691567610
-    second: wall_panel_cyan_left_0
+      213: 7738309624937039084
+    second: Wall_Panel_Cyan_Left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_panel_cyan_left_0
+      name: Wall_Panel_Cyan_Left_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: af1ef6734f229e030800000000000000
-      internalID: 3524386615691567610
+      spriteID: ce4cb54ca9ff36b60800000000000000
+      internalID: 7738309624937039084
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_panel_cyan_left_0: 3524386615691567610
+      Wall_Panel_Cyan_Left_0: 7738309624937039084
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

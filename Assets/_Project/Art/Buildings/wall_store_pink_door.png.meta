@@ -3,8 +3,8 @@ guid: 0d8d29787d7396e47be86475d5c8acc3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7380986523102713798
-    second: wall_store_pink_door_0
+      213: -1877682926432251710
+    second: Wall_Store_Pink_Door_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_store_pink_door_0
+      name: Wall_Store_Pink_Door_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a3864860dd7719990800000000000000
-      internalID: -7380986523102713798
+      spriteID: 2c09039a35121f5e0800000000000000
+      internalID: -1877682926432251710
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_store_pink_door_0: -7380986523102713798
+      Wall_Store_Pink_Door_0: -1877682926432251710
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fe516071149240243a8b35ff4a453e77
+guid: 7312d275b661c6942b96c4cb2dbf1b2a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8903687876418214246
-    second: door_fancy_wide_188_red_0
+      213: -2516461553651029854
+    second: Door_Panel_Pink_WW_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_fancy_wide_188_red_0
+      name: Door_Panel_Pink_WW_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6691cd823f0409b70800000000000000
-      internalID: 8903687876418214246
+      spriteID: 2a8e3bbbc8bb31dd0800000000000000
+      internalID: -2516461553651029854
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_fancy_wide_188_red_0: 8903687876418214246
+      Door_Panel_Pink_WW_0: -2516461553651029854
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

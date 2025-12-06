@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 47d8e6e45f328b14fb15da2b42684793
+guid: 36e086693175be24794015dc7a554dbd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1692370985247827685
-    second: door_fancy_stairs_210x318_darkred_0
+      213: -8987763507014548786
+    second: Road_Sewer_Bottom_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_fancy_stairs_210x318_darkred_0
+      name: Road_Sewer_Bottom_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 210
-        height: 318
+        width: 200
+        height: 253
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5e6efdbc1728c7710800000000000000
-      internalID: 1692370985247827685
+      spriteID: ec2cd27a5bc054380800000000000000
+      internalID: -8987763507014548786
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_fancy_stairs_210x318_darkred_0: 1692370985247827685
+      Road_Sewer_Bottom_0: -8987763507014548786
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

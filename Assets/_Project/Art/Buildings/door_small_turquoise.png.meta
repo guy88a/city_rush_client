@@ -3,8 +3,8 @@ guid: c42bd1beba72cf84e9992af1da5a7818
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5248302058615711101
-    second: door_small_turquoise_0
+      213: 4658156954558533074
+    second: Door_Small_Turquoise_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: door_small_turquoise_0
+      name: Door_Small_Turquoise_0
       rect:
         serializedVersion: 2
         x: 30
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 38a524a95194a27b0800000000000000
-      internalID: -5248302058615711101
+      spriteID: 2dd0a78f11915a040800000000000000
+      internalID: 4658156954558533074
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      door_small_turquoise_0: -5248302058615711101
+      Door_Small_Turquoise_0: 4658156954558533074
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -3,8 +3,8 @@ guid: da3741f253b98df40afc474a839660ae
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1601867615201510263
-    second: wall_store_cyan_middle_0
+      213: 7969767489217605675
+    second: Wall_Store_Cyan_Middle_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_store_cyan_middle_0
+      name: Wall_Store_Cyan_Middle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 98c36ba14e505c9e0800000000000000
-      internalID: -1601867615201510263
+      spriteID: b20b5494e4d4a9e60800000000000000
+      internalID: 7969767489217605675
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_store_cyan_middle_0: -1601867615201510263
+      Wall_Store_Cyan_Middle_0: 7969767489217605675
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

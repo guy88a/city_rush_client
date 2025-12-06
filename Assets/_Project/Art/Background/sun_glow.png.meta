@@ -3,8 +3,8 @@ guid: 36e78bf2272d21a41b29770fd7fcc792
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6272041355100440171
-    second: sun_glow_0
+      213: -4242066041537066198
+    second: Sun_Glow_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sun_glow_0
+      name: Sun_Glow_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b66425bb164ca0750800000000000000
-      internalID: 6272041355100440171
+      spriteID: a2b8f6029672125c0800000000000000
+      internalID: -4242066041537066198
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sun_glow_0: 6272041355100440171
+      Sun_Glow_0: -4242066041537066198
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

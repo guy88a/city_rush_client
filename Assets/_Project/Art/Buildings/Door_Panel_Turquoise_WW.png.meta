@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6d3d89bace8fcae43bfefadec5710d62
+guid: 10ea883c0b1623c43accd538698bbe89
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7765453910668496946
-    second: floor_seperator_right_0
+      213: 6331696748623577875
+    second: Door_Panel_Turquoise_WW_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: floor_seperator_right_0
+      name: Door_Panel_Turquoise_WW_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 165
-        height: 28
+        width: 188
+        height: 260
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ecfafe6bfc09b3490800000000000000
-      internalID: -7765453910668496946
+      spriteID: 313443765a4bed750800000000000000
+      internalID: 6331696748623577875
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      floor_seperator_right_0: -7765453910668496946
+      Door_Panel_Turquoise_WW_0: 6331696748623577875
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

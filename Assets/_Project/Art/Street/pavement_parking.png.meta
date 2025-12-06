@@ -3,8 +3,8 @@ guid: 9aa765ad2f1b8d342b83a39034e33067
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2442877633438693333
-    second: pavement_parking_0
+      213: 7027622667601431131
+    second: Pavement_Parking_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pavement_parking_0
+      name: Pavement_Parking_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b28c32d3cb7291ed0800000000000000
-      internalID: -2442877633438693333
+      spriteID: b5acddd0591278160800000000000000
+      internalID: 7027622667601431131
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pavement_parking_0: -2442877633438693333
+      Pavement_Parking_0: 7027622667601431131
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -3,8 +3,8 @@ guid: a336ec8d1b895f741ae73c79f801a80d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7546042434337359654
-    second: wall_brick_mustard_left_0
+      213: 441459524390424429
+    second: Wall_Brick_Mustard_Left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_brick_mustard_left_0
+      name: Wall_Brick_Mustard_Left_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad83c49f262174790800000000000000
-      internalID: -7546042434337359654
+      spriteID: d6f01063911602600800000000000000
+      internalID: 441459524390424429
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_brick_mustard_left_0: -7546042434337359654
+      Wall_Brick_Mustard_Left_0: 441459524390424429
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
