@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58646d2ac9c0af429fd63b52ed3efe2, type: 3}
+  m_Name: WallRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.WallRegistry
+  Walls:
+  - Type: Brick
+    Color: Mauve
+    Position: 0
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mauve
+    Position: 1
+    Prefab: {fileID: 3022445180327727416, guid: fb68891628030aa46b9331e47471efe8, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: 
+    Position: 0
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mint
+    Position: 0
+    Prefab: {fileID: 1155143490466566092, guid: 83893d93635a079448ee24882b216ce9, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mint
+    Position: 1
+    Prefab: {fileID: 2243015268821709350, guid: 16cd2b93520c5eb4481011ca12212646, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mint
+    Position: 2
+    Prefab: {fileID: 2709924870106915718, guid: 07b73b243218b6341a745406c11f7a1a, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mustard
+    Position: 0
+    Prefab: {fileID: 3804115148865120654, guid: dd738045089a0b84aa9b422c1fbd3a78, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mustard
+    Position: 1
+    Prefab: {fileID: 9180745647899304077, guid: 703c39baded7cdb45b47bfa43cc6e502, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Mustard
+    Position: 2
+    Prefab: {fileID: 8531585070191693401, guid: 83be04a05f0494e4ba57d92a5a24e670, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Olive
+    Position: 0
+    Prefab: {fileID: 7130072159333069887, guid: c69c76c226cd89f43b1f79983a101f73, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Olive
+    Position: 1
+    Prefab: {fileID: 848709735820733799, guid: 127e5ba936a28ac4f989f1ccaac33e45, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Olive
+    Position: 2
+    Prefab: {fileID: 5175571652663803644, guid: 915274564113d2740a6cc099944d7ae9, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Orange
+    Position: 0
+    Prefab: {fileID: 5979246207803381999, guid: c94617334c9e5e34aa4015163ccab903, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Orange
+    Position: 1
+    Prefab: {fileID: 1607982088719844710, guid: 2e2ffe73e5f39e74a95ef81a14f3e3aa, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Orange
+    Position: 2
+    Prefab: {fileID: 4435521045101144099, guid: 4e16735ca5ad0b748811a0deb9557a27, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Slate
+    Position: 0
+    Prefab: {fileID: 424104401110254188, guid: 5e472f2cf0e90c747aa48a9ba6221979, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Slate
+    Position: 1
+    Prefab: {fileID: 1051944549269834046, guid: e12d940eba8b72e45b8ff5bdccb0a653, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Slate
+    Position: 2
+    Prefab: {fileID: 6042657643912137124, guid: 8c1787328d760f14ab56e92456145cac, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Teal
+    Position: 0
+    Prefab: {fileID: 3612812098979790486, guid: 7bd5d5f097a3c0a42a04669baad56c1f, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: 
+    Position: 0
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: Teal
+    Position: 2
+    Prefab: {fileID: 444558243350670730, guid: e9bde093bb2e61b4787ca1b455784cae, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: 
+    Position: 0
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+    IsEntrance: 0
+  - Type: Brick
+    Color: 
+    Position: 0
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+    IsEntrance: 0

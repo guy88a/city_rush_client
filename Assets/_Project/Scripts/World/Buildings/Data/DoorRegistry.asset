@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ae4a0142239ab40bdfc38076aefe5d, type: 3}
+  m_Name: DoorRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.DoorRegistry
+  Doors:
+  - Type: Panel
+    Color: Brown
+    Size: WW
+    Prefab: {fileID: 6441178311178166893, guid: 765dc51e94ada964d8d881f6e3efe76a, type: 3}
+  - Type: Panel
+    Color: Cyan
+    Size: WW
+    Prefab: {fileID: 2413688958482139386, guid: 7eba10d68daad014dad4b269e9a92ce6, type: 3}
+  - Type: Panel
+    Color: Dark
+    Size: WW
+    Prefab: {fileID: 2242930608894394427, guid: f41fca544bdf617439b7e29f015be77c, type: 3}
+  - Type: Panel
+    Color: Pink
+    Size: WW
+    Prefab: {fileID: 8415273086319263993, guid: eebc71c7265db744e8d794fedbc31000, type: 3}
+  - Type: Panel
+    Color: Red
+    Size: WW
+    Prefab: {fileID: 5736539821974890753, guid: 7682d521be050844bb35931f10466f81, type: 3}
+  - Type: Panel
+    Color: Turquoise
+    Size: WW
+    Prefab: {fileID: 8617230993551389715, guid: 96ffa74fafd9d0b439795b8b57e4c1fd, type: 3}
+  - Type: Fancy
+    Color: Brown
+    Size: BIG
+    Prefab: {fileID: 8180350512129250710, guid: 07986425257123948b5773be38f4a052, type: 3}
+  - Type: Fancy
+    Color: Cyan
+    Size: BIG
+    Prefab: {fileID: 8202966621498027819, guid: 181f3de6acea69144be5659306751089, type: 3}
+  - Type: Fancy
+    Color: DarkRed
+    Size: BIG
+    Prefab: {fileID: 8694842420072735040, guid: 692a896a54c547f4bb7c724a7fdf13e8, type: 3}
+  - Type: Fancy
+    Color: Pink
+    Size: BIG
+    Prefab: {fileID: 6174188003954974693, guid: 7315dd6e2176d054cae091cb8245f434, type: 3}
+  - Type: Fancy
+    Color: Red
+    Size: BIG
+    Prefab: {fileID: 1011738828626328857, guid: e868383787a5fcf4d9c7c5f4ca397689, type: 3}
+  - Type: Fancy
+    Color: Turquoise
+    Size: BIG
+    Prefab: {fileID: 6151814210909885197, guid: 8006c9c3cea4b984ca7ae845c27af053, type: 3}
+  - Type: Small
+    Color: Green
+    Size: 
+    Prefab: {fileID: 5210117865347199311, guid: 0f376e0df3b76934a84cf75c44c9f5fa, type: 3}
+  - Type: Small
+    Color: Metal
+    Size: 
+    Prefab: {fileID: 2035530180194361739, guid: 02e0f9c61893c7b4ba31725f6ae12951, type: 3}
+  - Type: Small
+    Color: Red
+    Size: 
+    Prefab: {fileID: 4936460743757184929, guid: 92f32b27908068845b63b153451dd90e, type: 3}
+  - Type: Small
+    Color: Turquoise
+    Size: 
+    Prefab: {fileID: 1397638654787063456, guid: d28a432659ffddf4998264fda5336787, type: 3}
