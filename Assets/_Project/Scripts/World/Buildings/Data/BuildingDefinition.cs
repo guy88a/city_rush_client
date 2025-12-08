@@ -25,6 +25,7 @@ namespace CityRush.World.Buildings.Data
         public bool EntranceAddDoor;     // false = baked in door in wall
         public string EntranceDoorType;  // only if EntranceAddDoor == true
         public string EntranceDoorColor; // only if EntranceAddDoor == true
+        public string EntranceDoorSize;  // only if EntranceAddDoor == true
 
         // Building Shape
         public int Width;        // modules per row

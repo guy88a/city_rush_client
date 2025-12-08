@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30518307980bdd142a36c802b810a347, type: 3}
   m_Name: WindowRegistry
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.WindowRegistry
-  Windows: []
+  Entries:
+  - Key: Window_High_Closed
+    Prefab: {fileID: 1749617022399911037, guid: d651d4f02e6e6824ebf0b9935ae82b52, type: 3}
+  - Key: Window_Normal_Closed
+    Prefab: {fileID: 1825281871769863582, guid: 3aecfd17c3423e74f8e10621587dd821, type: 3}
+  - Key: Window_Normal_Open
+    Prefab: {fileID: 1560549795028134793, guid: 201964a5a83cdd7429203137aa6789b9, type: 3}
+  - Key: Window_Round_Closed
+    Prefab: {fileID: 8420350359986352952, guid: 166bef67ef4a1234e81e3e20887ef9fb, type: 3}
+  - Key: Window_Small_Closed
+    Prefab: {fileID: 4122723679282139127, guid: 8be747d58943d0d4eb4f758ae4659ac2, type: 3}
+  - Key: Window_Small_Open
+    Prefab: {fileID: 5700805556777835226, guid: 4ea9d4a9878cffd459918503518e0bfc, type: 3}

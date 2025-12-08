@@ -13,15 +13,35 @@ MonoBehaviour:
   m_Name: DoorRegistry
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.DoorRegistry
   Entries:
-  - Key: Window_Normal_Closed
-    Prefab: {fileID: 1825281871769863582, guid: 3aecfd17c3423e74f8e10621587dd821, type: 3}
-  - Key: Window_Normal_Open
-    Prefab: {fileID: 1560549795028134793, guid: 201964a5a83cdd7429203137aa6789b9, type: 3}
-  - Key: Window_Small_Closed
-    Prefab: {fileID: 4122723679282139127, guid: 8be747d58943d0d4eb4f758ae4659ac2, type: 3}
-  - Key: Window_Small_Open
-    Prefab: {fileID: 5700805556777835226, guid: 4ea9d4a9878cffd459918503518e0bfc, type: 3}
-  - Key: Window_Round_Closed
-    Prefab: {fileID: 8420350359986352952, guid: 166bef67ef4a1234e81e3e20887ef9fb, type: 3}
-  - Key: Window_High_Closed
-    Prefab: {fileID: 1749617022399911037, guid: d651d4f02e6e6824ebf0b9935ae82b52, type: 3}
+  - Key: Door_Fancy_Brown_BIG
+    Prefab: {fileID: 8180350512129250710, guid: 07986425257123948b5773be38f4a052, type: 3}
+  - Key: Door_Fancy_Cyan_BIG
+    Prefab: {fileID: 8202966621498027819, guid: 181f3de6acea69144be5659306751089, type: 3}
+  - Key: Door_Fancy_DarkRed_BIG
+    Prefab: {fileID: 8694842420072735040, guid: 692a896a54c547f4bb7c724a7fdf13e8, type: 3}
+  - Key: Door_Fancy_Pink_BIG
+    Prefab: {fileID: 6174188003954974693, guid: 7315dd6e2176d054cae091cb8245f434, type: 3}
+  - Key: Door_Fancy_Red_BIG
+    Prefab: {fileID: 1011738828626328857, guid: e868383787a5fcf4d9c7c5f4ca397689, type: 3}
+  - Key: Door_Fancy_Turquoise_BIG
+    Prefab: {fileID: 6151814210909885197, guid: 8006c9c3cea4b984ca7ae845c27af053, type: 3}
+  - Key: Door_Panel_Brown_WW
+    Prefab: {fileID: 6441178311178166893, guid: 765dc51e94ada964d8d881f6e3efe76a, type: 3}
+  - Key: Door_Panel_Cyan_WW
+    Prefab: {fileID: 2413688958482139386, guid: 7eba10d68daad014dad4b269e9a92ce6, type: 3}
+  - Key: Door_Panel_Dark_WW
+    Prefab: {fileID: 2242930608894394427, guid: f41fca544bdf617439b7e29f015be77c, type: 3}
+  - Key: Door_Panel_Pink_WW
+    Prefab: {fileID: 8415273086319263993, guid: eebc71c7265db744e8d794fedbc31000, type: 3}
+  - Key: Door_Panel_Red_WW
+    Prefab: {fileID: 5736539821974890753, guid: 7682d521be050844bb35931f10466f81, type: 3}
+  - Key: Door_Panel_Turquoise_WW
+    Prefab: {fileID: 8617230993551389715, guid: 96ffa74fafd9d0b439795b8b57e4c1fd, type: 3}
+  - Key: Door_Small_Green
+    Prefab: {fileID: 5210117865347199311, guid: 0f376e0df3b76934a84cf75c44c9f5fa, type: 3}
+  - Key: Door_Small_Metal
+    Prefab: {fileID: 2035530180194361739, guid: 02e0f9c61893c7b4ba31725f6ae12951, type: 3}
+  - Key: Door_Small_Red
+    Prefab: {fileID: 4936460743757184929, guid: 92f32b27908068845b63b153451dd90e, type: 3}
+  - Key: 
+    Prefab: {fileID: 0}

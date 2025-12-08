@@ -1,147 +1,113 @@
 using UnityEngine;
 using CityRush.World.Buildings.Data;
+using CityRush.World.Buildings.Registry;
 
 namespace CityRush.World.Buildings.Generation
 {
     public class FloorComponent : MonoBehaviour
     {
-        [Header("Wall Prefabs (Regular)")]
-        public GameObject WallLeftPrefab;
-        public GameObject WallMiddlePrefab;
-        public GameObject WallRightPrefab;
+        public WallRegistry wallRegistry;
+        public WindowRegistry windowRegistry;
+        public DoorRegistry doorRegistry;
 
-        [Header("Wall Prefabs (Entrance)")]
-        public GameObject EntranceWallLeftPrefab;
-        public GameObject EntranceWallMiddlePrefab;
-        public GameObject EntranceWallRightPrefab;
-
-        [Header("Windows")]
-        public GameObject WindowClosedPrefab;
-        public GameObject WindowOpenPrefab;
-
-        [Header("Door Prefabs")]
-        public GameObject DoorPrefabWood;
-        public GameObject DoorPrefabMetal;
-        public GameObject DoorPrefabGlass;
-
-        [Header("Entrance Decorations")]
-        public GameObject EntranceSideDecorationLeft;
-        public GameObject EntranceSideDecorationRight;
-
-        [Header("Pattern Settings")]
         public int WidthModules = 3;
 
-        public void Initialize(BuildingDefinition def, bool isEntrance)
+        public void Initialize(BuildingDefinition definition, bool isEntrance)
         {
             ClearModules();
-            Build(def, isEntrance);
+            Build(definition, isEntrance);
         }
 
-        private void Build(BuildingDefinition def, bool isEntrance)
+        private void Build(BuildingDefinition definition, bool isEntrance)
         {
-            float moduleWidth = 160f / 48f;
-
-            // Window pattern resolve
-            string pattern = "";
-
-            if (def.WindowsRandomPattern)
-            {
-                for (int i = 0; i < WidthModules; i++)
-                    pattern += (Random.Range(0, 2) == 1) ? "1" : "0";
-            }
-            else
-            {
-                pattern = def.WindowsForcedPattern;
-
-                if (pattern.Length < WidthModules)
-                    pattern = pattern.PadRight(WidthModules, '0');
-                else if (pattern.Length > WidthModules)
-                    pattern = pattern.Substring(0, WidthModules);
-            }
+            float moduleWidth = 160f / 48f; // pixels / PPU
 
             for (int i = 0; i < WidthModules; i++)
             {
-                bool isLeft = (i == 0);
-                bool isRight = (i == WidthModules - 1);
+                // -----------------------
+                // WALL TYPE + COLOR
+                // -----------------------
+                string wallType = isEntrance ? definition.EntranceType : definition.WallType;
+                string wallColor = isEntrance ? definition.EntranceColor : definition.WallColor;
 
-                GameObject wallPrefab = null;
+                // -----------------------
+                // WALL POSITION (Left / Middle / Right)
+                // -----------------------
+                string position =
+                    i == 0 ? "Left" :
+                    i == WidthModules - 1 ? "Right" :
+                    "Middle";
 
-                // ----------------------------------------------------------------------
-                // WALL SELECTION
-                // ----------------------------------------------------------------------
-                if (isEntrance)
-                {
-                    if (isLeft) wallPrefab = EntranceWallLeftPrefab;
-                    else if (isRight) wallPrefab = EntranceWallRightPrefab;
-                    else wallPrefab = EntranceWallMiddlePrefab;
-                }
-                else
-                {
-                    if (isLeft) wallPrefab = WallLeftPrefab;
-                    else if (isRight) wallPrefab = WallRightPrefab;
-                    else wallPrefab = WallMiddlePrefab;
-                }
+                // -----------------------
+                // BUILD WALL KEY
+                // -----------------------
+                string wallKey = "Wall_" + wallType + "_" + wallColor + "_" + position;
 
+                GameObject wallPrefab = wallRegistry.Get(wallKey);
                 if (wallPrefab == null)
                     continue;
 
-                GameObject wall = Instantiate(wallPrefab, transform);
-                wall.transform.localPosition = new Vector3(i * moduleWidth, 0, 0);
+                // -----------------------
+                // INSTANTIATE WALL
+                // -----------------------
+                Transform wall = Instantiate(wallPrefab, transform).transform;
+                wall.localPosition = new Vector3(i * moduleWidth, 0f, 0f);
 
-                // ----------------------------------------------------------------------
-                // WINDOWS (Entrance may or may not have windows)
-                // ----------------------------------------------------------------------
-                if (!isEntrance) // entrance handled separately later
+                // -----------------------
+                // HANDLE WINDOWS (NOT FOR ENTRANCE FLOORS)
+                // -----------------------
+                if (!isEntrance && windowRegistry != null)
                 {
-                    bool open = (pattern[i] == '1');
-                    GameObject winPrefab = open ? WindowOpenPrefab : WindowClosedPrefab;
+                    bool isOpen = DetermineWindowOpenState(definition, i);
+                    string windowType = definition.WindowType;
+                    string windowKey = "Window_" + windowType + "_" + (isOpen ? "Open" : "Closed");
 
-                    if (winPrefab != null)
+                    GameObject windowPrefab = windowRegistry.Get(windowKey);
+                    if (windowPrefab != null)
                     {
-                        GameObject window = Instantiate(winPrefab, transform);
-                        window.transform.localPosition = new Vector3(i * moduleWidth, 0, 0);
+                        Transform window = Instantiate(windowPrefab, wall).transform;
+                        window.localPosition = Vector3.zero; // perfect overlap
                     }
                 }
 
-                // ----------------------------------------------------------------------
-                // DOOR FOR ENTRANCE
-                // ----------------------------------------------------------------------
-                if (isEntrance && def.EntranceAddDoor)
+                // -----------------------
+                // HANDLE DOOR (ONLY ON ENTRANCE FLOOR)
+                // -----------------------
+                if (isEntrance && definition.EntranceAddDoor)
                 {
-                    if (i == 1) // door always centered (middle module)
+                    bool isLeftModule = (i == 0);
+                    if (isLeftModule)
                     {
-                        GameObject doorPrefab = null;
+                        string doorKey =
+                            "Door_" +
+                            definition.EntranceDoorType + "_" +
+                            definition.EntranceDoorColor + "_" +
+                            definition.EntranceDoorSize;
 
-                        if (def.EntranceDoorType == "Wood") doorPrefab = DoorPrefabWood;
-                        else if (def.EntranceDoorType == "Metal") doorPrefab = DoorPrefabMetal;
-                        else if (def.EntranceDoorType == "Glass") doorPrefab = DoorPrefabGlass;
-
+                        GameObject doorPrefab = doorRegistry.Get(doorKey);
                         if (doorPrefab != null)
                         {
-                            GameObject door = Instantiate(doorPrefab, transform);
-                            door.transform.localPosition = new Vector3(i * moduleWidth, 0, 0);
+                            Transform door = Instantiate(doorPrefab, wall).transform;
+                            door.localPosition = Vector3.zero; // full overlap
                         }
                     }
                 }
             }
+        }
 
-            // --------------------------------------------------------------------------
-            // ENTRANCE SIDE DECORATIONS
-            // --------------------------------------------------------------------------
-            if (isEntrance && def.EntranceDecoration)
+        private bool DetermineWindowOpenState(BuildingDefinition def, int index)
+        {
+            if (def.WindowsForcedPattern != null && def.WindowsForcedPattern.Length == WidthModules)
             {
-                if (EntranceSideDecorationLeft != null)
-                {
-                    GameObject leftDeco = Instantiate(EntranceSideDecorationLeft, transform);
-                    leftDeco.transform.localPosition = Vector3.zero;
-                }
-
-                if (EntranceSideDecorationRight != null)
-                {
-                    GameObject rightDeco = Instantiate(EntranceSideDecorationRight, transform);
-                    rightDeco.transform.localPosition = new Vector3((WidthModules - 1) * (160f / 48f), 0, 0);
-                }
+                return def.WindowsForcedPattern[index] == '1';
             }
+
+            if (def.WindowsRandomPattern)
+            {
+                return Random.value > 0.5f;
+            }
+
+            return false;
         }
 
         private void ClearModules()
