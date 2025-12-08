@@ -26,6 +26,8 @@ namespace CityRush.World.Buildings.Data
         public string EntranceDoorType;  // only if EntranceAddDoor == true
         public string EntranceDoorColor; // only if EntranceAddDoor == true
         public string EntranceDoorSize;  // only if EntranceAddDoor == true
+        public string RooftopType;       // chimney wall family
+        public string RooftopColor;      // chimney wall color
 
         // Building Shape
         public int Width;        // modules per row

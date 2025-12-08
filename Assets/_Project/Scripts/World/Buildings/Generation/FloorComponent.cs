@@ -1,16 +1,22 @@
-using UnityEngine;
 using CityRush.World.Buildings.Data;
 using CityRush.World.Buildings.Registry;
+using UnityEditor.PackageManager.UI;
+using UnityEngine;
 
 namespace CityRush.World.Buildings.Generation
 {
     public class FloorComponent : MonoBehaviour
     {
+        SpriteRenderer wallSR;
+        SpriteRenderer winSR;
+        SpriteRenderer doorSR;
+
         public WallRegistry wallRegistry;
         public WindowRegistry windowRegistry;
         public DoorRegistry doorRegistry;
 
         public int WidthModules = 3;
+        float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
 
         public void Initialize(BuildingDefinition definition, bool isEntrance)
         {
@@ -53,6 +59,7 @@ namespace CityRush.World.Buildings.Generation
                 Transform wall = Instantiate(wallPrefab, transform).transform;
                 wall.localPosition = new Vector3(i * moduleWidth, 0f, 0f);
 
+                SpriteRenderer wallSR = wall.GetComponent<SpriteRenderer>();
                 // -----------------------
                 // HANDLE WINDOWS (NOT FOR ENTRANCE FLOORS)
                 // -----------------------
@@ -66,7 +73,15 @@ namespace CityRush.World.Buildings.Generation
                     if (windowPrefab != null)
                     {
                         Transform window = Instantiate(windowPrefab, wall).transform;
-                        window.localPosition = Vector3.zero; // perfect overlap
+                        window.localPosition = new Vector3(halfWidth, 0f, 0f);
+
+                        SpriteRenderer winSR = window.GetComponent<SpriteRenderer>();
+
+                        if (wallSR != null && winSR != null)
+                        {
+                            winSR.sortingLayerID = wallSR.sortingLayerID;
+                            winSR.sortingOrder = wallSR.sortingOrder + 1;
+                        }
                     }
                 }
 
@@ -88,10 +103,18 @@ namespace CityRush.World.Buildings.Generation
                         if (doorPrefab != null)
                         {
                             Transform door = Instantiate(doorPrefab, wall).transform;
-                            door.localPosition = Vector3.zero; // full overlap
+                            door.localPosition = new Vector3(halfWidth, 0f, 0f);
+
+                            SpriteRenderer doorSR = door.GetComponent<SpriteRenderer>();
+                            if (doorSR != null && wallSR != null)
+                            {
+                                doorSR.sortingLayerID = wallSR.sortingLayerID;
+                                doorSR.sortingOrder = wallSR.sortingOrder + 10; // or 500 if you prefer
+                            }
                         }
                     }
                 }
+
             }
         }
 

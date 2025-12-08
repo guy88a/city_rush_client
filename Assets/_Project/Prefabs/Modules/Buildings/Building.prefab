@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3060527157827542807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 989975812470318341}
+  - component: {fileID: 9040531106886747194}
+  m_Layer: 0
+  m_Name: Building
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &989975812470318341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3060527157827542807}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.39734, y: 2.56016, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1023344840094128157}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9040531106886747194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3060527157827542807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3412d660491d02b4e95fb84db8cdc10d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Generation.BuildingGenerator
+  Definition:
+    WallType: Brick
+    WallColor: Mint
+    WindowType: Normal
+    WindowsRandomPattern: 1
+    WindowsForcedPattern: 
+    EntranceType: Brick
+    EntranceColor: Slate
+    EntranceDecoration: 0
+    EntranceAddDoor: 1
+    EntranceDoorType: Panel
+    EntranceDoorColor: Cyan
+    EntranceDoorSize: WW
+    RooftopType: Brick
+    RooftopColor: Mint
+    Width: 3
+    FloorsCount: 2
+    RooftopPattern: 1
+  EntranceFloorPrefab: {fileID: 7080472097013580475, guid: 35f86425ceee38848a3ab56da56d6ea0, type: 3}
+  RegularFloorPrefab: {fileID: 9222643630578681250, guid: 49f264ed4ebff5541b8da9208ca88f38, type: 3}
+  RooftopPrefab: {fileID: 8715120409232835195, guid: 5e9397fd10199c849af4cc66cd49876c, type: 3}
+  wallRegistry: {fileID: 11400000, guid: 63139dd8e5482b74abb55f1a07466ef3, type: 2}
+  windowRegistry: {fileID: 11400000, guid: faa6e4353be9efb4c81874afa6424289, type: 2}
+  doorRegistry: {fileID: 11400000, guid: f39d44da893ceef45970d451e6ee14b6, type: 2}
+  roofRegistry: {fileID: 11400000, guid: e97af9fa3af3fd846bb2be2293cce9f0, type: 2}
+  GeneratedRoot: {fileID: 1023344840094128157}
+--- !u!1 &8344312701988817600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1023344840094128157}
+  m_Layer: 0
+  m_Name: Building
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1023344840094128157
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8344312701988817600}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 989975812470318341}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

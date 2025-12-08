@@ -1,11 +1,9 @@
 using UnityEngine;
 using CityRush.World.Buildings.Data;
+using CityRush.World.Buildings.Registry;
 
 namespace CityRush.World.Buildings.Generation
 {
-    // BuildingGenerator
-    // Runtime generator that stacks floors into a full building.
-
     public class BuildingGenerator : MonoBehaviour
     {
         [Header("Building Definition")]
@@ -16,8 +14,19 @@ namespace CityRush.World.Buildings.Generation
         public GameObject RegularFloorPrefab;
         public GameObject RooftopPrefab;
 
+        [Header("Registries")]
+        public WallRegistry wallRegistry;
+        public WindowRegistry windowRegistry;
+        public DoorRegistry doorRegistry;
+        public RoofRegistry roofRegistry;
+
         [Header("Generated Output (Read Only)")]
         public Transform GeneratedRoot;
+
+        private void Start()
+        {
+            Generate();
+        }
 
         private void Reset()
         {
@@ -40,39 +49,63 @@ namespace CityRush.World.Buildings.Generation
             float floorHeight = 260f / 48f;
             Transform parent = GeneratedRoot;
 
-            // ENTRANCE FLOOR ---------------------------------------------------
+            // -----------------------------------------------------
+            // ENTRANCE FLOOR
+            // -----------------------------------------------------
             GameObject entrance = Instantiate(EntranceFloorPrefab, parent);
             entrance.transform.localPosition = Vector3.zero;
 
             FloorComponent entranceFloor = entrance.GetComponent<FloorComponent>();
             if (entranceFloor != null)
             {
+                entranceFloor.wallRegistry = wallRegistry;
+                entranceFloor.windowRegistry = windowRegistry;
+                entranceFloor.doorRegistry = doorRegistry;
+
                 entranceFloor.WidthModules = Definition.Width;
-                entranceFloor.Initialize(Definition, true);
+                entranceFloor.Initialize(Definition, true); // isEntrance = true
             }
 
-            // REGULAR FLOORS ---------------------------------------------------
+            // -----------------------------------------------------
+            // REGULAR FLOORS
+            // -----------------------------------------------------
             for (int i = 0; i < Definition.FloorsCount; i++)
             {
-                GameObject floor = Instantiate(RegularFloorPrefab, parent);
-
                 float y = (i + 1) * floorHeight;
+
+                GameObject floor = Instantiate(RegularFloorPrefab, parent);
                 floor.transform.localPosition = new Vector3(0, y, 0);
 
                 FloorComponent fc = floor.GetComponent<FloorComponent>();
                 if (fc != null)
                 {
+                    fc.wallRegistry = wallRegistry;
+                    fc.windowRegistry = windowRegistry;
+                    fc.doorRegistry = doorRegistry;
+
                     fc.WidthModules = Definition.Width;
-                    fc.Initialize(Definition, false);
+                    fc.Initialize(Definition, false); // isEntrance = false
                 }
             }
 
-            // ROOFTOP ----------------------------------------------------------
+            // -----------------------------------------------------
+            // ROOFTOP
+            // -----------------------------------------------------
             if (RooftopPrefab != null)
             {
-                float rooftopY = (Definition.FloorsCount + 1) * floorHeight;
+                float y = (Definition.FloorsCount + 1) * floorHeight;
+
                 GameObject roof = Instantiate(RooftopPrefab, parent);
-                roof.transform.localPosition = new Vector3(0, rooftopY, 0);
+                float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
+                roof.transform.localPosition = new Vector3(halfWidth, y, 0);
+
+                RooftopComponent rc = roof.GetComponent<RooftopComponent>();
+                if (rc != null)
+                {
+                    rc.roofRegistry = roofRegistry;
+                    rc.WidthModules = Definition.Width;
+                    rc.Initialize(Definition);
+                }
             }
         }
 
@@ -82,10 +115,7 @@ namespace CityRush.World.Buildings.Generation
                 return;
 
             for (int i = GeneratedRoot.childCount - 1; i >= 0; i--)
-            {
-                Transform child = GeneratedRoot.GetChild(i);
-                DestroyImmediate(child.gameObject);
-            }
+                DestroyImmediate(GeneratedRoot.GetChild(i).gameObject);
         }
     }
 }
