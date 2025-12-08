@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58646d2ac9c0af429fd63b52ed3efe2, type: 3}
+  m_Name: WallRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.WallRegistry
+  Entries:
+  - Key: Wall_Brick_Mauve_Left
+    Prefab: {fileID: 495636685543618240, guid: 5d49184e9e870394d91f439219964361, type: 3}
+  - Key: Wall_Brick_Mauve_Middle
+    Prefab: {fileID: 3022445180327727416, guid: fb68891628030aa46b9331e47471efe8, type: 3}
+  - Key: Wall_Brick_Mauve_Right
+    Prefab: {fileID: 2159732231882343642, guid: 47a3e239c7bfd7a4395a122dd88be0e3, type: 3}
+  - Key: Wall_Brick_Mint_Left
+    Prefab: {fileID: 1155143490466566092, guid: 83893d93635a079448ee24882b216ce9, type: 3}
+  - Key: Wall_Brick_Mint_Middle
+    Prefab: {fileID: 2243015268821709350, guid: 16cd2b93520c5eb4481011ca12212646, type: 3}
+  - Key: Wall_Brick_Mint_Right
+    Prefab: {fileID: 2709924870106915718, guid: 07b73b243218b6341a745406c11f7a1a, type: 3}
+  - Key: Wall_Brick_Mustard_Left
+    Prefab: {fileID: 3804115148865120654, guid: dd738045089a0b84aa9b422c1fbd3a78, type: 3}
+  - Key: Wall_Brick_Mustard_Middle
+    Prefab: {fileID: 9180745647899304077, guid: 703c39baded7cdb45b47bfa43cc6e502, type: 3}
+  - Key: Wall_Brick_Mustard_Right
+    Prefab: {fileID: 8531585070191693401, guid: 83be04a05f0494e4ba57d92a5a24e670, type: 3}
+  - Key: Wall_Brick_Olive_Left
+    Prefab: {fileID: 7130072159333069887, guid: c69c76c226cd89f43b1f79983a101f73, type: 3}
+  - Key: Wall_Brick_Olive_Middle
+    Prefab: {fileID: 848709735820733799, guid: 127e5ba936a28ac4f989f1ccaac33e45, type: 3}
+  - Key: Wall_Brick_Olive_Right
+    Prefab: {fileID: 5175571652663803644, guid: 915274564113d2740a6cc099944d7ae9, type: 3}
+  - Key: Wall_Brick_Orange_Left
+    Prefab: {fileID: 5979246207803381999, guid: c94617334c9e5e34aa4015163ccab903, type: 3}
+  - Key: Wall_Brick_Orange_Middle
+    Prefab: {fileID: 1607982088719844710, guid: 2e2ffe73e5f39e74a95ef81a14f3e3aa, type: 3}
+  - Key: Wall_Brick_Orange_Right
+    Prefab: {fileID: 4435521045101144099, guid: 4e16735ca5ad0b748811a0deb9557a27, type: 3}
+  - Key: Wall_Brick_Slate_Left
+    Prefab: {fileID: 424104401110254188, guid: 5e472f2cf0e90c747aa48a9ba6221979, type: 3}
+  - Key: Wall_Brick_Slate_Middle
+    Prefab: {fileID: 1051944549269834046, guid: e12d940eba8b72e45b8ff5bdccb0a653, type: 3}
+  - Key: Wall_Brick_Slate_Right
+    Prefab: {fileID: 6042657643912137124, guid: 8c1787328d760f14ab56e92456145cac, type: 3}
+  - Key: Wall_Brick_Teal_Left
+    Prefab: {fileID: 3612812098979790486, guid: 7bd5d5f097a3c0a42a04669baad56c1f, type: 3}
+  - Key: Wall_Brick_Teal_Middle
+    Prefab: {fileID: 468471915850229455, guid: 6a300248dc2182f41a687fe279b5bded, type: 3}
+  - Key: Wall_Brick_Teal_Right
+    Prefab: {fileID: 444558243350670730, guid: e9bde093bb2e61b4787ca1b455784cae, type: 3}
+  - Key: Wall_Panel_Brown_Left
+    Prefab: {fileID: 3376879548605452435, guid: 873ff25cfc8204c4ca0d2c47c85583de, type: 3}
+  - Key: Wall_Panel_Brown_Right
+    Prefab: {fileID: 4318025429417298027, guid: 80ba3b3167f234f46b0da91562696c5d, type: 3}
+  - Key: Wall_Panel_Cyan_Left
+    Prefab: {fileID: 1658296308139031649, guid: 20f0aa47f41e14543a02ea612e50baca, type: 3}
+  - Key: Wall_Panel_Cyan_Right
+    Prefab: {fileID: 2162574200084367700, guid: 8ef6014b491aea2429d23f141825e78f, type: 3}
+  - Key: Wall_Panel_Dark_Left
+    Prefab: {fileID: 4084625648669017382, guid: 8840652ffd60cb043910c9c20803a861, type: 3}
+  - Key: Wall_Panel_Dark_Right
+    Prefab: {fileID: 4357299940657457259, guid: 3bdbe85162dd84a45a99c05b63841d48, type: 3}
+  - Key: Wall_Panel_Pink_Left
+    Prefab: {fileID: 9152997612709088913, guid: 31d01c6205a38fa4fbba57a7b7d1b053, type: 3}
+  - Key: Wall_Panel_Pink_Right
+    Prefab: {fileID: 7576062647320608483, guid: e672a89ea4def6b4381d600bb0f912b3, type: 3}
+  - Key: Wall_Panel_Red_Left
+    Prefab: {fileID: 9037329667260666070, guid: 67ba7377d4055af4facc3b0442b0d906, type: 3}
+  - Key: Wall_Panel_Red_Right
+    Prefab: {fileID: 134079379582016229, guid: ca9ce24bbdab9354a990969523a8d3e6, type: 3}
+  - Key: Wall_Panel_Turquoise_Left
+    Prefab: {fileID: 5464551962058298423, guid: 4e4806cc46d8b1148a7bd30ec889d356, type: 3}
+  - Key: Wall_Panel_Turquoise_Right
+    Prefab: {fileID: 1005926545517517733, guid: a858df4df493691479fc817b12e252e8, type: 3}
+  - Key: Wall_Store_Cyan_Door
+    Prefab: {fileID: 3433723525283060871, guid: b50d036b42264eb4eb28916c767bb87d, type: 3}
+  - Key: Wall_Store_Cyan_Middle
+    Prefab: {fileID: 3027256187992548571, guid: c3e823bcf631c23499104e0df1bf6721, type: 3}
+  - Key: Wall_Store_Cyan_Right
+    Prefab: {fileID: 5925743802600087539, guid: ded3e78af7dcd3d4da27011f90c4798b, type: 3}
+  - Key: Wall_Store_Grey_Door
+    Prefab: {fileID: 2650836360562406263, guid: 751661fa5bdc2c34cb82438c9ae01f57, type: 3}
+  - Key: Wall_Store_Grey_Middle
+    Prefab: {fileID: 4376978390680105451, guid: a88e07542df8c684ba81c188871e5b35, type: 3}
+  - Key: Wall_Store_Grey_Right
+    Prefab: {fileID: 85571059811805390, guid: 33d344bcdca4aaf488b1993a042ba9db, type: 3}
+  - Key: Wall_Store_Pink_Door
+    Prefab: {fileID: 6967563602058528828, guid: e1be6fc54a79ef646a302553eca3230c, type: 3}
+  - Key: Wall_Store_Pink_Middle
+    Prefab: {fileID: 5489091622745490664, guid: 78ce447209c073242a6a992d61760848, type: 3}
+  - Key: Wall_Store_Pink_Right
+    Prefab: {fileID: 5687854670612686058, guid: 845c7c3003e95a840b6b8b78288db741, type: 3}
+  - Key: Wall_Store_Red_Door
+    Prefab: {fileID: 8907186563286995206, guid: 8f310480186f16a4aa4c4eda0c9ccfcd, type: 3}
+  - Key: Wall_Store_Red_Middle
+    Prefab: {fileID: 3160907869120285577, guid: 260cc5c3e91bf9445a32c28026c6e9eb, type: 3}
+  - Key: Wall_Store_Red_Right
+    Prefab: {fileID: 6203357975083324029, guid: ebc6d9823392f5a4dbd72eeacca957e7, type: 3}
+  - Key: Wall_Store_Turquoise_Door
+    Prefab: {fileID: 1334932667896599732, guid: 0719efbb133057a4b8f2fc23aaecc822, type: 3}
+  - Key: Wall_Store_Turquoise_Middle
+    Prefab: {fileID: 9040788065904108841, guid: 06297e70d77e34444afc03226f69434c, type: 3}
+  - Key: Wall_Store_Turquoise_Right
+    Prefab: {fileID: 7402382565901263852, guid: 0df14de5f6b1beb449493904272ff9f0, type: 3}
+  - Key: Wall_Store_Yellow_Door
+    Prefab: {fileID: 2615754987083895431, guid: 2e51b095f17a5534d8dd69aa3483dcaf, type: 3}
+  - Key: Wall_Store_Yellow_Middle
+    Prefab: {fileID: 2596749330561227323, guid: 80a52d3be9fb15d4ca2f4772fdc9cb0d, type: 3}
+  - Key: Wall_Store_Yellow_Right
+    Prefab: {fileID: 3646759807309751922, guid: 617b5e49f7a005549a3866f2fb651b1b, type: 3}
+  - Key: 
+    Prefab: {fileID: 0}

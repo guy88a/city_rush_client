@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04a4d6d1035caeb4d8e5e47bb9c4231d, type: 3}
+  m_Name: RoofRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.RoofRegistry
+  Entries:
+  - Key: Chimney_Brick_Mauve
+    Prefab: {fileID: 387351511512399029, guid: 6939cf1639dd3b940a0e54aeb2bd2ea9, type: 3}
+  - Key: Chimney_Brick_Mint
+    Prefab: {fileID: 4167318635837420796, guid: 25d80a31d1978a54ebf4a55c967425bc, type: 3}
+  - Key: Chimney_Brick_Mustard
+    Prefab: {fileID: 8468049071539724682, guid: 2ae8ba0885bec894d82cb82151a285c4, type: 3}
+  - Key: Chimney_Brick_Olive
+    Prefab: {fileID: 1648591242660773256, guid: 02361f982294b20408351046df631880, type: 3}
+  - Key: Chimney_Brick_Orange
+    Prefab: {fileID: 4059258753920363955, guid: 7b12c81cc354ca14386294d3e5751cf4, type: 3}
+  - Key: Chimney_Brick_Slate
+    Prefab: {fileID: 3047139577437582750, guid: 90fc06514dbcbf142ad3bacd11d6aaf4, type: 3}
+  - Key: Chimney_Brick_Teal
+    Prefab: {fileID: 3099200209054351792, guid: a645e4b3f4c653d49950fb9ab5880d13, type: 3}
