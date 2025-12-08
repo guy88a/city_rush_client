@@ -5,35 +5,36 @@ using UnityEngine;
 namespace CityRush.World.Buildings.Registry
 {
     [Serializable]
-    public struct DoorEntry
+    public struct DoorModuleEntry
     {
-        public string Type;    // Small / Panel / Fancy
-        public string Color;   // Metal / Cyan / Brown
-        public string Size;    // "", "WW", "HH", "BIG"
+        public string Key;      // Example: "Door_Panel_Cyan_WW"
         public GameObject Prefab;
     }
 
     [CreateAssetMenu(menuName = "CityRush/Registry/DoorRegistry")]
     public class DoorRegistry : ScriptableObject
     {
-        public List<DoorEntry> Doors = new List<DoorEntry>();
+        public List<DoorModuleEntry> Entries = new List<DoorModuleEntry>();
+        private Dictionary<string, GameObject> map;
 
-        public GameObject GetDoor(string type, string color, string size)
+        private void OnEnable()
         {
-            foreach (var entry in Doors)
-            {
-                if (entry.Type == type &&
-                    entry.Color == color)
-                {
-                    // if both sides treat size as empty -> match
-                    if (string.IsNullOrEmpty(size) && string.IsNullOrEmpty(entry.Size))
-                        return entry.Prefab;
+            map = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
 
-                    // if both have size and they match -> match
-                    if (!string.IsNullOrEmpty(size) && entry.Size == size)
-                        return entry.Prefab;
-                }
+            foreach (var e in Entries)
+            {
+                if (string.IsNullOrWhiteSpace(e.Key) || e.Prefab == null)
+                    continue;
+
+                if (!map.ContainsKey(e.Key))
+                    map.Add(e.Key, e.Prefab);
             }
+        }
+
+        public GameObject Get(string key)
+        {
+            if (map != null && map.TryGetValue(key, out var prefab))
+                return prefab;
 
             return null;
         }

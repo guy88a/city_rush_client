@@ -5,25 +5,36 @@ using UnityEngine;
 namespace CityRush.World.Buildings.Registry
 {
     [Serializable]
-    public struct WindowEntry
+    public struct WindowModuleEntry
     {
-        public string Type;     // Classic / Round / etc.
-        public bool IsOpen;     // true = open prefab, false = closed
+        public string Key;      // Example: "Window_Classic_Open"
         public GameObject Prefab;
     }
 
     [CreateAssetMenu(menuName = "CityRush/Registry/WindowRegistry")]
     public class WindowRegistry : ScriptableObject
     {
-        public List<WindowEntry> Windows = new List<WindowEntry>();
+        public List<WindowModuleEntry> Entries = new List<WindowModuleEntry>();
+        private Dictionary<string, GameObject> map;
 
-        public GameObject GetWindow(string type, bool open)
+        private void OnEnable()
         {
-            foreach (var entry in Windows)
+            map = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var e in Entries)
             {
-                if (entry.Type == type && entry.IsOpen == open)
-                    return entry.Prefab;
+                if (string.IsNullOrWhiteSpace(e.Key) || e.Prefab == null)
+                    continue;
+
+                if (!map.ContainsKey(e.Key))
+                    map.Add(e.Key, e.Prefab);
             }
+        }
+
+        public GameObject Get(string key)
+        {
+            if (map != null && map.TryGetValue(key, out var prefab))
+                return prefab;
 
             return null;
         }

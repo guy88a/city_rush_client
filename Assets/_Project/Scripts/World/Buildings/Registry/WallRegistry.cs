@@ -4,35 +4,37 @@ using UnityEngine;
 
 namespace CityRush.World.Buildings.Registry
 {
-    public enum WallPosition { Left, Middle, Right }
-
     [Serializable]
-    public struct WallEntry
+    public struct WallModuleEntry
     {
-        public string Type;      // Brick / Panel / Concrete
-        public string Color;     // Mauve / Red / etc.
-        public WallPosition Position;
+        public string Key;       // Example: "Wall_Brick_Mauve_Left"
         public GameObject Prefab;
-        public bool IsEntrance;  // true = entrance variant
     }
 
     [CreateAssetMenu(menuName = "CityRush/Registry/WallRegistry")]
     public class WallRegistry : ScriptableObject
     {
-        public List<WallEntry> Walls = new List<WallEntry>();
+        public List<WallModuleEntry> Entries = new List<WallModuleEntry>();
+        private Dictionary<string, GameObject> map;
 
-        public GameObject GetWall(string type, string color, WallPosition position, bool entrance)
+        private void OnEnable()
         {
-            foreach (var entry in Walls)
+            map = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var e in Entries)
             {
-                if (entry.Type == type &&
-                    entry.Color == color &&
-                    entry.Position == position &&
-                    entry.IsEntrance == entrance)
-                {
-                    return entry.Prefab;
-                }
+                if (string.IsNullOrWhiteSpace(e.Key) || e.Prefab == null)
+                    continue;
+
+                if (!map.ContainsKey(e.Key))
+                    map.Add(e.Key, e.Prefab);
             }
+        }
+
+        public GameObject Get(string key)
+        {
+            if (map != null && map.TryGetValue(key, out var prefab))
+                return prefab;
 
             return null;
         }
