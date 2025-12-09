@@ -266,11 +266,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.52
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -14.05
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -307,6 +307,18 @@ PrefabInstance:
     - target: {fileID: 3060527157827542807, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_Name
       value: Building
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.EntranceType
+      value: Store
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.EntranceColor
+      value: Yellow
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.EntranceEmbeddedDoor
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

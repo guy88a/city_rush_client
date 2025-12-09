@@ -55,27 +55,27 @@ MonoBehaviour:
     Prefab: {fileID: 468471915850229455, guid: 6a300248dc2182f41a687fe279b5bded, type: 3}
   - Key: Wall_Brick_Teal_Right
     Prefab: {fileID: 444558243350670730, guid: e9bde093bb2e61b4787ca1b455784cae, type: 3}
-  - Key: Wall_Panel_Brown_Left
+  - Key: Wall_Panel_Brown_Middle
     Prefab: {fileID: 3376879548605452435, guid: 873ff25cfc8204c4ca0d2c47c85583de, type: 3}
   - Key: Wall_Panel_Brown_Right
     Prefab: {fileID: 4318025429417298027, guid: 80ba3b3167f234f46b0da91562696c5d, type: 3}
-  - Key: Wall_Panel_Cyan_Left
+  - Key: Wall_Panel_Cyan_Middle
     Prefab: {fileID: 1658296308139031649, guid: 20f0aa47f41e14543a02ea612e50baca, type: 3}
   - Key: Wall_Panel_Cyan_Right
     Prefab: {fileID: 2162574200084367700, guid: 8ef6014b491aea2429d23f141825e78f, type: 3}
-  - Key: Wall_Panel_Dark_Left
+  - Key: Wall_Panel_Dark_Middle
     Prefab: {fileID: 4084625648669017382, guid: 8840652ffd60cb043910c9c20803a861, type: 3}
   - Key: Wall_Panel_Dark_Right
     Prefab: {fileID: 4357299940657457259, guid: 3bdbe85162dd84a45a99c05b63841d48, type: 3}
-  - Key: Wall_Panel_Pink_Left
+  - Key: Wall_Panel_Pink_Middle
     Prefab: {fileID: 9152997612709088913, guid: 31d01c6205a38fa4fbba57a7b7d1b053, type: 3}
   - Key: Wall_Panel_Pink_Right
     Prefab: {fileID: 7576062647320608483, guid: e672a89ea4def6b4381d600bb0f912b3, type: 3}
-  - Key: Wall_Panel_Red_Left
+  - Key: Wall_Panel_Red_Middle
     Prefab: {fileID: 9037329667260666070, guid: 67ba7377d4055af4facc3b0442b0d906, type: 3}
   - Key: Wall_Panel_Red_Right
     Prefab: {fileID: 134079379582016229, guid: ca9ce24bbdab9354a990969523a8d3e6, type: 3}
-  - Key: Wall_Panel_Turquoise_Left
+  - Key: Wall_Panel_Turquoise_Middle
     Prefab: {fileID: 5464551962058298423, guid: 4e4806cc46d8b1148a7bd30ec889d356, type: 3}
   - Key: Wall_Panel_Turquoise_Right
     Prefab: {fileID: 1005926545517517733, guid: a858df4df493691479fc817b12e252e8, type: 3}
