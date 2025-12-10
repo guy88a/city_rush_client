@@ -33,6 +33,10 @@ namespace CityRush.World.Buildings.Data
         public string EntranceDoorColor; // only if EntranceAddDoor == true
         public string EntranceDoorSize;  // only if EntranceAddDoor == true
 
+        // Separators
+        public bool UseSeparators;       // render / don't render separators
+        public string SeparatorType;     // e.g. "Standard", "Modern"
+
         // Rooftop
         public string RooftopType;       // chimney wall family
         public string RooftopColor;      // chimney wall color

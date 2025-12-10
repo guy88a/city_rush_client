@@ -334,6 +334,10 @@ PrefabInstance:
       value: Building (1)
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: separatorRegistry
+      value: 
+      objectReference: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.WallColor
       value: Orange
       objectReference: {fileID: 0}
@@ -352,6 +356,14 @@ PrefabInstance:
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceColor
       value: Brown
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.SeparatorType
+      value: Standard
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.UseSeparators
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceDoorColor
@@ -419,12 +431,24 @@ PrefabInstance:
       value: Building
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: separatorRegistry
+      value: 
+      objectReference: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceType
       value: Store
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceColor
       value: Yellow
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.SeparatorType
+      value: Standard
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.UseSeparators
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceEmbeddedDoor

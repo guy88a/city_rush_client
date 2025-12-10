@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5458ce6dd1f4ca0428dfce64436c164f, type: 3}
+  m_Name: SeparatorRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.SeparatorRegistry
+  Entries:
+  - Key: Separator_Standard_Left_WW
+    Prefab: {fileID: 932621735216920981, guid: 8a4b6ce1b837fd748beee6968905a0f4, type: 3}
+  - Key: Separator_Standard_Middle
+    Prefab: {fileID: 1526435941084235932, guid: 3a11d830fb1ce1d4f8c478db1e16b2c0, type: 3}
+  - Key: Separator_Standard_Right_WW
+    Prefab: {fileID: 8823932695819250219, guid: b34b96312facdda4b8329ae762178ac6, type: 3}

@@ -19,6 +19,7 @@ namespace CityRush.World.Buildings.Generation
         public WindowRegistry windowRegistry;
         public DoorRegistry doorRegistry;
         public RoofRegistry roofRegistry;
+        public SeparatorRegistry separatorRegistry;   // NEW
 
         [Header("Generated Output (Read Only)")]
         public Transform GeneratedRoot;
@@ -47,6 +48,7 @@ namespace CityRush.World.Buildings.Generation
                 return;
 
             float floorHeight = 260f / 48f;
+            float moduleWidth = 160f / 48f;
             Transform parent = GeneratedRoot;
 
             // -----------------------------------------------------
@@ -89,6 +91,19 @@ namespace CityRush.World.Buildings.Generation
             }
 
             // -----------------------------------------------------
+            // FLOOR SEPARATORS (between floors)
+            // -----------------------------------------------------
+            if (Definition.UseSeparators && separatorRegistry != null)
+            {
+                // between: entrance <-> floor0, floor0 <-> floor1, ..., floorN-2 <-> floorN-1
+                for (int i = 0; i < Definition.FloorsCount; i++)
+                {
+                    float y = (i + 1) * floorHeight;
+                    SpawnSeparatorRow(Definition, parent, y, moduleWidth);
+                }
+            }
+
+            // -----------------------------------------------------
             // ROOFTOP
             // -----------------------------------------------------
             if (RooftopPrefab != null)
@@ -96,7 +111,7 @@ namespace CityRush.World.Buildings.Generation
                 float y = (Definition.FloorsCount + 1) * floorHeight;
 
                 GameObject roof = Instantiate(RooftopPrefab, parent);
-                float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
+                float halfWidth = moduleWidth * 0.5f; // ~1.6667
                 roof.transform.localPosition = new Vector3(halfWidth, y, 0);
 
                 RooftopComponent rc = roof.GetComponent<RooftopComponent>();
@@ -105,6 +120,56 @@ namespace CityRush.World.Buildings.Generation
                     rc.roofRegistry = roofRegistry;
                     rc.WidthModules = Definition.Width;
                     rc.Initialize(Definition);
+                }
+            }
+        }
+
+        private void SpawnSeparatorRow(BuildingDefinition def, Transform parent, float y, float moduleWidth)
+        {
+            if (string.IsNullOrEmpty(def.SeparatorType))
+                return;
+
+            for (int i = 0; i < def.Width; i++)
+            {
+                string positionSuffix;
+
+                if (i == 0)
+                    positionSuffix = "Left_WW";
+                else if (i == def.Width - 1)
+                    positionSuffix = "Right_WW";
+                else
+                    positionSuffix = "Middle";
+
+                string key = "Separator_" + def.SeparatorType + "_" + positionSuffix;
+
+                GameObject sepPrefab = separatorRegistry.Get(key);
+                if (sepPrefab == null)
+                    continue;
+
+                Transform sep = Instantiate(sepPrefab, parent).transform;
+                SpriteRenderer sr = sep.GetComponent<SpriteRenderer>();
+                float sepWidth = sr.bounds.size.x;
+                float wallWidth = moduleWidth;
+
+                float x = 0f;
+
+                if (i == 0) // LEFT separator
+                {
+                    x = -(sepWidth - wallWidth);
+                }
+                else // Middle separators
+                {
+                    x = i * wallWidth;
+                }
+
+                sep.localPosition = new Vector3(x, y, 0f);
+
+                // Sorting: between walls and windows
+                //sr = sep.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    // assuming walls at 0, windows at +2 (see tweak below)
+                    sr.sortingOrder = 1;
                 }
             }
         }

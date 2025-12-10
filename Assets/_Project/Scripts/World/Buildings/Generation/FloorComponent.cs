@@ -116,7 +116,7 @@ namespace CityRush.World.Buildings.Generation
                         if (winSR != null && wallSR != null)
                         {
                             winSR.sortingLayerID = wallSR.sortingLayerID;
-                            winSR.sortingOrder = wallSR.sortingOrder + 1;
+                            winSR.sortingOrder = wallSR.sortingOrder + 2;
                         }
                     }
                 }
