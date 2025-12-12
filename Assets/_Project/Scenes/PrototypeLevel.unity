@@ -295,7 +295,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6
+      value: -11
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -370,8 +370,16 @@ PrefabInstance:
       value: Brown
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.UseRooftopSeparator
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceEmbeddedDoor
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.RooftopSeparatorType
+      value: Poor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -392,7 +400,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6
+      value: -11
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -451,8 +459,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.UseRooftopSeparator
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceEmbeddedDoor
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.RooftopSeparatorType
+      value: Normal
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

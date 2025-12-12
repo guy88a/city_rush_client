@@ -19,7 +19,11 @@ namespace CityRush.World.Buildings.Generation
         public WindowRegistry windowRegistry;
         public DoorRegistry doorRegistry;
         public RoofRegistry roofRegistry;
-        public SeparatorRegistry separatorRegistry;   // NEW
+        public SeparatorRegistry separatorRegistry;
+        public RooftopSeparatorRegistry rooftopSeparatorRegistry;
+
+        const float WALL_MODULE_WIDTH = 160f / 48f;
+        private const float ROOFTOP_WALL_HEIGHT_FACTOR = 0.5f;
 
         [Header("Generated Output (Read Only)")]
         public Transform GeneratedRoot;
@@ -104,6 +108,20 @@ namespace CityRush.World.Buildings.Generation
             }
 
             // -----------------------------------------------------
+            // ROOFTOP SEPARATOR
+            // -----------------------------------------------------
+            if (Definition.UseRooftopSeparator && rooftopSeparatorRegistry != null)
+            {
+                float y = (Definition.FloorsCount + 1) * floorHeight;
+                SpawnRooftopSeparatorRow(Definition, parent, y, moduleWidth);
+            }
+
+            // -----------------------------------------------------
+            // ROOFTOP WALL
+            // -----------------------------------------------------
+            SpawnRooftopWall(Definition, parent, (Definition.FloorsCount + 1) * floorHeight);
+
+            // -----------------------------------------------------
             // ROOFTOP
             // -----------------------------------------------------
             if (RooftopPrefab != null)
@@ -169,10 +187,155 @@ namespace CityRush.World.Buildings.Generation
                 if (sr != null)
                 {
                     // assuming walls at 0, windows at +2 (see tweak below)
-                    sr.sortingOrder = 1;
+                    sr.sortingOrder = BuildingSorting.Separators;
                 }
             }
         }
+
+        private void SpawnRooftopSeparatorRow(BuildingDefinition def, Transform parent, float y, float moduleWidth)
+        {
+            if (string.IsNullOrEmpty(def.RooftopSeparatorType))
+                return;
+
+            for (int i = 0; i < def.Width; i++)
+            {
+                string baseKey = "Rooftop_Separator_" + def.RooftopSeparatorType + "_";
+
+                string key = null;
+
+                if (i == 0) // LEFT
+                {
+                    key = baseKey + "Left_WW";
+
+                    if (rooftopSeparatorRegistry.Get(key) == null)
+                        key = baseKey + "Left";
+                }
+                else if (i == def.Width - 1) // RIGHT
+                {
+                    key = baseKey + "Right_WW";
+
+                    if (rooftopSeparatorRegistry.Get(key) == null)
+                        key = baseKey + "Right";
+                }
+                else // MIDDLE
+                {
+                    key = baseKey + "Middle";
+                }
+
+                GameObject prefab = rooftopSeparatorRegistry.Get(key);
+                if (prefab == null)
+                    continue;
+
+                Transform sep = Instantiate(prefab, parent).transform;
+
+                // --- X placement (KNOWN GOOD LOGIC) ---
+                float x;
+                SpriteRenderer sr = sep.GetComponent<SpriteRenderer>();
+                float sepWidth = sr.bounds.size.x;
+
+                if (i == 0) // LEFT
+                {
+                    x = -(sepWidth - moduleWidth);
+                }
+                else
+                {
+                    x = i * moduleWidth;
+                }
+
+                sep.localPosition = new Vector3(x, y, 0f);
+
+                // --- Sorting ---
+                if (sr != null)
+                {
+                    sr.sortingOrder = BuildingSorting.RoofSep;
+                }
+            }
+        }
+
+        private void SpawnRooftopWall(BuildingDefinition def, Transform parent, float y)
+        {
+            const float WALL_MODULE_WIDTH = 160f / 48f;
+            const float ROOFTOP_WALL_HEIGHT_FACTOR = 0.3f;
+
+            // -------------------------------------------------
+            // Resolve wall prefabs
+            // -------------------------------------------------
+            string leftKey = "Wall_" + def.WallType + "_" + def.WallColor + "_Left";
+            string middleKey = "Wall_" + def.WallType + "_" + def.WallColor + "_Middle";
+            string rightKey = "Wall_" + def.WallType + "_" + def.WallColor + "_Right";
+
+            GameObject leftPrefab = wallRegistry.Get(leftKey);
+            GameObject middlePrefab = wallRegistry.Get(middleKey);
+            GameObject rightPrefab = wallRegistry.Get(rightKey);
+
+            if (leftPrefab == null || middlePrefab == null || rightPrefab == null)
+                return;
+
+            SpriteRenderer leftSrc = leftPrefab.GetComponent<SpriteRenderer>();
+            SpriteRenderer middleSrc = middlePrefab.GetComponent<SpriteRenderer>();
+            SpriteRenderer rightSrc = rightPrefab.GetComponent<SpriteRenderer>();
+
+            if (leftSrc == null || middleSrc == null || rightSrc == null)
+                return;
+
+            // -------------------------------------------------
+            // Dimensions
+            // -------------------------------------------------
+            float totalWidth = def.Width * WALL_MODULE_WIDTH;
+
+            float leftWidth = leftSrc.bounds.size.x;
+            float rightWidth = rightSrc.bounds.size.x;
+
+            float middleWidth = totalWidth - leftWidth - rightWidth;
+            if (middleWidth <= 0f)
+                return;
+
+            float wallHeight = middleSrc.bounds.size.y * ROOFTOP_WALL_HEIGHT_FACTOR;
+
+            // -------------------------------------------------
+            // LEFT
+            // -------------------------------------------------
+            GameObject left = new GameObject("RooftopWall_Left");
+            left.transform.SetParent(parent);
+            left.transform.localPosition = new Vector3(0f, y, 0f);
+
+            SpriteRenderer srLeft = left.AddComponent<SpriteRenderer>();
+            srLeft.sprite = leftSrc.sprite;
+            srLeft.sortingLayerID = leftSrc.sortingLayerID;
+            srLeft.sortingOrder = BuildingSorting.RooftopWall;
+            srLeft.drawMode = SpriteDrawMode.Tiled;
+            srLeft.size = new Vector2(leftWidth, wallHeight);
+
+            // -------------------------------------------------
+            // MIDDLE (tiled)
+            // -------------------------------------------------
+            GameObject middle = new GameObject("RooftopWall_Middle");
+            middle.transform.SetParent(parent);
+            middle.transform.localPosition = new Vector3(leftWidth, y, 0f);
+
+            SpriteRenderer srMiddle = middle.AddComponent<SpriteRenderer>();
+            srMiddle.sprite = middleSrc.sprite;
+            srMiddle.sortingLayerID = middleSrc.sortingLayerID;
+            srMiddle.sortingOrder = BuildingSorting.RooftopWall;
+            srMiddle.drawMode = SpriteDrawMode.Tiled;
+            srMiddle.size = new Vector2(middleWidth, wallHeight);
+
+            // -------------------------------------------------
+            // RIGHT
+            // -------------------------------------------------
+            GameObject right = new GameObject("RooftopWall_Right");
+            right.transform.SetParent(parent);
+            right.transform.localPosition = new Vector3(leftWidth + middleWidth, y, 0f);
+
+            SpriteRenderer srRight = right.AddComponent<SpriteRenderer>();
+            srRight.sprite = rightSrc.sprite;
+            srRight.sortingLayerID = rightSrc.sortingLayerID;
+            srRight.sortingOrder = BuildingSorting.RooftopWall;
+            srRight.drawMode = SpriteDrawMode.Tiled;
+            srRight.size = new Vector2(rightWidth, wallHeight);
+        }
+
+
 
         private void ClearGenerated()
         {

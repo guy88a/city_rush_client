@@ -4,7 +4,6 @@ namespace CityRush.World.Buildings.Data
 {
     // BuildingDefinition
     // Pure data container describing a building.
-    // No unicode, no special characters.
 
     [System.Serializable]
     public class BuildingDefinition
@@ -41,6 +40,10 @@ namespace CityRush.World.Buildings.Data
         public string RooftopType;       // chimney wall family
         public string RooftopColor;      // chimney wall color
         public int RooftopPattern;       // module index for rooftop access door or special layout
+
+        // Rooftop Separator
+        public bool UseRooftopSeparator;     // render / don't render rooftop separator
+        public string RooftopSeparatorType;  // e.g. "Fancy", "Industrial", etc.
 
         // Building Shape
         public int Width;        // modules per row
