@@ -7,24 +7,24 @@ namespace CityRush.World.Buildings.Generation
 {
     public class FloorComponent : MonoBehaviour
     {
-        SpriteRenderer wallSR;
-        SpriteRenderer winSR;
-        SpriteRenderer doorSR;
-
         public WallRegistry wallRegistry;
         public WindowRegistry windowRegistry;
         public DoorRegistry doorRegistry;
+        public PropsRegistry propsRegistry;
 
         public int WidthModules = 3;
         float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
+        const float PropBottomMarginPx = 56f;
+        const float PPU = 48f;
+        float propBottomMargin = PropBottomMarginPx / PPU;
 
-        public void Initialize(BuildingDefinition definition, bool isEntrance)
+        public void Initialize(BuildingDefinition definition, bool isEntrance, int floorIndex)
         {
             ClearModules();
-            Build(definition, isEntrance);
+            Build(definition, isEntrance, floorIndex);
         }
 
-        private void Build(BuildingDefinition def, bool isEntrance)
+        private void Build(BuildingDefinition def, bool isEntrance, int floorIndex)
         {
             float moduleWidth = 160f / 48f;
 
@@ -150,6 +150,47 @@ namespace CityRush.World.Buildings.Generation
                         }
                     }
                 }
+
+                // ======================
+                // PROPS (ALL FLOORS)
+                // ======================
+                if (def.PropsGrid != null &&
+                    floorIndex < def.PropsGrid.Floors.Count)
+                {
+                    var row = def.PropsGrid.Floors[floorIndex];
+
+                    if (row != null &&
+                        row.Modules != null &&
+                        i < row.Modules.Count)
+                    {
+                        string propKey = row.Modules[i];
+
+                        if (!string.IsNullOrEmpty(propKey) && propsRegistry != null)
+                        {
+                            GameObject propPrefab = propsRegistry.Get(propKey);
+                            if (propPrefab != null)
+                            {
+                                Transform prop = Instantiate(propPrefab, transform).transform;
+
+                                float halfModule = moduleWidth * 0.5f;
+
+                                prop.localPosition = new Vector3(
+                                    i * moduleWidth + halfModule,
+                                    propBottomMargin,
+                                    0f
+                                );
+
+                                SpriteRenderer psr = prop.GetComponent<SpriteRenderer>();
+                                if (psr != null)
+                                {
+                                    psr.sortingLayerID = wallSR.sortingLayerID;
+                                    psr.sortingOrder = BuildingSorting.PropsMin;
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
 
         }

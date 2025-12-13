@@ -51,6 +51,6 @@ namespace CityRush.World.Buildings.Data
         public int Width;        // modules per row
         public int FloorsCount;  // number of regular floors
 
-        public BuildingPropsGrid WallProps = new();
+        public BuildingPropsGrid PropsGrid = new();
     }
 }

@@ -394,12 +394,28 @@ PrefabInstance:
       value: Normal
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.PropsGrid.Floors.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.WallProps.Floors.Array.size
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.PropsGrid.Floors.Array.data[3].Modules.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.WallProps.Floors.Array.data[3].Modules.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: 'Definition.PropsGrid.Floors.Array.data[1].Modules.Array.data[0]'
+      value: Prop_Plant_FlowerB
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: 'Definition.PropsGrid.Floors.Array.data[2].Modules.Array.data[1]'
+      value: Prop_Plant_FlowerA
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -509,6 +525,14 @@ PrefabInstance:
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.WallProps.Floors.Array.data[2].Modules.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: 'Definition.PropsGrid.Floors.Array.data[1].Modules.Array.data[1]'
+      value: Prop_Vent_Normal
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: 'Definition.PropsGrid.Floors.Array.data[2].Modules.Array.data[2]'
+      value: Prop_Plant_FlowerC
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
