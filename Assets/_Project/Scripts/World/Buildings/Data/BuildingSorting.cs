@@ -11,8 +11,8 @@ namespace CityRush.World.Buildings
         public const int Windows = 3;
         public const int Doors = 4;
 
-        public const int RooftopWall = 5;
-        public const int Player = 6;             // reference value only
+        public const int Player = 5;             // reference value only
+        public const int RooftopWall = 6;
         public const int RoofSep = 7;
 
         public const int PropsMin = 8;

@@ -43,5 +43,3 @@ MonoBehaviour:
     Prefab: {fileID: 2035530180194361739, guid: 02e0f9c61893c7b4ba31725f6ae12951, type: 3}
   - Key: Door_Small_Red
     Prefab: {fileID: 4936460743757184929, guid: 92f32b27908068845b63b153451dd90e, type: 3}
-  - Key: 
-    Prefab: {fileID: 0}

@@ -40,6 +40,7 @@ namespace CityRush.World.Buildings.Data
         public string RooftopType;       // chimney wall family
         public string RooftopColor;      // chimney wall color
         public int RooftopPattern;       // module index for rooftop access door or special layout
+        public string RooftopWallDecoration;       // top decoration for rooftop wall
 
         // Rooftop Separator
         public bool UseRooftopSeparator;     // render / don't render rooftop separator

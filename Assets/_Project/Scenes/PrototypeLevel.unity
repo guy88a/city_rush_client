@@ -291,11 +291,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.78
+      value: -10.5
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -334,6 +334,10 @@ PrefabInstance:
       value: Building (1)
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.Width
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: separatorRegistry
       value: 
       objectReference: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
@@ -342,8 +346,12 @@ PrefabInstance:
       value: Orange
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.WindowType
+      value: Small
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.FloorsCount
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceType
@@ -367,7 +375,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.EntranceDoorColor
-      value: Brown
+      value: Cyan
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.UseRooftopSeparator
@@ -380,6 +388,10 @@ PrefabInstance:
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.RooftopSeparatorType
       value: Poor
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.RooftopWallDecoration
+      value: Normal
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -396,11 +408,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1
+      value: -0.6
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -468,6 +480,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
       propertyPath: Definition.RooftopSeparatorType
+      value: Normal
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+      propertyPath: Definition.RooftopWallDecoration
       value: Normal
       objectReference: {fileID: 0}
     m_RemovedComponents: []
