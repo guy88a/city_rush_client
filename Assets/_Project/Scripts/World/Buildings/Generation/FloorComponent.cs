@@ -1,73 +1,111 @@
+using CityRush.World.Buildings;
 using CityRush.World.Buildings.Data;
 using CityRush.World.Buildings.Registry;
-using UnityEditor.PackageManager.UI;
 using UnityEngine;
 
 namespace CityRush.World.Buildings.Generation
 {
     public class FloorComponent : MonoBehaviour
     {
-        SpriteRenderer wallSR;
-        SpriteRenderer winSR;
-        SpriteRenderer doorSR;
-
         public WallRegistry wallRegistry;
         public WindowRegistry windowRegistry;
         public DoorRegistry doorRegistry;
+        public PropsRegistry propsRegistry;
 
         public int WidthModules = 3;
         float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
+        const float PropBottomMarginPx = 56f;
+        const float PPU = 48f;
+        float propBottomMargin = PropBottomMarginPx / PPU;
 
-        public void Initialize(BuildingDefinition definition, bool isEntrance)
+        public void Initialize(BuildingDefinition definition, bool isEntrance, int floorIndex)
         {
             ClearModules();
-            Build(definition, isEntrance);
+            Build(definition, isEntrance, floorIndex);
         }
 
-        private void Build(BuildingDefinition definition, bool isEntrance)
+        private void Build(BuildingDefinition def, bool isEntrance, int floorIndex)
         {
-            float moduleWidth = 160f / 48f; // pixels / PPU
+            float moduleWidth = 160f / 48f;
 
             for (int i = 0; i < WidthModules; i++)
             {
-                // -----------------------
-                // WALL TYPE + COLOR
-                // -----------------------
-                string wallType = isEntrance ? definition.EntranceType : definition.WallType;
-                string wallColor = isEntrance ? definition.EntranceColor : definition.WallColor;
+                // ================
+                // SELECT WALL KEY
+                // ================
+                string wallKey = null;
+                string position = GetWallPosition(i);
 
-                // -----------------------
-                // WALL POSITION (Left / Middle / Right)
-                // -----------------------
-                string position =
-                    i == 0 ? "Left" :
-                    i == WidthModules - 1 ? "Right" :
-                    "Middle";
+                if (!isEntrance)
+                {
+                    // Regular floor wall: unchanged
+                    wallKey = "Wall_" + def.WallType + "_" + def.WallColor + "_" + position;
+                }
+                else
+                {
+                    // ============================================================
+                    // ENTRANCE FLOOR LOGIC – NEW SYSTEM
+                    // ============================================================
 
-                // -----------------------
-                // BUILD WALL KEY
-                // -----------------------
-                string wallKey = "Wall_" + wallType + "_" + wallColor + "_" + position;
+                    bool isDoorIndex = (i == def.EntranceDoorIndex);
 
+                    // ---------------------------
+                    // CASE 1 — Embedded Door
+                    // ---------------------------
+                    if (def.EntranceEmbeddedDoor && isDoorIndex)
+                    {
+                        // Instead of Wall_Left/Middle/Right, use generic Door panel
+                        wallKey = "Wall_" + def.EntranceType + "_" + def.EntranceColor + "_Door";
+                    }
+                    else
+                    {
+                        // ---------------------------
+                        // CASE 2 — Two Assets Mode
+                        // ---------------------------
+                        if (def.EntranceTwoAssetsMode)
+                        {
+                            if (isDoorIndex)
+                            {
+                                // Fallback to regular wall type/color at door index
+                                wallKey = "Wall_" + def.WallType + "_" + def.WallColor + "_" + position;
+                            }
+                            else
+                            {
+                                // Other modules use entrance wall style
+                                wallKey = "Wall_" + def.EntranceType + "_" + def.EntranceColor + "_" + position;
+                            }
+                        }
+                        else
+                        {
+                            // ---------------------------
+                            // CASE 3 — Normal Entrance
+                            // ---------------------------
+                            wallKey = "Wall_" + def.EntranceType + "_" + def.EntranceColor + "_" + position;
+                        }
+                    }
+                }
+
+                // ================
+                // GET WALL PREFAB
+                // ================
                 GameObject wallPrefab = wallRegistry.Get(wallKey);
                 if (wallPrefab == null)
                     continue;
 
-                // -----------------------
-                // INSTANTIATE WALL
-                // -----------------------
+                // ================
+                // SPAWN WALL
+                // ================
                 Transform wall = Instantiate(wallPrefab, transform).transform;
                 wall.localPosition = new Vector3(i * moduleWidth, 0f, 0f);
-
                 SpriteRenderer wallSR = wall.GetComponent<SpriteRenderer>();
-                // -----------------------
-                // HANDLE WINDOWS (NOT FOR ENTRANCE FLOORS)
-                // -----------------------
+
+                // ====================================
+                // WINDOWS (ONLY FOR NON-ENTRANCE FLOORS)
+                // ====================================
                 if (!isEntrance && windowRegistry != null)
                 {
-                    bool isOpen = DetermineWindowOpenState(definition, i);
-                    string windowType = definition.WindowType;
-                    string windowKey = "Window_" + windowType + "_" + (isOpen ? "Open" : "Closed");
+                    bool isOpen = DetermineWindowOpenState(def, i);
+                    string windowKey = "Window_" + def.WindowType + "_" + (isOpen ? "Open" : "Closed");
 
                     GameObject windowPrefab = windowRegistry.Get(windowKey);
                     if (windowPrefab != null)
@@ -76,46 +114,85 @@ namespace CityRush.World.Buildings.Generation
                         window.localPosition = new Vector3(halfWidth, 0f, 0f);
 
                         SpriteRenderer winSR = window.GetComponent<SpriteRenderer>();
-
-                        if (wallSR != null && winSR != null)
+                        if (winSR != null && wallSR != null)
                         {
                             winSR.sortingLayerID = wallSR.sortingLayerID;
-                            winSR.sortingOrder = wallSR.sortingOrder + 1;
+                            winSR.sortingOrder = BuildingSorting.Windows;
                         }
                     }
                 }
 
-                // -----------------------
-                // HANDLE DOOR (ONLY ON ENTRANCE FLOOR)
-                // -----------------------
-                if (isEntrance && definition.EntranceAddDoor)
+                // ====================================
+                // DOOR MODULE (NON-EMBEDDED DOORS ONLY)
+                // ====================================
+                if (isEntrance &&
+                    !def.EntranceEmbeddedDoor &&                 // Not embedded
+                    def.EntranceAddDoor &&                       // Door should spawn
+                    i == def.EntranceDoorIndex)                  // Correct index
                 {
-                    bool isLeftModule = (i == 0);
-                    if (isLeftModule)
+                    string doorKey =
+                        "Door_" +
+                        def.EntranceDoorType + "_" +
+                        def.EntranceDoorColor + "_" +
+                        def.EntranceDoorSize;
+
+                    GameObject doorPrefab = doorRegistry.Get(doorKey);
+                    if (doorPrefab != null)
                     {
-                        string doorKey =
-                            "Door_" +
-                            definition.EntranceDoorType + "_" +
-                            definition.EntranceDoorColor + "_" +
-                            definition.EntranceDoorSize;
+                        Transform door = Instantiate(doorPrefab, wall).transform;
+                        door.localPosition = new Vector3(halfWidth, 0f, 0f);
 
-                        GameObject doorPrefab = doorRegistry.Get(doorKey);
-                        if (doorPrefab != null)
+                        SpriteRenderer doorSR = door.GetComponent<SpriteRenderer>();
+                        if (doorSR != null && wallSR != null)
                         {
-                            Transform door = Instantiate(doorPrefab, wall).transform;
-                            door.localPosition = new Vector3(halfWidth, 0f, 0f);
+                            doorSR.sortingLayerID = wallSR.sortingLayerID;
+                            doorSR.sortingOrder = BuildingSorting.Doors;
+                        }
+                    }
+                }
 
-                            SpriteRenderer doorSR = door.GetComponent<SpriteRenderer>();
-                            if (doorSR != null && wallSR != null)
+                // ======================
+                // PROPS (ALL FLOORS)
+                // ======================
+                if (def.PropsGrid != null &&
+                    floorIndex < def.PropsGrid.Floors.Count)
+                {
+                    var row = def.PropsGrid.Floors[floorIndex];
+
+                    if (row != null &&
+                        row.Modules != null &&
+                        i < row.Modules.Count)
+                    {
+                        string propKey = row.Modules[i];
+
+                        if (!string.IsNullOrEmpty(propKey) && propsRegistry != null)
+                        {
+                            GameObject propPrefab = propsRegistry.Get(propKey);
+                            if (propPrefab != null)
                             {
-                                doorSR.sortingLayerID = wallSR.sortingLayerID;
-                                doorSR.sortingOrder = wallSR.sortingOrder + 10;
+                                Transform prop = Instantiate(propPrefab, transform).transform;
+
+                                float halfModule = moduleWidth * 0.5f;
+
+                                prop.localPosition = new Vector3(
+                                    i * moduleWidth + halfModule,
+                                    propBottomMargin,
+                                    0f
+                                );
+
+                                SpriteRenderer psr = prop.GetComponent<SpriteRenderer>();
+                                if (psr != null)
+                                {
+                                    psr.sortingLayerID = wallSR.sortingLayerID;
+                                    psr.sortingOrder = BuildingSorting.PropsMin;
+                                }
                             }
                         }
                     }
                 }
 
             }
+
         }
 
         private bool DetermineWindowOpenState(BuildingDefinition def, int index)
@@ -126,11 +203,27 @@ namespace CityRush.World.Buildings.Generation
             }
 
             if (def.WindowsRandomPattern)
-            {
                 return Random.value > 0.5f;
-            }
 
             return false;
+        }
+
+        private string GetWallPosition(int index)
+        {
+            if (index == 0)
+                return "Left";
+
+            if (index == WidthModules - 1)
+                return "Right";
+
+            return "Middle";
+        }
+
+
+        private Vector2 GetWallModuleLocalPosition(int moduleIndex)
+        {
+            float moduleWidth = 160f / 48f;
+            return new Vector2(moduleIndex * moduleWidth, 0f);
         }
 
         private void ClearModules()

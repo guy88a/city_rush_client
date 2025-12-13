@@ -51,18 +51,26 @@ MonoBehaviour:
     WindowType: Normal
     WindowsRandomPattern: 1
     WindowsForcedPattern: 
-    EntranceType: Brick
-    EntranceColor: Slate
+    EntranceType: Panel
+    EntranceColor: Cyan
     EntranceDecoration: 0
+    EntranceTwoAssetsMode: 1
+    EntranceEmbeddedDoor: 0
+    EntranceDoorIndex: 0
     EntranceAddDoor: 1
     EntranceDoorType: Panel
     EntranceDoorColor: Cyan
     EntranceDoorSize: WW
+    UseSeparators: 0
+    SeparatorType: 
     RooftopType: Brick
     RooftopColor: Mint
+    RooftopPattern: 1
+    RooftopWallDecoration: 
+    UseRooftopSeparator: 0
+    RooftopSeparatorType: 
     Width: 3
     FloorsCount: 2
-    RooftopPattern: 1
   EntranceFloorPrefab: {fileID: 7080472097013580475, guid: 35f86425ceee38848a3ab56da56d6ea0, type: 3}
   RegularFloorPrefab: {fileID: 9222643630578681250, guid: 49f264ed4ebff5541b8da9208ca88f38, type: 3}
   RooftopPrefab: {fileID: 8715120409232835195, guid: 5e9397fd10199c849af4cc66cd49876c, type: 3}
@@ -70,6 +78,9 @@ MonoBehaviour:
   windowRegistry: {fileID: 11400000, guid: faa6e4353be9efb4c81874afa6424289, type: 2}
   doorRegistry: {fileID: 11400000, guid: f39d44da893ceef45970d451e6ee14b6, type: 2}
   roofRegistry: {fileID: 11400000, guid: e97af9fa3af3fd846bb2be2293cce9f0, type: 2}
+  separatorRegistry: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
+  rooftopSeparatorRegistry: {fileID: 11400000, guid: 938f1876dd528994ea6976a4c0ef77e5, type: 2}
+  propsRegistry: {fileID: 11400000, guid: 6f7fd1a6ce61b1843ac3728d69920c09, type: 2}
   GeneratedRoot: {fileID: 1023344840094128157}
 --- !u!1 &8344312701988817600
 GameObject:

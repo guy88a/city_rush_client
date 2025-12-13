@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e80876e4eba4ab644b6b10b823533d99, type: 3}
+  m_Name: RooftopSeparatorRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.RooftopSeparatorRegistry
+  Entries:
+  - Key: Rooftop_Separator_Fancy_Left_WW
+    Prefab: {fileID: 8770975841811548018, guid: f0d9460caade4d64fa18c5fcbb434193, type: 3}
+  - Key: Rooftop_Separator_Fancy_Middle
+    Prefab: {fileID: 6171896147956173655, guid: 815ae4f53a323924d86716a0e6ffd95c, type: 3}
+  - Key: Rooftop_Separator_Fancy_Right_WW
+    Prefab: {fileID: 8026051494248946666, guid: 6779f53fee74bdc409e3e83296fc7145, type: 3}
+  - Key: Rooftop_Separator_Normal_Left_WW
+    Prefab: {fileID: 4947743906092102142, guid: 91b9f03ba626fee48808298d2274cb0a, type: 3}
+  - Key: Rooftop_Separator_Normal_Middle
+    Prefab: {fileID: 7499971360863405944, guid: ac16880b1bab5904eb673ccf64381776, type: 3}
+  - Key: Rooftop_Separator_Normal_Right_WW
+    Prefab: {fileID: 3063055140302866038, guid: 9745972b6b9c8af4cb2bde08ba37ee9c, type: 3}
+  - Key: Rooftop_Separator_Poor_Left
+    Prefab: {fileID: 2910062734507039356, guid: 2e92a19764758c941977b3f6d178ef17, type: 3}
+  - Key: Rooftop_Separator_Poor_Middle
+    Prefab: {fileID: 1824940155376534755, guid: a7a16280ecffd414d920b225f16242cd, type: 3}
+  - Key: Rooftop_Separator_Poor_Right
+    Prefab: {fileID: 4789115231981869912, guid: e42a2c21416164d49bcd58212f916183, type: 3}
