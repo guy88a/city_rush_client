@@ -408,5 +408,19 @@ namespace CityRush.World.Buildings.Generation
         }
 
         #endregion
+
+        #if UNITY_EDITOR
+                private void OnValidate()
+                {
+                    if (Definition == null)
+                        return;
+
+                    BuildingWallPropsSizer.EnsureSize(
+                        Definition.WallProps,
+                        Definition.FloorsCount + 1, // entrance included
+                        Definition.Width
+                    );
+                }
+        #endif
     }
 }
