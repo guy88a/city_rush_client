@@ -99,8 +99,6 @@ namespace CityRush.World.Buildings.Generation
 
             AssignFloorRegistries(fc);
             fc.WidthModules = Definition.Width;
-            fc.FloorIndex = 0;
-            fc.propsRegistry = propsRegistry;
             fc.Initialize(Definition, true);
         }
 
@@ -119,8 +117,6 @@ namespace CityRush.World.Buildings.Generation
 
                 AssignFloorRegistries(fc);
                 fc.WidthModules = Definition.Width;
-                fc.FloorIndex = i + 1;
-                fc.propsRegistry = propsRegistry;
                 fc.Initialize(Definition, false);
             }
         }
@@ -412,19 +408,5 @@ namespace CityRush.World.Buildings.Generation
         }
 
         #endregion
-
-        #if UNITY_EDITOR
-                private void OnValidate()
-                {
-                    if (Definition == null)
-                        return;
-
-                    BuildingWallPropsSizer.EnsureSize(
-                        Definition.WallProps,
-                        Definition.FloorsCount + 1, // entrance included
-                        Definition.Width
-                    );
-                }
-        #endif
     }
 }

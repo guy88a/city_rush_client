@@ -1,6 +1,5 @@
 using CityRush.World.Buildings;
 using CityRush.World.Buildings.Data;
-using CityRush.World.Buildings.Props;
 using CityRush.World.Buildings.Registry;
 using UnityEngine;
 
@@ -18,9 +17,6 @@ namespace CityRush.World.Buildings.Generation
 
         public int WidthModules = 3;
         float halfWidth = (160f / 48f) * 0.5f; // ~1.6667
-
-        public int FloorIndex;
-        public PropsRegistry propsRegistry;
 
         public void Initialize(BuildingDefinition definition, bool isEntrance)
         {
@@ -156,7 +152,6 @@ namespace CityRush.World.Buildings.Generation
                 }
             }
 
-            SpawnWallProps(def.WallProps);
         }
 
         private bool DetermineWindowOpenState(BuildingDefinition def, int index)
@@ -183,49 +178,6 @@ namespace CityRush.World.Buildings.Generation
             return "Middle";
         }
 
-        public void SpawnWallProps(BuildingPropsGrid wallProps)
-        {
-            if (wallProps == null)
-                return;
-
-            if (propsRegistry == null)
-                return;
-
-            if (FloorIndex < 0 || FloorIndex >= wallProps.Floors.Count)
-                return;
-
-            var row = wallProps.Floors[FloorIndex];
-            if (row == null || row.Modules == null)
-                return;
-
-            for (int moduleIndex = 0; moduleIndex < row.Modules.Count; moduleIndex++)
-            {
-                var propKey = row.Modules[moduleIndex];
-
-                if (string.IsNullOrEmpty(propKey))
-                    continue;
-
-                var prefab = propsRegistry.Get(propKey);
-                if (prefab == null)
-                    continue;
-
-                // Instantiate
-                var propGO = Instantiate(prefab, transform, false);
-
-                // Base position = wall module origin
-                Vector2 basePos = GetWallModuleLocalPosition(moduleIndex);
-
-                // Wall offset (wall-only)
-                Vector2 offset = WallPropOffsets.Get(propKey);
-
-                propGO.transform.localPosition = basePos + offset;
-
-                // Sorting
-                var sr = propGO.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                    sr.sortingOrder = BuildingSorting.PropsMin;
-            }
-        }
 
         private Vector2 GetWallModuleLocalPosition(int moduleIndex)
         {
