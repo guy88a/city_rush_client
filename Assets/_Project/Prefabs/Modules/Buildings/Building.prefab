@@ -66,6 +66,7 @@ MonoBehaviour:
     RooftopType: Brick
     RooftopColor: Mint
     RooftopPattern: 1
+    RooftopWallDecoration: 
     UseRooftopSeparator: 0
     RooftopSeparatorType: 
     Width: 3
@@ -79,6 +80,7 @@ MonoBehaviour:
   roofRegistry: {fileID: 11400000, guid: e97af9fa3af3fd846bb2be2293cce9f0, type: 2}
   separatorRegistry: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
   rooftopSeparatorRegistry: {fileID: 11400000, guid: 938f1876dd528994ea6976a4c0ef77e5, type: 2}
+  propsRegistry: {fileID: 11400000, guid: 6f7fd1a6ce61b1843ac3728d69920c09, type: 2}
   GeneratedRoot: {fileID: 1023344840094128157}
 --- !u!1 &8344312701988817600
 GameObject:

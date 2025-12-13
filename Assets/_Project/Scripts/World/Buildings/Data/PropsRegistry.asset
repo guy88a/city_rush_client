@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d8e1a13382b86a4298331ae63a03be2, type: 3}
+  m_Name: PropsRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.PropsRegistry
+  entries:
+  - Key: Prop_Antenna_Simple
+    Prefab: {fileID: 1071157630209403784, guid: 0d75e02e92bda114cb981ca3eab12b7f, type: 3}
+  - Key: Prop_Dish_Simple
+    Prefab: {fileID: 5354952641598298774, guid: 2e898c299908ea84f9a5514446b852f8, type: 3}
+  - Key: Prop_ElectrictyBox_Normal
+    Prefab: {fileID: 1398658153759555322, guid: 1922fd1f17bb5b54d8513996e14c34c7, type: 3}
+  - Key: Prop_Plant_FlowerA
+    Prefab: {fileID: 4603474428532589011, guid: 2263d53e1d62ffa4f9583792223ede97, type: 3}
+  - Key: Prop_Plant_FlowerB
+    Prefab: {fileID: 382496137377633346, guid: fabe2fa48d808b342a94a90230b1496e, type: 3}
+  - Key: Prop_Plant_FlowerC
+    Prefab: {fileID: 5358922421505320749, guid: 97ad6a4e72ce49946b053cdcf3e9e946, type: 3}
+  - Key: Prop_Plant_Normal
+    Prefab: {fileID: 4478754950777795050, guid: c2a553634d407534197e601c58d2b48a, type: 3}
+  - Key: Prop_Poster_Big
+    Prefab: {fileID: 5374700922156001740, guid: 3a8d5a5d00d2a9242b0482f903e43961, type: 3}
+  - Key: Prop_Vent_Normal
+    Prefab: {fileID: 7103684432247108384, guid: 81353f60b090a454284974c5b6221427, type: 3}
+  - Key: Prop_WaterTower_Simple
+    Prefab: {fileID: 1132662579862017037, guid: e2788b97485229e40b0470d7aeff5cdb, type: 3}
