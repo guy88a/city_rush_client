@@ -119,6 +119,89 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &250179063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 250179065}
+  - component: {fileID: 250179064}
+  m_Layer: 0
+  m_Name: Street
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &250179064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 250179063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ccb3fff194898844874ffed13df7baf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.StreetComponent
+  streetJson: "{\r\n  \"street\": {\r\n    \"pavements\": [0,0,1,1],\r\n    \"road\":
+    [0,1,0],\r\n    \"props\": {}\r\n  },\r\n  \"buildings\": [\r\n    {\r\n     
+    \"WallType\": \"Brick\",\r\n      \"WallColor\": \"Orange\",\r\n\r\n      \"WindowType\":
+    \"Normal\",\r\n      \"WindowsRandomPattern\": true,\r\n      \"WindowsForcedPattern\":
+    \"\",\r\n\r\n      \"EntranceType\": \"Brick\",\r\n      \"EntranceColor\": \"Olive\",\r\n     
+    \"EntranceDecoration\": false,\r\n\r\n      \"EntranceTwoAssetsMode\": false,\r\n     
+    \"EntranceEmbeddedDoor\": false,\r\n      \"EntranceDoorIndex\": 1,\r\n\r\n     
+    \"EntranceAddDoor\": true,\r\n      \"EntranceDoorType\": \"Fancy\",\r\n     
+    \"EntranceDoorColor\": \"Brown\",\r\n      \"EntranceDoorSize\": \"BIG\",\r\n\r\n     
+    \"UseSeparators\": true,\r\n      \"SeparatorType\": \"Standard\",\r\n\r\n     
+    \"RooftopType\": \"Brick\",\r\n      \"RooftopColor\": \"Slate\",\r\n      \"RooftopPattern\":
+    1,\r\n      \"RooftopWallDecoration\": \"Normal\",\r\n\r\n      \"UseRooftopSeparator\":
+    true,\r\n      \"RooftopSeparatorType\": \"Normal\",\r\n\r\n      \"Width\":
+    3,\r\n      \"FloorsCount\": 4,\r\n\r\n      \"PropsGrid\": {\r\n        \"Floors\":
+    [\r\n          {\r\n            \"Modules\": [\"\", \"\", \"\"]\r\n         
+    },\r\n          {\r\n            \"Modules\": [\"Prop_Plant_FlowerA\", \"\",
+    \"\"]\r\n          },\r\n          {\r\n            \"Modules\": [\"\", \"Prop_Vent_Normal\",
+    \"Prop_Plant_FlowerC\"]\r\n          },\r\n          {\r\n            \"Modules\":
+    [\"Prop_Plant_FlowerA\", \"\", \"Prop_Plant_FlowerB\"]\r\n          },\r\n         
+    {\r\n            \"Modules\": [\"Prop_Plant_FlowerC\", \"Prop_Vent_Normal\",
+    \"\"]\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"WallType\":
+    \"Brick\",\r\n      \"WallColor\": \"Mint\",\r\n\r\n      \"WindowType\": \"Normal\",\r\n     
+    \"WindowsRandomPattern\": true,\r\n      \"WindowsForcedPattern\": \"\",\r\n\r\n     
+    \"EntranceType\": \"Panel\",\r\n      \"EntranceColor\": \"Dark\",\r\n      \"EntranceDecoration\":
+    false,\r\n\r\n      \"EntranceTwoAssetsMode\": true,\r\n      \"EntranceEmbeddedDoor\":
+    false,\r\n      \"EntranceDoorIndex\": 0,\r\n\r\n      \"EntranceAddDoor\": true,\r\n     
+    \"EntranceDoorType\": \"Panel\",\r\n      \"EntranceDoorColor\": \"Red\",\r\n     
+    \"EntranceDoorSize\": \"WW\",\r\n\r\n      \"UseSeparators\": true,\r\n     
+    \"SeparatorType\": \"Standard\",\r\n\r\n      \"RooftopType\": \"Brick\",\r\n     
+    \"RooftopColor\": \"Mauve\",\r\n      \"RooftopPattern\": 0,\r\n      \"RooftopWallDecoration\":
+    \"Normal\",\r\n\r\n      \"UseRooftopSeparator\": true,\r\n      \"RooftopSeparatorType\":
+    \"Normal\",\r\n\r\n      \"Width\": 3,\r\n      \"FloorsCount\": 2,\r\n\r\n     
+    \"PropsGrid\": {\r\n        \"Floors\": [\r\n          {\r\n            \"Modules\":
+    [\"\", \"\", \"\"]\r\n          },\r\n          {\r\n            \"Modules\":
+    [\"Prop_Plant_FlowerC\", \"\", \"Prop_Plant_FlowerA\"]\r\n          },\r\n         
+    {\r\n            \"Modules\": [\"Prop_Plant_Normal\", \"\", \"Prop_Vent_Normal\"]\r\n         
+    }\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"pedestrians\": {}\r\n}"
+  buildingRow: {fileID: 1961106069}
+--- !u!4 &250179065
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 250179063}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1961106070}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &670352885
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,268 +364,87 @@ MonoBehaviour:
   m_CropFrameX: 0
   m_CropFrameY: 0
   m_StretchFill: 0
---- !u!1001 &1112769906
-PrefabInstance:
+--- !u!1 &1511871874
+GameObject:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -10.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -12
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3060527157827542807, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_Name
-      value: Building (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.Width
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: separatorRegistry
-      value: 
-      objectReference: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallColor
-      value: Orange
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WindowType
-      value: Small
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.FloorsCount
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceType
-      value: Panel
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.RooftopColor
-      value: Olive
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceColor
-      value: Brown
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.SeparatorType
-      value: Standard
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.UseSeparators
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceDoorColor
-      value: Cyan
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.UseRooftopSeparator
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceEmbeddedDoor
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.RooftopSeparatorType
-      value: Poor
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.RooftopWallDecoration
-      value: Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.PropsGrid.Floors.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallProps.Floors.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.PropsGrid.Floors.Array.data[3].Modules.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallProps.Floors.Array.data[3].Modules.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: 'Definition.PropsGrid.Floors.Array.data[1].Modules.Array.data[0]'
-      value: Prop_Plant_FlowerB
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: 'Definition.PropsGrid.Floors.Array.data[2].Modules.Array.data[1]'
-      value: Prop_Plant_FlowerA
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
---- !u!1001 &8366931892533735157
-PrefabInstance:
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1511871875}
+  m_Layer: 0
+  m_Name: BuildingsRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1511871875
+Transform:
   m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511871874}
   serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -12
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 989975812470318341, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3060527157827542807, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: m_Name
-      value: Building
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.Width
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: separatorRegistry
-      value: 
-      objectReference: {fileID: 11400000, guid: 0d2aaada0ff204e46881e9bccf447083, type: 2}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceType
-      value: Store
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceColor
-      value: Yellow
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.SeparatorType
-      value: Standard
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.UseSeparators
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.UseRooftopSeparator
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.EntranceEmbeddedDoor
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.RooftopSeparatorType
-      value: Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.RooftopWallDecoration
-      value: Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallProps.Floors.Array.data[0].Modules.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallProps.Floors.Array.data[1].Modules.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: Definition.WallProps.Floors.Array.data[2].Modules.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: 'Definition.PropsGrid.Floors.Array.data[1].Modules.Array.data[1]'
-      value: Prop_Vent_Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
-      propertyPath: 'Definition.PropsGrid.Floors.Array.data[2].Modules.Array.data[2]'
-      value: Prop_Plant_FlowerC
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1961106070}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1961106068
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1961106070}
+  - component: {fileID: 1961106069}
+  m_Layer: 0
+  m_Name: BuildingsRow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1961106069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961106068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91e2776335826fb489f92b4e9c01be09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.BuildingRowComponent
+  buildingGeneratorPrefab: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+  buildingsRoot: {fileID: 1511871875}
+--- !u!4 &1961106070
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961106068}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1511871875}
+  m_Father: {fileID: 250179065}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 670352888}
-  - {fileID: 8366931892533735157}
-  - {fileID: 1112769906}
+  - {fileID: 250179065}
