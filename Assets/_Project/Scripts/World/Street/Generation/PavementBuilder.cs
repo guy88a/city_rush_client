@@ -45,12 +45,18 @@ namespace CityRush.World.Street.Generation
                         0f
                     );
 
-                    Object.Instantiate(
+                    var instance = Object.Instantiate(
                         _tiles[tileIndex],
                         position,
                         Quaternion.identity,
                         _parent
                     );
+
+                    var sr = instance.GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sortingOrder = StreetSorting.Pavement;
+                    }
 
                     index++;
                 }

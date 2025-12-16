@@ -21,6 +21,9 @@ namespace CityRush.World.Street
 
         private StreetData streetData;
 
+        private Transform roadsRoot;
+        private Transform pavementsRoot;
+
         private void Start()
         {
             if (!string.IsNullOrEmpty(streetJson))
@@ -31,8 +34,11 @@ namespace CityRush.World.Street
         {
             streetJson = json;
             ParseStreetData();
+
+            EnsureRoots();
             BuildRoad(streetData);
             BuildPavement(streetData);
+
             AssignBuildings();
         }
 
@@ -47,12 +53,32 @@ namespace CityRush.World.Street
             return cam.transform.position.y - cam.orthographicSize;
         }
 
+        private void EnsureRoots()
+        {
+            roadsRoot = GetOrCreateChild("Roads");
+            pavementsRoot = GetOrCreateChild("Pavements");
+        }
+
+        private Transform GetOrCreateChild(string name)
+        {
+            var child = transform.Find(name);
+            if (child != null)
+                return child;
+
+            var go = new GameObject(name);
+            go.transform.SetParent(transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+            return go.transform;
+        }
+
         private void BuildRoad(StreetData data)
         {
             if (data == null || data.street == null || data.street.road == null)
                 return;
             var builder = new RoadBuilder(
-                transform,
+                roadsRoot,
                 roadTiles,
                 TILE_WIDTH,
                 GetRoadBaseY()
@@ -68,7 +94,7 @@ namespace CityRush.World.Street
             float pavementBaseY = GetRoadBaseY() + ROAD_HEIGHT;
 
             var builder = new PavementBuilder(
-                transform,
+                pavementsRoot,
                 pavementTiles,
                 TILE_WIDTH,
                 pavementBaseY
