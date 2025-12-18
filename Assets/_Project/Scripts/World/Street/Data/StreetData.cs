@@ -14,8 +14,8 @@ namespace CityRush.World.Street.Data
     [Serializable]
     public class StreetVisualData
     {
-        public int[] pavements;
-        public int[] road;
+        public StreetPatternData pavements;
+        public StreetPatternData road;
         public object props;
     }
 

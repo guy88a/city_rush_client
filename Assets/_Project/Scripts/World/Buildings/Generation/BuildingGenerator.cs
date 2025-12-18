@@ -47,11 +47,6 @@ namespace CityRush.World.Buildings.Generation
 
         #region Unity
 
-        private void Start()
-        {
-            Generate();
-        }
-
         private void Reset()
         {
             if (GeneratedRoot != null)
@@ -66,6 +61,12 @@ namespace CityRush.World.Buildings.Generation
         #endregion
 
         #region Public API
+
+        public void Build(BuildingDefinition definition = null)
+        {
+            Definition = definition;
+            Generate();
+        }
 
         public void Generate()
         {

@@ -71,6 +71,20 @@ MonoBehaviour:
     RooftopSeparatorType: 
     Width: 3
     FloorsCount: 2
+    PropsGrid:
+      Floors:
+      - Modules:
+        - 
+        - 
+        - 
+      - Modules:
+        - 
+        - 
+        - 
+      - Modules:
+        - 
+        - 
+        - 
   EntranceFloorPrefab: {fileID: 7080472097013580475, guid: 35f86425ceee38848a3ab56da56d6ea0, type: 3}
   RegularFloorPrefab: {fileID: 9222643630578681250, guid: 49f264ed4ebff5541b8da9208ca88f38, type: 3}
   RooftopPrefab: {fileID: 8715120409232835195, guid: 5e9397fd10199c849af4cc66cd49876c, type: 3}
