@@ -369,6 +369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9890418448de70b4ea9d37f3186d0d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Core.GameBootstrapper
+  streetPrefab: {fileID: 5984691592662099914, guid: 50ec00d7bf3cb864b8d8d56ac2459192, type: 3}
 --- !u!4 &2062821623
 Transform:
   m_ObjectHideFlags: 0
