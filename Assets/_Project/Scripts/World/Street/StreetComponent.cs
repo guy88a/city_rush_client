@@ -24,6 +24,10 @@ namespace CityRush.World.Street
         private Transform roadsRoot;
         private Transform pavementsRoot;
 
+        public float LeftBoundX { get; private set; }
+        public float RightBoundX { get; private set; }
+        private const int BLEED_TILES = 2;
+
         private void Start()
         {
             if (!string.IsNullOrEmpty(streetJson))
@@ -38,6 +42,8 @@ namespace CityRush.World.Street
             EnsureRoots();
             BuildRoad(streetData);
             BuildPavement(streetData);
+
+            SetBoundaries();
 
             AssignBuildings();
         }
@@ -109,6 +115,17 @@ namespace CityRush.World.Street
                 return;
 
             buildingRow.SetBuildings(streetData.buildings);
+        }
+
+        private void SetBoundaries()
+        {
+            int totalTiles = streetData.street.GetStreetWidthInTiles();
+            float totalWidth = totalTiles * TILE_WIDTH;
+
+            float bleedOffset = BLEED_TILES * TILE_WIDTH;
+
+            LeftBoundX = transform.position.x + bleedOffset;
+            RightBoundX = transform.position.x + totalWidth - bleedOffset;
         }
     }
 }

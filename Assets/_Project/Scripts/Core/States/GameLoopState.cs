@@ -1,23 +1,28 @@
 using UnityEngine;
+using CityRush.World.Street;
 
 namespace CityRush.Core.States
 {
     public class GameLoopState : IState
     {
-        public void Enter()
+        private StreetComponent _streetInstance;
+        private readonly Game _game;
+
+        public GameLoopState(Game game)
         {
-            Debug.Log("[GameLoopState] Entered gameplay.");
-            // Future: start player control, systems, timers, etc.
+            _game = game;
         }
 
-        public void Update(float deltaTime)
+        public void Enter()
         {
-            Debug.Log($"[GameLoopState] Tick: {deltaTime}");
+            _streetInstance = UnityEngine.Object.Instantiate(_game.StreetPrefab);
         }
+
+        public void Update(float deltaTime) { }
 
         public void Exit()
         {
-            Debug.Log("[GameLoopState] Exited gameplay.");
+            
         }
     }
 }

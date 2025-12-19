@@ -17,6 +17,11 @@ namespace CityRush.World.Street.Data
         public StreetPatternData pavements;
         public StreetPatternData road;
         public object props;
+
+        public int GetStreetWidthInTiles()
+        {
+            return road != null ? road.TotalTiles : 0;
+        }
     }
 
     [Serializable]

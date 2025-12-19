@@ -8,12 +8,12 @@ public class GameStateMachine
     private readonly Dictionary<Type, IState> _states;
     private IState _activeState;
 
-    public GameStateMachine(GameContext context)
+    public GameStateMachine(Game game, GameContext context)
     {
         _states = new Dictionary<Type, IState> {
             { typeof(BootstrapState), new BootstrapState(this, context) },
             { typeof(LoadLevelState), new LoadLevelState(this, context) },
-            { typeof(GameLoopState), new GameLoopState() }
+            { typeof(GameLoopState), new GameLoopState(game) }
         };
     }
 
