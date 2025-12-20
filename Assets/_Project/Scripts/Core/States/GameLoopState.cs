@@ -23,11 +23,22 @@ public class GameLoopState : IState
     {
         var prefabs = _context.GetData<CorePrefabsRegistry>();
 
+        // Background (unchanged)
         _backgroundInstance = Object.Instantiate(prefabs.BackgroundPrefab);
         _backgroundInstance.CameraTransform = _game.CameraTransform;
 
+        // Street
         _streetInstance = Object.Instantiate(prefabs.StreetPrefab);
         _streetInstance.Initialize(_game.GlobalCamera);
+
+        TextAsset jsonAsset = Resources.Load<TextAsset>("Streets/street_01");
+
+        var request = new StreetLoadRequest(
+            streetId: "street_01",
+            streetJson: jsonAsset.text
+        );
+
+        _streetInstance.Build(request);
     }
 
     public void Exit()

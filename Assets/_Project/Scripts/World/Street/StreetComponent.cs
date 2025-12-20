@@ -32,13 +32,18 @@ namespace CityRush.World.Street
 
         private void Start()
         {
-            if (!string.IsNullOrEmpty(streetJson))
-                BuildStreetFromJson(streetJson);
+            //if (!string.IsNullOrEmpty(streetJson))
+            //    BuildStreetFromJson(streetJson);
         }
 
         public void Initialize(Camera camera)
         {
             _camera = camera;
+        }
+
+        public void Build(StreetLoadRequest request)
+        {
+            BuildStreetFromJson(request.StreetJson);
         }
 
         public void BuildStreetFromJson(string json)
@@ -134,9 +139,9 @@ namespace CityRush.World.Street
             RightBoundX = transform.position.x + totalWidth - bleedOffset;
         }
 
-        public void SetCamera(Camera camera)
-        {
-            _camera = camera;
-        }
+        //public void SetCamera(Camera camera)
+        //{
+        //    _camera = camera;
+        //}
     }
 }
