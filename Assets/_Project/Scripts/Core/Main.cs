@@ -1,18 +1,12 @@
-using CityRush.Core;
-using CityRush.World.Background;
-using CityRush.World.Street;
-using UnityEngine;
+using CityRush.Core.Prefabs;
 
 public static class Main
 {
     private static Game _game;
 
-    public static void Start(
-        Camera globalCameraPrefab,
-        BackgroundRoot backgroundPrefab,
-        StreetComponent streetPrefab)
+    public static void Start(CorePrefabsRegistry corePrefabs)
     {
-        _game = new Game(globalCameraPrefab, backgroundPrefab, streetPrefab);
+        _game = new Game(corePrefabs);
         _game.Start();
     }
 

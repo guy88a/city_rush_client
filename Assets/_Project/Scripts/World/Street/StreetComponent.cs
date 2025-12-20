@@ -36,6 +36,11 @@ namespace CityRush.World.Street
                 BuildStreetFromJson(streetJson);
         }
 
+        public void Initialize(Camera camera)
+        {
+            _camera = camera;
+        }
+
         public void BuildStreetFromJson(string json)
         {
             streetJson = json;

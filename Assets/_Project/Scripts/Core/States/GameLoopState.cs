@@ -1,33 +1,43 @@
+using CityRush.Core;
+using CityRush.Core.States;
+using CityRush.Core.Prefabs;
 using CityRush.World.Background;
 using CityRush.World.Street;
 using UnityEngine;
 
-namespace CityRush.Core.States
+public class GameLoopState : IState
 {
-    public class GameLoopState : IState
+    private readonly Game _game;
+    private readonly GameContext _context;
+
+    private BackgroundRoot _backgroundInstance;
+    private StreetComponent _streetInstance;
+
+    public GameLoopState(Game game, GameContext context)
     {
-        private BackgroundRoot _backgroundPrefab;
-        private StreetComponent _streetInstance;
-        private readonly Game _game;
-
-        public GameLoopState(Game game)
-        {
-            _game = game;
-        }
-
-        public void Enter()
-        {
-            _backgroundPrefab = UnityEngine.Object.Instantiate(_game.BackgroundPrefab);
-            _backgroundPrefab.CameraTransform = _game.GlobalCamera.transform;
-            _streetInstance = UnityEngine.Object.Instantiate(_game.StreetPrefab);
-            _streetInstance.SetCamera(_game.GlobalCamera);
-        }
-
-        public void Update(float deltaTime) { }
-
-        public void Exit()
-        {
-            
-        }
+        _game = game;
+        _context = context;
     }
+
+    public void Enter()
+    {
+        var prefabs = _context.GetData<CorePrefabsRegistry>();
+
+        _backgroundInstance = Object.Instantiate(prefabs.BackgroundPrefab);
+        _backgroundInstance.CameraTransform = _game.CameraTransform;
+
+        _streetInstance = Object.Instantiate(prefabs.StreetPrefab);
+        _streetInstance.Initialize(_game.GlobalCamera);
+    }
+
+    public void Exit()
+    {
+        if (_backgroundInstance != null)
+            Object.Destroy(_backgroundInstance.gameObject);
+
+        if (_streetInstance != null)
+            Object.Destroy(_streetInstance.gameObject);
+    }
+
+    public void Update(float deltaTime) { }
 }

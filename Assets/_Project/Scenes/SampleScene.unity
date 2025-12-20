@@ -232,9 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9890418448de70b4ea9d37f3186d0d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Core.GameBootstrapper
-  backgroundPrefab: {fileID: 7562059905275938921, guid: 769c503b78c8dd64f9be3a6e6a9e7619, type: 3}
-  streetPrefab: {fileID: 5984691592662099914, guid: 50ec00d7bf3cb864b8d8d56ac2459192, type: 3}
-  globalCameraPrefab: {fileID: 214967739007956234, guid: e983598a8e200074692d8e86495f2c22, type: 3}
+  corePrefabs: {fileID: 11400000, guid: 27b7c8fa9b2537c4b8faf44ad0153418, type: 2}
 --- !u!4 &2062821623
 Transform:
   m_ObjectHideFlags: 0
