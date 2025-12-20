@@ -18,7 +18,9 @@ namespace CityRush.Core.States
         public void Enter()
         {
             _backgroundPrefab = UnityEngine.Object.Instantiate(_game.BackgroundPrefab);
+            _backgroundPrefab.CameraTransform = _game.GlobalCamera.transform;
             _streetInstance = UnityEngine.Object.Instantiate(_game.StreetPrefab);
+            _streetInstance.SetCamera(_game.GlobalCamera);
         }
 
         public void Update(float deltaTime) { }

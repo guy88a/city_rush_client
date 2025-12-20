@@ -6,6 +6,8 @@ namespace CityRush.World.Street
 {
     public class StreetComponent : MonoBehaviour
     {
+        private Camera _camera;
+
         [Header("Road")]
         [SerializeField] private GameObject[] roadTiles;
         [Header("Pavement")]
@@ -52,11 +54,10 @@ namespace CityRush.World.Street
         {
             streetData = JsonUtility.FromJson<StreetData>(streetJson);
         }
-        
+
         private float GetRoadBaseY()
         {
-            var cam = Camera.main;
-            return cam.transform.position.y - cam.orthographicSize;
+            return _camera.transform.position.y - _camera.orthographicSize;
         }
 
         private void EnsureRoots()
@@ -126,6 +127,11 @@ namespace CityRush.World.Street
 
             LeftBoundX = transform.position.x + bleedOffset;
             RightBoundX = transform.position.x + totalWidth - bleedOffset;
+        }
+
+        public void SetCamera(Camera camera)
+        {
+            _camera = camera;
         }
     }
 }

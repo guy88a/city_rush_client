@@ -8,16 +8,17 @@ namespace CityRush.Core
     {
         [SerializeField] private BackgroundRoot backgroundPrefab;
         [SerializeField] private StreetComponent streetPrefab;
+        [SerializeField] private Camera globalCameraPrefab; // NEW
 
         private void Awake()
         {
             DontDestroyOnLoad(this);
-            Main.Start(backgroundPrefab, streetPrefab);
+            Main.Start(globalCameraPrefab, backgroundPrefab, streetPrefab);
         }
 
         private void Update()
         {
-            Main.Update(Time.deltaTime); // Delegate to Main
+            Main.Update(Time.deltaTime);
         }
     }
 }
