@@ -16,9 +16,8 @@ namespace CityRush.Core.States
 
         public void Enter()
         {
-            Debug.Log("[BootstrapState] Entered.");
+            _context.Get<ILoggerService>()?.Info("[BootstrapState] Entered.");
             _gameStateMachine.Enter<LoadLevelState>();
-            _context.Get<ILoggerService>()?.Success("Everything is good");
         }
 
         public void Exit()

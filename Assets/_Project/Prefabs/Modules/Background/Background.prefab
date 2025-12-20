@@ -332,7 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayer
   Config:
-    ParallaxMultiplier: 0.4
+    ParallaxMultiplier: 0.86
     FollowCameraX: 1
     LoopHorizontally: 1
     LoopWidth: 4096
@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayer
   Config:
-    ParallaxMultiplier: 0.5
+    ParallaxMultiplier: 0.9
     FollowCameraX: 1
     LoopHorizontally: 1
     LoopWidth: 4096
