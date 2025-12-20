@@ -1,8 +1,7 @@
 using CityRush.Core;
+using CityRush.Core.Prefabs;
 using CityRush.Core.Services;
 using CityRush.Core.States;
-using CityRush.World.Background;
-using CityRush.World.Street;
 using UnityEngine;
 
 public class Game
@@ -10,28 +9,24 @@ public class Game
     private readonly GameStateMachine _stateMachine;
     private readonly GameContext _context;
 
-    public BackgroundRoot BackgroundPrefab { get; }
-    public StreetComponent StreetPrefab { get; }
+    private readonly CorePrefabsRegistry _corePrefabs;
 
-    public Camera GlobalCamera { get; }
+    public Camera GlobalCamera { get; private set; }
     public Transform CameraTransform => GlobalCamera.transform;
 
     public float StreetLeftBoundX { get; private set; }
     public float StreetRightBoundX { get; private set; }
 
-    public Game(
-        Camera globalCameraPrefab,
-        BackgroundRoot backgroundPrefab,
-        StreetComponent streetPrefab)
+    public Game(CorePrefabsRegistry corePrefabs)
     {
-        BackgroundPrefab = backgroundPrefab;
-        StreetPrefab = streetPrefab;
-
-        GlobalCamera = Object.Instantiate(globalCameraPrefab);
-        Object.DontDestroyOnLoad(GlobalCamera.gameObject);
+        _corePrefabs = corePrefabs;
 
         _context = new GameContext();
         RegisterServices();
+
+        // Camera stays a core runtime system
+        GlobalCamera = Object.Instantiate(_corePrefabs.GlobalCameraPrefab);
+        Object.DontDestroyOnLoad(GlobalCamera.gameObject);
 
         _stateMachine = new GameStateMachine(this, _context);
     }
@@ -50,6 +45,9 @@ public class Game
     {
         _context.Register<ILoggerService>(new LoggerService());
         _context.Register<ISceneLoaderService>(new SceneLoaderService());
+
+        // Register prefab registry as data
+        _context.Set(_corePrefabs);
     }
 
     public void SetStreetBounds(float left, float right)
