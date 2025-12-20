@@ -8,7 +8,7 @@ namespace CityRush.Core
     {
         [SerializeField] private BackgroundRoot backgroundPrefab;
         [SerializeField] private StreetComponent streetPrefab;
-        [SerializeField] private Camera globalCameraPrefab; // NEW
+        [SerializeField] private Camera globalCameraPrefab;
 
         private void Awake()
         {
