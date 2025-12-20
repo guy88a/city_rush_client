@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8062315988794266772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 926636495334583837}
+  - component: {fileID: 5984691592662099914}
+  m_Layer: 0
+  m_Name: Street
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &926636495334583837
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8062315988794266772}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5151357863017376252}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5984691592662099914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8062315988794266772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ccb3fff194898844874ffed13df7baf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.StreetComponent
+  roadTiles:
+  - {fileID: 56333910991308394, guid: fbea601be2d34fa4880c46847f660693, type: 3}
+  - {fileID: 6263708859536002553, guid: b85c141dd2aa23e4f8cdd07de940f011, type: 3}
+  - {fileID: 6050701157443292002, guid: bfd49c2fe0d0ef943b7ea1a2d986ebbd, type: 3}
+  pavementTiles:
+  - {fileID: 4946868184786751332, guid: dedbf5113bcb9d5488b822ed7d0e45a5, type: 3}
+  - {fileID: 7796151104820471047, guid: f9368707d751b4e43bee906c4f096529, type: 3}
+  - {fileID: 4848785905517751356, guid: bee3d4c01e3d56b459fb026d18bd4c06, type: 3}
+  - {fileID: 8886226621671623337, guid: 3ec0e2a2a2ec37342a86a8dec854ed4d, type: 3}
+  - {fileID: 3981289648135418647, guid: 0a86a53ac23154341ba4ebf6cf1d1dcd, type: 3}
+  streetJson: "{\r\n  \"street\": {\r\n    \"pavements\": {\r\n      \"pattern\":
+    [0,0,0,0,3,1,1,2,4,0,0,0,0,0,0,0,0,0,0,0,3,2,1,1,1,2,4,0,0,0],\r\n      \"repeat\":
+    1\r\n    },\r\n    \"road\": {\r\n      \"pattern\": [0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0],\r\n     
+    \"repeat\": 1\r\n    },\r\n    \"props\": {}\r\n  },\r\n  \"buildings\": [\r\n   
+    {\r\n      \"WallType\": \"Brick\",\r\n      \"WallColor\": \"Orange\",\r\n\r\n     
+    \"WindowType\": \"Normal\",\r\n      \"WindowsRandomPattern\": true,\r\n     
+    \"WindowsForcedPattern\": \"\",\r\n\r\n      \"EntranceType\": \"Brick\",\r\n     
+    \"EntranceColor\": \"Olive\",\r\n      \"EntranceDecoration\": false,\r\n\r\n     
+    \"EntranceTwoAssetsMode\": false,\r\n      \"EntranceEmbeddedDoor\": false,\r\n     
+    \"EntranceDoorIndex\": 1,\r\n\r\n      \"EntranceAddDoor\": true,\r\n      \"EntranceDoorType\":
+    \"Fancy\",\r\n      \"EntranceDoorColor\": \"Brown\",\r\n      \"EntranceDoorSize\":
+    \"BIG\",\r\n\r\n      \"UseSeparators\": true,\r\n      \"SeparatorType\": \"Standard\",\r\n\r\n     
+    \"RooftopType\": \"Brick\",\r\n      \"RooftopColor\": \"Slate\",\r\n      \"RooftopPattern\":
+    1,\r\n      \"RooftopWallDecoration\": \"Normal\",\r\n\r\n      \"UseRooftopSeparator\":
+    true,\r\n      \"RooftopSeparatorType\": \"Normal\",\r\n\r\n      \"Width\":
+    3,\r\n      \"FloorsCount\": 4,\r\n\r\n      \"PropsGrid\": {\r\n        \"Floors\":
+    [\r\n          {\r\n            \"Modules\": [\"\", \"\", \"Prop_Poster_Big\"]\r\n         
+    },\r\n          {\r\n            \"Modules\": [\"Prop_Plant_FlowerA\", \"\",
+    \"\"]\r\n          },\r\n          {\r\n            \"Modules\": [\"\", \"Prop_Vent_Normal\",
+    \"Prop_Plant_FlowerC\"]\r\n          },\r\n          {\r\n            \"Modules\":
+    [\"Prop_Plant_FlowerA\", \"\", \"Prop_Plant_FlowerB\"]\r\n          },\r\n         
+    {\r\n            \"Modules\": [\"Prop_Plant_FlowerC\", \"Prop_Vent_Normal\",
+    \"\"]\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"WallType\":
+    \"Brick\",\r\n      \"WallColor\": \"Mint\",\r\n\r\n      \"WindowType\": \"Normal\",\r\n     
+    \"WindowsRandomPattern\": true,\r\n      \"WindowsForcedPattern\": \"\",\r\n\r\n     
+    \"EntranceType\": \"Panel\",\r\n      \"EntranceColor\": \"Dark\",\r\n      \"EntranceDecoration\":
+    false,\r\n\r\n      \"EntranceTwoAssetsMode\": true,\r\n      \"EntranceEmbeddedDoor\":
+    false,\r\n      \"EntranceDoorIndex\": 0,\r\n\r\n      \"EntranceAddDoor\": true,\r\n     
+    \"EntranceDoorType\": \"Panel\",\r\n      \"EntranceDoorColor\": \"Red\",\r\n     
+    \"EntranceDoorSize\": \"WW\",\r\n\r\n      \"UseSeparators\": true,\r\n     
+    \"SeparatorType\": \"Standard\",\r\n\r\n      \"RooftopType\": \"Brick\",\r\n     
+    \"RooftopColor\": \"Mauve\",\r\n      \"RooftopPattern\": 0,\r\n      \"RooftopWallDecoration\":
+    \"Normal\",\r\n\r\n      \"UseRooftopSeparator\": true,\r\n      \"RooftopSeparatorType\":
+    \"Normal\",\r\n\r\n      \"Width\": 3,\r\n      \"FloorsCount\": 2,\r\n\r\n     
+    \"PropsGrid\": {\r\n        \"Floors\": [\r\n          {\r\n            \"Modules\":
+    [\"\", \"\", \"\"]\r\n          },\r\n          {\r\n            \"Modules\":
+    [\"Prop_Plant_FlowerC\", \"\", \"Prop_Plant_FlowerA\"]\r\n          },\r\n         
+    {\r\n            \"Modules\": [\"Prop_Plant_Normal\", \"\", \"Prop_Vent_Normal\"]\r\n         
+    }\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"pedestrians\": {}\r\n}"
+  buildingRow: {fileID: 1699292290938789226}
+--- !u!1 &8593539504087382715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4578705423585432260}
+  m_Layer: 0
+  m_Name: BuildingsRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4578705423585432260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593539504087382715}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5151357863017376252}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8846112176908716324
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5151357863017376252}
+  - component: {fileID: 1699292290938789226}
+  m_Layer: 0
+  m_Name: BuildingsRow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5151357863017376252
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8846112176908716324}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -3.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4578705423585432260}
+  m_Father: {fileID: 926636495334583837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1699292290938789226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8846112176908716324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91e2776335826fb489f92b4e9c01be09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.BuildingRowComponent
+  buildingGeneratorPrefab: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+  buildingsRoot: {fileID: 4578705423585432260}

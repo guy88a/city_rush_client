@@ -1,12 +1,14 @@
 using CityRush.Core;
+using CityRush.World.Background;
+using CityRush.World.Street;
 
 public static class Main
 {
     private static Game _game;
 
-    public static void Start()
+    public static void Start(BackgroundRoot backgroundPrefab, StreetComponent streetPrefab)
     {
-        _game = new Game();
+        _game = new Game(backgroundPrefab, streetPrefab);
         _game.Start();
     }
 
