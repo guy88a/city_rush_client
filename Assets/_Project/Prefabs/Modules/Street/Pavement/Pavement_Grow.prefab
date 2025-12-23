@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 408904102351660383}
   - component: {fileID: 7143967584004700754}
   - component: {fileID: 7382297007667244344}
+  - component: {fileID: -4832713974145461820}
   m_Layer: 0
   m_Name: Pavement_Grow
   m_TagString: Untagged
@@ -135,5 +136,24 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.3333333, y: 2.5}
+  m_Size: {x: 3.3333333, y: 1.5}
   m_EdgeRadius: 0
+--- !u!251 &-4832713974145461820
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3981289648135418647}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 1
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
