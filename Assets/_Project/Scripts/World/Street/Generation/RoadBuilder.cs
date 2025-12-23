@@ -9,6 +9,7 @@ namespace CityRush.World.Street.Generation
         private readonly GameObject[] _tiles;
         private readonly float _tileWidth;
         private readonly float _y;
+        private readonly float xOffset = -20;
 
         public RoadBuilder(
             Transform parent,
@@ -40,7 +41,7 @@ namespace CityRush.World.Street.Generation
                         continue;
 
                     Vector3 position = new Vector3(
-                        index * _tileWidth,
+                        (index * _tileWidth) + xOffset,
                         _y,
                         0f
                     );
