@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 366302396701757019}
   - component: {fileID: 3135981535883031885}
   - component: {fileID: 8739396925253766697}
-  - component: {fileID: 2920605465067169227}
+  - component: {fileID: 8499255627011179376}
   m_Layer: 0
   m_Name: Dumpster
   m_TagString: Untagged
@@ -166,7 +166,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2920605465067169227
+--- !u!114 &8499255627011179376
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,7 +175,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 4696297697400611820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bf33d6e5b119f949a087ece46123798, type: 3}
+  m_Script: {fileID: 11500000, guid: b790b8c728c36e945996fc820d828841, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PhysicsObject
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterControll
+  minGroundNormalY: 0.65
   gravityModifier: 1
