@@ -9,6 +9,6 @@ public class CharacterControll : PhysicsObject
 
     void Update()
     {
-        targetVelocity = Vector2.left;
+        
     }
 }
