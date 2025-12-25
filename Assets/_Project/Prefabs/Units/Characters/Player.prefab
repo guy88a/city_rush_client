@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5884811048226285474}
   - component: {fileID: -3936171824208857221}
   - component: {fileID: 1994779479807403598}
+  - component: {fileID: 740575591315477217}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -127,8 +128,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 5.8333335, y: 5.625}
+  m_Offset: {x: 0, y: -0.68}
+  m_Size: {x: 1.4, y: 3.76}
   m_Direction: 0
 --- !u!50 &-3936171824208857221
 Rigidbody2D:
@@ -166,8 +167,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 8471212319856264224}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b790b8c728c36e945996fc820d828841, type: 3}
+  m_Script: {fileID: 11500000, guid: 4af93986150e33f40b30a2837c28a402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterControll
   minGroundNormalY: 0.65
   gravityModifier: 1
+--- !u!95 &740575591315477217
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 40677375e69b2e948ae74bd5243bae96, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
