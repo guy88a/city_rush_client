@@ -12,6 +12,8 @@ public class GameLoopState : IState
 
     private BackgroundRoot _backgroundInstance;
     private StreetComponent _streetInstance;
+    private GameObject _playerInstance;
+    private Transform _playerTransform;
 
     public GameLoopState(Game game, GameContext context)
     {
@@ -39,6 +41,15 @@ public class GameLoopState : IState
         );
 
         _streetInstance.Build(request);
+
+        _playerInstance = Object.Instantiate(prefabs.PlayerPrefab);
+
+        float spawnX = _streetInstance.SpawnX;
+        float groundY = 0f;
+
+        _playerInstance.transform.position = new Vector3(spawnX, groundY, 0f);
+
+        _playerTransform = _playerInstance.transform;
     }
 
     public void Exit()
@@ -48,7 +59,18 @@ public class GameLoopState : IState
 
         if (_streetInstance != null)
             Object.Destroy(_streetInstance.gameObject);
+
+        if (_playerInstance != null)
+            Object.Destroy(_playerInstance);
     }
 
-    public void Update(float deltaTime) { }
+    public void Update(float deltaTime)
+    {
+        if (_playerTransform == null)
+            return;
+
+        Vector3 camPos = _game.CameraTransform.position;
+        camPos.x = _playerTransform.position.x;
+        _game.CameraTransform.position = camPos;
+    }
 }

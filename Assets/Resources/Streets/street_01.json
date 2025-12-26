@@ -1,4 +1,7 @@
 {
+  "spawn": {
+  "x": 6.5
+  },
   "background": {
     "sky": "",
     "images": []

@@ -139,6 +139,17 @@ namespace CityRush.World.Street
             RightBoundX = transform.position.x + totalWidth - bleedOffset;
         }
 
+        public float SpawnX
+        {
+            get
+            {
+                if (streetData == null || streetData.spawn == null)
+                    return 0f;
+
+                return streetData.spawn.x;
+            }
+        }
+
         //public void SetCamera(Camera camera)
         //{
         //    _camera = camera;
