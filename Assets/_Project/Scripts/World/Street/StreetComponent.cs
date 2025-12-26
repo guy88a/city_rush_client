@@ -133,10 +133,8 @@ namespace CityRush.World.Street
             int totalTiles = streetData.street.GetStreetWidthInTiles();
             float totalWidth = totalTiles * TILE_WIDTH;
 
-            float bleedOffset = BLEED_TILES * TILE_WIDTH;
-
-            LeftBoundX = transform.position.x + bleedOffset;
-            RightBoundX = transform.position.x + totalWidth - bleedOffset;
+            LeftBoundX = transform.position.x;
+            RightBoundX = transform.position.x + totalWidth;
         }
 
         public float SpawnX

@@ -15,6 +15,10 @@ public class GameLoopState : IState
     private GameObject _playerInstance;
     private Transform _playerTransform;
 
+    private float _cameraHalfWidth;
+    private float _streetLeftX;
+    private float _streetRightX;
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -41,6 +45,11 @@ public class GameLoopState : IState
         );
 
         _streetInstance.Build(request);
+
+        Camera cam = _game.GlobalCamera;
+        _cameraHalfWidth = cam.orthographicSize * cam.aspect;
+        _streetLeftX = _streetInstance.LeftBoundX;
+        _streetRightX = _streetInstance.RightBoundX;
 
         _playerInstance = Object.Instantiate(prefabs.PlayerPrefab);
 
@@ -69,8 +78,14 @@ public class GameLoopState : IState
         if (_playerTransform == null)
             return;
 
+        float minX = _streetLeftX + _cameraHalfWidth;
+        float maxX = _streetRightX - _cameraHalfWidth;
+
+        float targetX = _playerTransform.position.x;
+        float clampedX = Mathf.Clamp(targetX, minX, maxX);
+
         Vector3 camPos = _game.CameraTransform.position;
-        camPos.x = _playerTransform.position.x;
+        camPos.x = clampedX;
         _game.CameraTransform.position = camPos;
     }
 }

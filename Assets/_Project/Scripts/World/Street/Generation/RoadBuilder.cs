@@ -9,7 +9,7 @@ namespace CityRush.World.Street.Generation
         private readonly GameObject[] _tiles;
         private readonly float _tileWidth;
         private readonly float _y;
-        private readonly float xOffset = -20;
+        private readonly float xOffset = 0;
 
         public RoadBuilder(
             Transform parent,
