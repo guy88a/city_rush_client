@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1832728284387423864}
   - component: {fileID: 9160166568022089679}
   - component: {fileID: 1526264688385937376}
-  - component: {fileID: 1079733590602349993}
   m_Layer: 0
   m_Name: Pavement_Parking
   m_TagString: Untagged
@@ -123,7 +122,7 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 1
+  m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 1.6666666, y: 1.25}
@@ -138,22 +137,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.3333333, y: 1.5}
   m_EdgeRadius: 0
---- !u!251 &1079733590602349993
-PlatformEffector2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7796151104820471047}
-  m_Enabled: 1
-  m_UseColliderMask: 1
-  m_ColliderMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RotationalOffset: 0
-  m_UseOneWay: 1
-  m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
-  m_UseSideFriction: 0
-  m_UseSideBounce: 0
-  m_SideArc: 1

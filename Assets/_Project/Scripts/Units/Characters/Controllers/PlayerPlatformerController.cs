@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,20 +6,28 @@ namespace CityRush.Units.Characters.Controllers
 {
     public class PlayerPlatformerController : PhysicsObject
     {
-        public float maxSpeed = 7;
-        public float jumpTakeoffSpeed = 7;
+        public float maxSpeed = 10;
+        public float jumpTakeoffSpeed = 10;
 
         private bool jumpPressed = false;
         private bool jumpReleased = false;
 
         private PlayerControls controls;
+        private SpriteRenderer spriteRenderer;
+        private Animator animator;
+
+        private void Awake()
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            animator = GetComponent<Animator>();
+        }
 
         void Start()
         {
             controls = new PlayerControls();
             controls.Player.Enable();
 
-            controls.Player.Jump.started += ctx => jumpPressed = true;
+            controls.Player.Jump.started += ctx => jumpPressed = grounded;
             controls.Player.Jump.canceled += ctx => jumpReleased = true;
         }
 
@@ -33,6 +42,7 @@ namespace CityRush.Units.Characters.Controllers
             {
                 velocity.y = jumpTakeoffSpeed;
                 jumpPressed = false;
+                animator.SetTrigger("takeOff");
             }
             else if (jumpReleased)
             {
@@ -42,7 +52,23 @@ namespace CityRush.Units.Characters.Controllers
                 jumpReleased = false;
             }
 
+            if(!grounded || velocity.y > 0)
+            {
+                animator.SetBool("isJumping", true);
+            } else
+            {
+                animator.SetBool("isJumping", false);
+            }
+
+                bool flipSprite = (spriteRenderer.flipX ? (move.x > 0) : (move.x < 0));
+            if (flipSprite)
+            {
+                spriteRenderer.flipX = !spriteRenderer.flipX;
+            }
+
             targetVelocity = move * maxSpeed;
+
+            animator.SetFloat("speed", Math.Abs(move.x * maxSpeed));
         }
 
     }
