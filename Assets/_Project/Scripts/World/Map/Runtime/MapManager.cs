@@ -57,6 +57,12 @@ namespace CityRush.World.Map.Runtime
                 : null;
         }
 
+        public StreetRef GetCurrentStreet()
+        {
+            var zone = _mapData.Zones[_currentPosition.ZoneIndex];
+            return zone.Structure[_currentPosition.Row].Streets[_currentPosition.Col];
+        }
+
         // ------------------------------------------------------------
         // Write API (called ONLY after successful street load)
         // ------------------------------------------------------------
@@ -80,11 +86,18 @@ namespace CityRush.World.Map.Runtime
         {
             _currentNavigation = new MapNavigationSnapshot(
                 _currentPosition,
+                GetStreetAt(_currentPosition),
                 BuildNeighbor(MapDirection.Left),
                 BuildNeighbor(MapDirection.Right),
                 BuildNeighbor(MapDirection.Up),
                 BuildNeighbor(MapDirection.Down)
             );
+        }
+
+        private StreetRef GetStreetAt(MapPosition pos)
+        {
+            var zone = _mapData.Zones[pos.ZoneIndex];
+            return zone.Structure[pos.Row].Streets[pos.Col];
         }
 
         private MapNeighbor BuildNeighbor(MapDirection direction)
