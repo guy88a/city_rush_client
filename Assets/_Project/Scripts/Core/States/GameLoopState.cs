@@ -12,15 +12,19 @@ public class GameLoopState : IState
     private readonly GameContext _context;
 
     private MapData _mapData;
-
     private BackgroundRoot _backgroundInstance;
     private StreetComponent _streetInstance;
+
     private GameObject _playerInstance;
     private Transform _playerTransform;
+    private BoxCollider2D _playerCollider;
 
     private float _cameraHalfWidth;
     private float _streetLeftX;
     private float _streetRightX;
+
+    private bool _loggedLeft;
+    private bool _loggedRight;
 
     public GameLoopState(Game game, GameContext context)
     {
@@ -61,6 +65,7 @@ public class GameLoopState : IState
         _streetRightX = _streetInstance.RightBoundX;
 
         _playerInstance = Object.Instantiate(prefabs.PlayerPrefab);
+        _playerCollider = _playerInstance.GetComponent<BoxCollider2D>();
 
         float spawnX = _streetInstance.SpawnX;
         float groundY = 0f;
@@ -96,5 +101,39 @@ public class GameLoopState : IState
         Vector3 camPos = _game.CameraTransform.position;
         camPos.x = clampedX;
         _game.CameraTransform.position = camPos;
+
+        // Street Navigation
+        if (_playerCollider == null)
+            return;
+
+        // Camera visible bounds
+        float cameraCenterX = _game.CameraTransform.position.x;
+        float cameraLeftX = cameraCenterX - _cameraHalfWidth;
+        float cameraRightX = cameraCenterX + _cameraHalfWidth;
+
+        // Player collider bounds
+        Bounds b = _playerCollider.bounds;
+        float playerCenterX = _playerCollider.bounds.center.x;
+
+        // Left
+        if (!_loggedLeft && playerCenterX < cameraLeftX)
+        {
+            Debug.Log("Left");
+            _loggedLeft = true;
+        }
+
+        // Right
+        if (!_loggedRight && playerCenterX > cameraRightX)
+        {
+            Debug.Log("Right");
+            _loggedRight = true;
+        }
+
+        // Reset
+        if (playerCenterX >= cameraLeftX)
+            _loggedLeft = false;
+
+        if (playerCenterX <= cameraRightX)
+            _loggedRight = false;
     }
 }
