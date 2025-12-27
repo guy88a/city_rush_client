@@ -1,10 +1,11 @@
 using CityRush.Core;
-using CityRush.Core.States;
 using CityRush.Core.Prefabs;
+using CityRush.Core.States;
+using CityRush.Units.Characters.Controllers;
 using CityRush.World.Background;
+using CityRush.World.Map;
 using CityRush.World.Street;
 using UnityEngine;
-using CityRush.World.Map;
 
 public class GameLoopState : IState
 {
@@ -18,13 +19,19 @@ public class GameLoopState : IState
     private GameObject _playerInstance;
     private Transform _playerTransform;
     private BoxCollider2D _playerCollider;
+    private PlayerPlatformerController _playerController;
 
     private float _cameraHalfWidth;
     private float _streetLeftX;
     private float _streetRightX;
 
-    private bool _loggedLeft;
-    private bool _loggedRight;
+    private enum StreetNavigationIntent
+    {
+        None,
+        Left,
+        Right
+    }
+    private StreetNavigationIntent _navigationIntent = StreetNavigationIntent.None;
 
     public GameLoopState(Game game, GameContext context)
     {
@@ -66,6 +73,7 @@ public class GameLoopState : IState
 
         _playerInstance = Object.Instantiate(prefabs.PlayerPrefab);
         _playerCollider = _playerInstance.GetComponent<BoxCollider2D>();
+        _playerController = _playerInstance.GetComponent<PlayerPlatformerController>();
 
         float spawnX = _streetInstance.SpawnX;
         float groundY = 0f;
@@ -102,8 +110,12 @@ public class GameLoopState : IState
         camPos.x = clampedX;
         _game.CameraTransform.position = camPos;
 
-        // Street Navigation
+        // Street Navigation ------------------------------------------------------------
         if (_playerCollider == null)
+            return;
+
+        // If we already have an intent pending, do not re-trigger.
+        if (_navigationIntent != StreetNavigationIntent.None)
             return;
 
         // Camera visible bounds
@@ -111,29 +123,20 @@ public class GameLoopState : IState
         float cameraLeftX = cameraCenterX - _cameraHalfWidth;
         float cameraRightX = cameraCenterX + _cameraHalfWidth;
 
-        // Player collider bounds
-        Bounds b = _playerCollider.bounds;
+        // Half-offscreen = collider center crosses screen edge
         float playerCenterX = _playerCollider.bounds.center.x;
 
-        // Left
-        if (!_loggedLeft && playerCenterX < cameraLeftX)
+        if (playerCenterX < cameraLeftX)
         {
-            Debug.Log("Left");
-            _loggedLeft = true;
+            _navigationIntent = StreetNavigationIntent.Left;
+            Debug.Log("StreetNavigationIntent: Left");
+            _playerController.Freeze();
         }
-
-        // Right
-        if (!_loggedRight && playerCenterX > cameraRightX)
+        else if (playerCenterX > cameraRightX)
         {
-            Debug.Log("Right");
-            _loggedRight = true;
+            _navigationIntent = StreetNavigationIntent.Right;
+            Debug.Log("StreetNavigationIntent: Right");
+            _playerController.Freeze();
         }
-
-        // Reset
-        if (playerCenterX >= cameraLeftX)
-            _loggedLeft = false;
-
-        if (playerCenterX <= cameraRightX)
-            _loggedRight = false;
     }
 }

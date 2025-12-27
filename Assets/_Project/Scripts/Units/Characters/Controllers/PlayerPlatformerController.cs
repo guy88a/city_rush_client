@@ -16,6 +16,8 @@ namespace CityRush.Units.Characters.Controllers
         private SpriteRenderer spriteRenderer;
         private Animator animator;
 
+        public bool IsFrozen { get; private set; }
+
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
@@ -33,6 +35,8 @@ namespace CityRush.Units.Characters.Controllers
 
         protected override void ComputeVelocity()
         {
+            if (IsFrozen) { return; }
+
             Vector2 move = Vector2.zero;
 
             Vector2 input = controls.Player.Move.ReadValue<Vector2>();
@@ -71,5 +75,16 @@ namespace CityRush.Units.Characters.Controllers
             animator.SetFloat("speed", Math.Abs(move.x * maxSpeed));
         }
 
+        public void Freeze()
+        {
+            IsFrozen = true;
+            targetVelocity = Vector2.zero;
+            velocity = Vector2.zero;
+        }
+
+        public void Unfreeze()
+        {
+            IsFrozen = false;
+        }
     }
 }
