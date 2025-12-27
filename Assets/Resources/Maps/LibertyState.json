@@ -1,0 +1,33 @@
+{
+  "MapId": "LibertyState",
+  "PlayerSpawn": { "x": 0, "y": 1 },
+  "Zones": [
+    {
+      "ZoneId": "IronCity",
+      "Type": "City",
+      "GridSize": { "x": 2, "y": 2 },
+      "Structure": [
+        {
+          "ThemeId": "Uptown",
+          "Streets": [
+            { "StreetId": "ironcity_ut_0", "JsonPath": "Cities/IronCity/UT_Street_0" },
+            { "StreetId": "ironcity_ut_1", "JsonPath": "Cities/IronCity/UT_Street_1" }
+          ]
+        },
+        {
+          "ThemeId": "Downtown",
+          "Streets": [
+            { "StreetId": "ironcity_dt_0", "JsonPath": "Cities/IronCity/DT_Street_0" },
+            { "StreetId": "ironcity_dt_1", "JsonPath": "Cities/IronCity/DT_Street_1" }
+          ]
+        }
+      ]
+    },
+    {
+      "ZoneId": "Countryside_IronCity",
+      "Type": "Countryside",
+      "GridSize": { "x": 0, "y": 0 },
+      "Structure": []
+    }
+  ]
+}

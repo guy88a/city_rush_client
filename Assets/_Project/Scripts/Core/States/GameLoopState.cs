@@ -4,11 +4,14 @@ using CityRush.Core.Prefabs;
 using CityRush.World.Background;
 using CityRush.World.Street;
 using UnityEngine;
+using CityRush.World.Map;
 
 public class GameLoopState : IState
 {
     private readonly Game _game;
     private readonly GameContext _context;
+
+    private MapData _mapData;
 
     private BackgroundRoot _backgroundInstance;
     private StreetComponent _streetInstance;
@@ -28,6 +31,7 @@ public class GameLoopState : IState
     public void Enter()
     {
         var prefabs = _context.GetData<CorePrefabsRegistry>();
+        _mapData = _context.GetData<MapData>();
 
         // Background (unchanged)
         _backgroundInstance = Object.Instantiate(prefabs.BackgroundPrefab);
@@ -37,10 +41,15 @@ public class GameLoopState : IState
         _streetInstance = Object.Instantiate(prefabs.StreetPrefab);
         _streetInstance.Initialize(_game.GlobalCamera);
 
-        TextAsset jsonAsset = Resources.Load<TextAsset>("Streets/street_01");
+        StreetRef streetRef = _mapData
+        .Zones[0]                 // IronCity
+        .Structure[1]             // Row 1 = Downtown
+        .Streets[0];              // Column 0 = DT_Street_0
+
+        TextAsset jsonAsset = Resources.Load<TextAsset>($"Maps/{streetRef.JsonPath}");
 
         var request = new StreetLoadRequest(
-            streetId: "street_01",
+            streetId: streetRef.StreetId,
             streetJson: jsonAsset.text
         );
 

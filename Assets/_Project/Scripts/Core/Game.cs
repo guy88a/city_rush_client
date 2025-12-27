@@ -50,9 +50,9 @@ public class Game
         _context.Set(_corePrefabs);
     }
 
-    public void SetStreetBounds(float left, float right)
-    {
-        StreetLeftBoundX = left;
-        StreetRightBoundX = right;
-    }
+    //public void SetStreetBounds(float left, float right)
+    //{
+    //    StreetLeftBoundX = left;
+    //    StreetRightBoundX = right;
+    //}
 }
