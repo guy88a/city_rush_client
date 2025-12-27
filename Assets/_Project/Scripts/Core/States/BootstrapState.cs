@@ -1,5 +1,6 @@
-using UnityEngine;
 using CityRush.Core.Services;
+using CityRush.World.Map;
+using UnityEngine;
 
 namespace CityRush.Core.States
 {
@@ -17,6 +18,11 @@ namespace CityRush.Core.States
         public void Enter()
         {
             _context.Get<ILoggerService>()?.Info("[BootstrapState] Entered.");
+
+            TextAsset json = Resources.Load<TextAsset>("Maps/LibertyState");
+            var mapData = JsonUtility.FromJson<MapData>(json.text);
+            _context.Set(mapData);
+
             _gameStateMachine.Enter<LoadLevelState>();
         }
 

@@ -4,8 +4,15 @@ using CityRush.World.Buildings.Data;
 namespace CityRush.World.Street.Data
 {
     [Serializable]
+    public class StreetSpawnData
+    {
+        public float x;
+    }
+
+    [Serializable]
     public class StreetData
     {
+        public StreetSpawnData spawn;
         public StreetVisualData street;
         public BuildingDefinition[] buildings;
         public PedestriansData pedestrians;

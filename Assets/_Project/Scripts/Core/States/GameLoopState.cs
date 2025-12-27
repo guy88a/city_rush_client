@@ -4,14 +4,23 @@ using CityRush.Core.Prefabs;
 using CityRush.World.Background;
 using CityRush.World.Street;
 using UnityEngine;
+using CityRush.World.Map;
 
 public class GameLoopState : IState
 {
     private readonly Game _game;
     private readonly GameContext _context;
 
+    private MapData _mapData;
+
     private BackgroundRoot _backgroundInstance;
     private StreetComponent _streetInstance;
+    private GameObject _playerInstance;
+    private Transform _playerTransform;
+
+    private float _cameraHalfWidth;
+    private float _streetLeftX;
+    private float _streetRightX;
 
     public GameLoopState(Game game, GameContext context)
     {
@@ -22,6 +31,7 @@ public class GameLoopState : IState
     public void Enter()
     {
         var prefabs = _context.GetData<CorePrefabsRegistry>();
+        _mapData = _context.GetData<MapData>();
 
         // Background (unchanged)
         _backgroundInstance = Object.Instantiate(prefabs.BackgroundPrefab);
@@ -31,14 +41,33 @@ public class GameLoopState : IState
         _streetInstance = Object.Instantiate(prefabs.StreetPrefab);
         _streetInstance.Initialize(_game.GlobalCamera);
 
-        TextAsset jsonAsset = Resources.Load<TextAsset>("Streets/street_01");
+        StreetRef streetRef = _mapData
+        .Zones[0]                 // IronCity
+        .Structure[1]             // Row 1 = Downtown
+        .Streets[0];              // Column 0 = DT_Street_0
+
+        TextAsset jsonAsset = Resources.Load<TextAsset>($"Maps/{streetRef.JsonPath}");
 
         var request = new StreetLoadRequest(
-            streetId: "street_01",
+            streetId: streetRef.StreetId,
             streetJson: jsonAsset.text
         );
 
         _streetInstance.Build(request);
+
+        Camera cam = _game.GlobalCamera;
+        _cameraHalfWidth = cam.orthographicSize * cam.aspect;
+        _streetLeftX = _streetInstance.LeftBoundX;
+        _streetRightX = _streetInstance.RightBoundX;
+
+        _playerInstance = Object.Instantiate(prefabs.PlayerPrefab);
+
+        float spawnX = _streetInstance.SpawnX;
+        float groundY = 0f;
+
+        _playerInstance.transform.position = new Vector3(spawnX, groundY, 0f);
+
+        _playerTransform = _playerInstance.transform;
     }
 
     public void Exit()
@@ -48,7 +77,24 @@ public class GameLoopState : IState
 
         if (_streetInstance != null)
             Object.Destroy(_streetInstance.gameObject);
+
+        if (_playerInstance != null)
+            Object.Destroy(_playerInstance);
     }
 
-    public void Update(float deltaTime) { }
+    public void Update(float deltaTime)
+    {
+        if (_playerTransform == null)
+            return;
+
+        float minX = _streetLeftX + _cameraHalfWidth;
+        float maxX = _streetRightX - _cameraHalfWidth;
+
+        float targetX = _playerTransform.position.x;
+        float clampedX = Mathf.Clamp(targetX, minX, maxX);
+
+        Vector3 camPos = _game.CameraTransform.position;
+        camPos.x = clampedX;
+        _game.CameraTransform.position = camPos;
+    }
 }

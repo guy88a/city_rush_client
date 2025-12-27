@@ -16,8 +16,11 @@ namespace CityRush.Core.Prefabs
         [SerializeField] private BackgroundRoot backgroundPrefab;
         [SerializeField] private StreetComponent streetPrefab;
 
+        [SerializeField] private GameObject playerPrefab;
+
         public Camera GlobalCameraPrefab => globalCameraPrefab;
         public BackgroundRoot BackgroundPrefab => backgroundPrefab;
         public StreetComponent StreetPrefab => streetPrefab;
+        public GameObject PlayerPrefab => playerPrefab;
     }
 }
