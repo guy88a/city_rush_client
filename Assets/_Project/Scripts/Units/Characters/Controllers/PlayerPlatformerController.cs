@@ -84,7 +84,7 @@ namespace CityRush.Units.Characters.Controllers
 
         public void Unfreeze()
         {
-            Debug.Log("PLAYER UNFREEZE");
+            Debug.Log("PLAYER UNFREEZE!!!");
             IsFrozen = false;
             targetVelocity = Vector2.zero; // reset stale frame
         }

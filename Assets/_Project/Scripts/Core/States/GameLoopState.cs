@@ -1,6 +1,7 @@
 using CityRush.Core;
 using CityRush.Core.Prefabs;
 using CityRush.Core.States;
+using CityRush.Core.Transitions;
 using CityRush.Units.Characters.Controllers;
 using CityRush.World.Background;
 using CityRush.World.Map;
@@ -12,6 +13,9 @@ public class GameLoopState : IState
 {
     private readonly Game _game;
     private readonly GameContext _context;
+
+    private ScreenFadeController _screenFade;
+    private bool _isTransitioning;
 
     private MapManager _mapManager;
     private BackgroundRoot _backgroundInstance;
@@ -27,6 +31,7 @@ public class GameLoopState : IState
     private float _streetRightX;
 
     private bool _canNavigate = false;
+    private bool _suppressNavigationThisFrame;
 
     // when traveling between street spawns player at new street (left/right based od direction)
     // with _cameraHalfWidth gap this modifier set gap by % (0 to 1).
@@ -51,6 +56,10 @@ public class GameLoopState : IState
     {
         var prefabs = _context.GetData<CorePrefabsRegistry>();
         _mapManager = _context.GetData<MapManager>();
+
+        // Fade Screen
+        var fadeGO = Object.Instantiate(prefabs.ScreenFadeCanvasPrefab);
+        _screenFade = fadeGO.GetComponent<ScreenFadeController>();
 
         // Background
         _backgroundInstance = Object.Instantiate(prefabs.BackgroundPrefab);
@@ -101,9 +110,21 @@ public class GameLoopState : IState
     public void Update(float deltaTime)
     {
         // Handle transition FIRST (allowed while frozen)
-        if (_navigationIntent != StreetNavigationIntent.None)
+        if (_navigationIntent != StreetNavigationIntent.None && !_isTransitioning)
         {
-            LoadNextStreet();
+            _isTransitioning = true;
+
+            _screenFade.FadeOut(() =>
+            {
+                LoadNextStreet();
+
+                _screenFade.FadeIn(() =>
+                {
+                    _isTransitioning = false;
+                    _suppressNavigationThisFrame = false;
+                });
+            });
+
             return;
         }
 
@@ -126,7 +147,7 @@ public class GameLoopState : IState
         _game.CameraTransform.position = camPos;
 
         // Navigation only when allowed
-        if (!_canNavigate)
+        if (!_canNavigate || _suppressNavigationThisFrame)
             return;
 
         float cameraLeftX = camPos.x - _cameraHalfWidth;
@@ -225,6 +246,8 @@ public class GameLoopState : IState
         // Resume play
         _playerController.Unfreeze();
         _canNavigate = true;
+
+        _suppressNavigationThisFrame = true;
     }
 
 }
