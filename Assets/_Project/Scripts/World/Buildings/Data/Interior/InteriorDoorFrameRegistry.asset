@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc7db7e848bd4554cb94509ef9b1fd15, type: 3}
+  m_Name: InteriorDoorFrameRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.Interior.InteriorDoorFrameRegistry
+  Entries:
+  - Key: InteriorDoorFrame_Dark_Solid
+    Prefab: {fileID: 7710297516487896473, guid: 0479d316bb45bb94fa46a7fb02588194, type: 3}
+  - Key: InteriorDoorFrame_Light_Solid
+    Prefab: {fileID: 3671050811364279463, guid: 0f34b994d82c03b4d823a22cbe48b566, type: 3}
+  - Key: InteriorDoorFrame_White_Solid
+    Prefab: {fileID: 2286785590544726856, guid: 9448a06c099121a4e8347fe338ea5b66, type: 3}
