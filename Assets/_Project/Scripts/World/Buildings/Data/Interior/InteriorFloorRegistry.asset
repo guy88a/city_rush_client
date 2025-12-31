@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ded0dec690ef4940bb4e4127f92dc33, type: 3}
+  m_Name: InteriorFloorRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.Interior.InteriorFloorRegistry
+  Entries:
+  - Key: InteriorFloor_Blue_Solid
+    Prefab: {fileID: 2646198149701557409, guid: eac9ac3fa3f2b3747a18df39b1d4e35f, type: 3}
+  - Key: InteriorFloor_Brown_Solid
+    Prefab: {fileID: 6125891530112497772, guid: 9923d0f5799c81449ba4ab4cb5342f53, type: 3}
+  - Key: InteriorFloor_Green_Solid
+    Prefab: {fileID: 2462438154612608432, guid: dffb2a03bb98e714b9cc8c8fc3709028, type: 3}
+  - Key: InteriorFloor_LimeGreen_Solid
+    Prefab: {fileID: 5758829762897966775, guid: 098537cad80235840a87e1e4c3e9c693, type: 3}
+  - Key: InteriorFloor_Orange_Solid
+    Prefab: {fileID: 6043522548236187950, guid: 5721a209dbca2c44299afe11d5cb850f, type: 3}
+  - Key: InteriorFloor_Pink_Solid
+    Prefab: {fileID: 6847036075681267707, guid: 25661de01d2e9ea40a50f78c26c78db4, type: 3}
+  - Key: InteriorFloor_Purple_Solid
+    Prefab: {fileID: 1372084621847218354, guid: 008b2740d7c25e449aafb775ca388306, type: 3}
+  - Key: InteriorFloor_Red_Solid
+    Prefab: {fileID: 4562461792409823818, guid: 05f4d8b5ae17b654b93dd5a1a8f323bc, type: 3}
+  - Key: InteriorFloor_Yellow_Solid
+    Prefab: {fileID: 8733263098611896820, guid: e96f46ea3d1a82242b90e382e0b03803, type: 3}

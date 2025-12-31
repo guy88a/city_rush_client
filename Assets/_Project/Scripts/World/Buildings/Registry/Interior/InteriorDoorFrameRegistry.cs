@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CityRush.World.Buildings.Registry
+namespace CityRush.World.Buildings.Registry.Interior
 {
     [Serializable]
-    public struct WallModuleEntry
+    public struct InteriorDoorFrameEntry
     {
-        public string Key;       // Example: "Wall_Brick_Mauve_Left"
+        public string Key;
         public GameObject Prefab;
     }
 
-    [CreateAssetMenu(menuName = "CityRush/Registry/WallRegistry")]
-    public class WallRegistry : ScriptableObject
+    [CreateAssetMenu(menuName = "CityRush/Registry/Interior/DoorFrameRegistry")]
+    public class InteriorDoorFrameRegistry : ScriptableObject
     {
-        public List<WallModuleEntry> Entries = new List<WallModuleEntry>();
+        public List<InteriorDoorFrameEntry> Entries = new List<InteriorDoorFrameEntry>();
         private Dictionary<string, GameObject> map;
 
         private void OnEnable()

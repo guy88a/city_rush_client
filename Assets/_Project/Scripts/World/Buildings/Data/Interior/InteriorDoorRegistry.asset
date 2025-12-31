@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d06ac30cf727f0b4e91436d2b4da7bc6, type: 3}
+  m_Name: InteriorDoorRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.Interior.InteriorDoorRegistry
+  Entries:
+  - Key: InteriorDoor_Brown_Cube
+    Prefab: {fileID: 8911214778512162034, guid: 587abcd04fdf98e449a9803a68d92cce, type: 3}
+  - Key: InteriorDoor_Brown_Solid
+    Prefab: {fileID: 5350292084243200246, guid: 8f366850aca455442892fdc4438ae391, type: 3}
+  - Key: InteriorDoor_Cyan_Cube
+    Prefab: {fileID: 8848892284119180081, guid: 6438a9fd236787d4785c2e31a9fb04f3, type: 3}
+  - Key: InteriorDoor_Cyan_Solid
+    Prefab: {fileID: 2846424011393105233, guid: a6c56604776b8d44393afd53d396a84a, type: 3}
+  - Key: InteriorDoor_LightCyan_Cube
+    Prefab: {fileID: 4151857720039904132, guid: 055b935158a96db4793fb48bab62a02f, type: 3}
+  - Key: InteriorDoor_LightCyan_Solid
+    Prefab: {fileID: 4980156220978376142, guid: a48b8fae8e5807049b1301b90b9397d8, type: 3}

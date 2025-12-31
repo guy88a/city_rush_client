@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b987389de027fee4cbb5555140396e50, type: 3}
+  m_Name: InteriorWallRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Buildings.Registry.Interior.InteriorWallRegistry
+  Entries:
+  - Key: InteriorWall_Blue_LargeStripe
+    Prefab: {fileID: 7836791981129212719, guid: ebee267f8310c454b9314176777e105c, type: 3}
+  - Key: InteriorWall_Brown_LargeStripe
+    Prefab: {fileID: 1325024820821134148, guid: 3cc067a635b98294d9abf8d503e186ba, type: 3}
+  - Key: InteriorWall_Green_Flock
+    Prefab: {fileID: 1936086120524421547, guid: d01b7b0b6ef4fcf45af7935971bfb084, type: 3}
+  - Key: InteriorWall_Pink_Flock
+    Prefab: {fileID: 4017247044153659701, guid: e1664972d937a904fb67f6779a64df03, type: 3}
