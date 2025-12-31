@@ -7,7 +7,7 @@ namespace CityRush.World.Buildings.Registry
     [Serializable]
     public struct WallModuleEntry
     {
-        public string Key;       // Example: "Wall_Brick_Mauve_Left"
+        public string Key;
         public GameObject Prefab;
     }
 
