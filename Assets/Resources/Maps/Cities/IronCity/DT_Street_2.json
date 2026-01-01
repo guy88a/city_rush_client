@@ -81,6 +81,61 @@
       "WindowsRandomPattern": true,
       "WindowsForcedPattern": "",
 
+      "EntranceType": "Brick",
+      "EntranceColor": "Olive",
+      "EntranceDecoration": false,
+
+      "EntranceTwoAssetsMode": false,
+      "EntranceEmbeddedDoor": false,
+      "EntranceDoorIndex": 1,
+
+      "EntranceAddDoor": true,
+      "EntranceDoorType": "Fancy",
+      "EntranceDoorColor": "Brown",
+      "EntranceDoorSize": "BIG",
+
+      "UseSeparators": true,
+      "SeparatorType": "Standard",
+
+      "RooftopType": "Brick",
+      "RooftopColor": "Slate",
+      "RooftopPattern": 1,
+      "RooftopWallDecoration": "Normal",
+
+      "UseRooftopSeparator": true,
+      "RooftopSeparatorType": "Normal",
+
+      "Width": 3,
+      "FloorsCount": 4,
+
+      "PropsGrid": {
+        "Floors": [
+          {
+            "Modules": ["", "", "Prop_Poster_Big"]
+          },
+          {
+            "Modules": ["Prop_Plant_FlowerA", "", ""]
+          },
+          {
+            "Modules": ["", "Prop_Vent_Normal", "Prop_Plant_FlowerC"]
+          },
+          {
+            "Modules": ["Prop_Plant_FlowerA", "", "Prop_Plant_FlowerB"]
+          },
+          {
+            "Modules": ["Prop_Plant_FlowerC", "Prop_Vent_Normal", ""]
+          }
+        ]
+      }
+    },
+    {
+      "WallType": "Brick",
+      "WallColor": "Mustard",
+
+      "WindowType": "Normal",
+      "WindowsRandomPattern": true,
+      "WindowsForcedPattern": "",
+
       "EntranceType": "Panel",
       "EntranceColor": "Dark",
       "EntranceDecoration": false,
