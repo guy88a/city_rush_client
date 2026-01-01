@@ -73,6 +73,41 @@ namespace CityRush.World.Interior
             sr.size = new Vector2(targetWidthUnits, targetHeightUnits);
             sr.sortingOrder = 1000;
 
+            // Ensure collider is driven by the tiled size (SpriteRenderer.size does NOT resize colliders).
+            // NOTE: floor prefabs may ship with colliders on various children; keep ONE BoxCollider2D and disable the rest.
+            BoxCollider2D col = null;
+            var colliders = floorInstance.GetComponentsInChildren<Collider2D>(true);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] == null)
+                    continue;
+
+                // Prefer a BoxCollider2D on the same GameObject as the SpriteRenderer (same local space).
+                if (col == null && colliders[i] is BoxCollider2D bc && bc.gameObject == sr.gameObject)
+                {
+                    col = bc;
+                    col.enabled = true;
+                    continue;
+                }
+
+                colliders[i].enabled = false;
+            }
+
+            if (col == null)
+                col = sr.gameObject.AddComponent<BoxCollider2D>();
+
+            col.enabled = true;
+
+            float colliderHeightUnits = sr.size.y * 0.8f;
+            col.size = new Vector2(sr.size.x, colliderHeightUnits);
+
+            // Bottom-aligned in world space (handles non-centered pivots):
+            // colliderCenterY = spriteBottomY + (colliderHeight/2)
+            var desiredWorldCenter = sr.bounds.center;
+            desiredWorldCenter.y = sr.bounds.min.y + (colliderHeightUnits * 0.5f);
+            var localCenter = sr.transform.InverseTransformPoint(desiredWorldCenter);
+            col.offset = new Vector2(localCenter.x, localCenter.y);
+
             float panelHalfHeightUnits = (hallwayHeightPx * 0.5f) / ppu;
             float floorHalfHeightUnits = (floorHeightPx * 0.5f) / ppu;
             float y = -panelHalfHeightUnits + floorHalfHeightUnits;
