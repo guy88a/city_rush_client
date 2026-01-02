@@ -79,13 +79,15 @@ public class GameLoopState : IState
         {
             _world.UnloadStreet();
             _world.LoadCorridor(_prefabs.CorridorPrefab);
+            _world.CenterCorridorOnCamera();
+            _world.RepositionPlayerForCorridorSpawn();
 
             _world.ScreenFade.FadeIn(() =>
             {
                 _isEnteringInterior = false;
                 _isInInterior = true;
 
-                // keep frozen for now — next step will reposition + unfreeze
+                _world.PlayerController.Unfreeze();
             });
         });
     }

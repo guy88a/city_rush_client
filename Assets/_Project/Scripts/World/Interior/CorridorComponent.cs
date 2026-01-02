@@ -264,7 +264,7 @@ namespace CityRush.World.Interior
 
         private void ApplyPresentation()
         {
-            transform.localPosition = localOffset;
+            //transform.localPosition = localOffset;
             transform.localScale = Vector3.one * zoomScale;
         }
 
@@ -309,5 +309,34 @@ namespace CityRush.World.Interior
             for (int i = t.childCount - 1; i >= 0; i--)
                 Destroy(t.GetChild(i).gameObject);
         }
+
+        public Bounds VisualBoundsWorld
+        {
+            get
+            {
+                SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+                if (renderers == null || renderers.Length == 0)
+                    return default;
+
+                Bounds b = renderers[0].bounds;
+                for (int i = 1; i < renderers.Length; i++)
+                    b.Encapsulate(renderers[i].bounds);
+
+                return b;
+            }
+        }
+
+        public float FloorTopWorldY_FromCollider
+        {
+            get
+            {
+                if (_floorCollider == null) return transform.position.y;
+                // collider top = position + (offset.y + size.y/2) in world, including scale
+                Vector3 p = _floorCollider.transform.position;
+                float scaleY = _floorCollider.transform.lossyScale.y;
+                return p.y + (_floorCollider.offset.y + (_floorCollider.size.y * 0.5f)) * scaleY;
+            }
+        }
+
     }
 }

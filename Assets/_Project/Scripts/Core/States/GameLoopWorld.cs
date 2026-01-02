@@ -114,6 +114,8 @@ internal sealed class GameLoopWorld
         Corridor = parent != null
             ? Object.Instantiate(corridorPrefab, parent)
             : Object.Instantiate(corridorPrefab);
+
+        Corridor.Rebuild();
     }
 
     /// <summary>
@@ -169,4 +171,44 @@ internal sealed class GameLoopWorld
             jsonAsset.text
         ));
     }
+
+    public void RepositionPlayerForCorridorSpawn()
+    {
+        if (Corridor == null || PlayerTransform == null)
+            return;
+
+        Bounds floor = Corridor.FloorBoundsWorld;
+
+        float x = floor.center.x;
+        float y = Corridor.FloorTopWorldY_FromCollider;
+
+        float playerHalfH = 0f;
+        if (PlayerCollider != null)
+            playerHalfH = PlayerCollider.bounds.extents.y;
+
+        PlayerTransform.position = new Vector3(x, y + playerHalfH + 1f, 0f);
+
+        //Vector3 camPos = _game.CameraTransform.position;
+        //camPos.x = x;
+        //_game.CameraTransform.position = camPos;
+    }
+
+    public void CenterCorridorOnCamera()
+    {
+        if (Corridor == null)
+            return;
+
+        Bounds b = Corridor.VisualBoundsWorld;
+        if (b.size == Vector3.zero)
+            return;
+
+        Vector3 camPos = _game.CameraTransform.position;
+
+        float dx = camPos.x - b.center.x;
+        float dy = camPos.y - b.center.y;
+
+        Corridor.transform.position += new Vector3(dx, dy, 0f);
+    }
+
+
 }
