@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CityRush.World.Interior;
 using UnityEngine.InputSystem;
 
 namespace CityRush.Units.Characters.Controllers
@@ -15,6 +16,9 @@ namespace CityRush.Units.Characters.Controllers
         private PlayerControls controls;
         private SpriteRenderer spriteRenderer;
         private Animator animator;
+
+        private BuildingDoor _currentBuildingDoor;
+        public BuildingDoor CurrentBuildingDoor => _currentBuildingDoor;
 
         public bool IsFrozen { get; private set; }
 
@@ -36,6 +40,11 @@ namespace CityRush.Units.Characters.Controllers
         protected override void ComputeVelocity()
         {
             if (IsFrozen) { return; }
+
+            if (_currentBuildingDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                Debug.Log($"[Door] W pressed on BuildingDoor: {_currentBuildingDoor.BuildingId}", _currentBuildingDoor);
+            }
 
             Vector2 move = Vector2.zero;
 
@@ -87,6 +96,18 @@ namespace CityRush.Units.Characters.Controllers
             Debug.Log("PLAYER UNFREEZE!!!");
             IsFrozen = false;
             targetVelocity = Vector2.zero; // reset stale frame
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            BuildingDoor door = other.GetComponentInParent<BuildingDoor>();
+            if (door != null) _currentBuildingDoor = door;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            BuildingDoor door = other.GetComponentInParent<BuildingDoor>();
+            if (door != null && door == _currentBuildingDoor) _currentBuildingDoor = null;
         }
     }
 }
