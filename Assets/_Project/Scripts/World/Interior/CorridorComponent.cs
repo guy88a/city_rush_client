@@ -1,13 +1,12 @@
 using CityRush.World.Buildings.Registry.Interior;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 namespace CityRush.World.Interior
 {
     public sealed class CorridorComponent : MonoBehaviour
     {
-        private const float PPU = 48;
+        private const float PPU = 48f;
+
         private const string FLOOR_CHILD_NAME = "Floor";
         private const string WALL_CHILD_NAME = "Wall";
         private const string SKIRT_CHILD_NAME = "Skirt";
@@ -28,10 +27,10 @@ namespace CityRush.World.Interior
         [Header("Layout (Pixels)")]
         [SerializeField] private int hallwayApartments = 3;
         [SerializeField] private int appartmentWidth = 400;
-        [SerializeField] private int hallwayWidthPx = 900;
+        [SerializeField] private int hallwayWidthPx = 900;     // kept for inspector compatibility (not used yet)
         [SerializeField] private int hallwayBleedPx = 100;
-        [SerializeField] private int hallwayHeightPx = 470;
-        [SerializeField] private int floorHeightPx = 170;
+        [SerializeField] private int hallwayHeightPx = 470;    // kept for inspector compatibility (not used yet)
+        [SerializeField] private int floorHeightPx = 170;      // kept for inspector compatibility (not used yet)
 
         [Header("Floor")]
         [SerializeField] private string floorKey = "InteriorFloor_Brown_Solid";
@@ -46,243 +45,243 @@ namespace CityRush.World.Interior
         [SerializeField] private string doorFrameKey = "InteriorDoorFrame_White_Solid";
         [SerializeField] private string doorLeafKey = "InteriorDoor_Brown_Cube";
 
-        [Header("Zooms")]
-        [SerializeField] private const float ZOOM_SMALL = 0.23f;
-        [SerializeField] private const float ZOOM_MEDIUM = 0.6f;
-        [SerializeField] private const float ZOOM_FULL = 1f;
+        [Header("Presentation")]
+        [Min(0.01f)]
+        [SerializeField] private float zoomScale = 0.23f;
 
-        // Sprite Renderer Properties
-        SpriteRenderer floorRenderer;
-        SpriteRenderer wallRenderer;
-        SpriteRenderer skirtingRenderer;
-        SpriteRenderer doorFrameRenderer;
-        SpriteRenderer doorLeafRenderer;
-        private float floorHeight;
-        private const int SORTING_ORDER = 15;
+        [SerializeField] private Vector3 localOffset = new Vector3(19f, -5f, 0f);
 
-        // Collider Properties
-        BoxCollider2D floorCollider;
+        [Header("Render")]
+        [SerializeField] private int sortingBase = 15;
 
-        public string CorridorData
-        {
-            get => corridorData;
-            private set => corridorData = value;
-        }
+        // runtime refs
+        private SpriteRenderer _floorRenderer;
+        private SpriteRenderer _wallRenderer;
+        private SpriteRenderer _skirtingRenderer;
+        private BoxCollider2D _floorCollider;
 
-        private void Awake()
-        {
-            floorRenderer = GetComponent<SpriteRenderer>();
-        }
+        private float _floorTopLocalY;
+        private float _corridorWidthWorldUnits;
+
+        public string CorridorData => corridorData;
+
+        // After zoom is applied, this stays the "real" world width (what you expect to see in-game).
+        public float CorridorWidthWorldUnits => _corridorWidthWorldUnits;
+
+        // Useful for GameLoop player spawn.
+        public float FloorTopWorldY => _floorCollider != null ? _floorCollider.bounds.max.y : transform.position.y;
+        public Bounds FloorBoundsWorld => _floorCollider != null ? _floorCollider.bounds : default;
 
         private void Start()
         {
+            Rebuild();
+        }
+
+        [ContextMenu("Rebuild")]
+        public void Rebuild()
+        {
             ClearCorridor();
+            ApplyPresentation();
 
             BuildFloor();
+            ResolveFloorTopLocalY();
+
             BuildWall();
-            ApplyWallSkirting();
-            ApplyDoors(ZOOM_SMALL);
+            BuildSkirting();
+            BuildDoors();
 
-            SetComponentsGlobals(ZOOM_SMALL);
-            ScaleCorridor(ZOOM_SMALL);
+            ApplyTilingAndCollider();
+        }
+
+        public void SetJson(string json) => corridorData = json;
+
+        public void SetPresentation(float zoom, Vector3 offset)
+        {
+            zoomScale = Mathf.Max(0.01f, zoom);
+            localOffset = offset;
         }
 
         // ------------------------------------------------------------
-        // FLOOR
+        // Build
         // ------------------------------------------------------------
-        public void BuildFloor()
+
+        private void BuildFloor()
         {
-            // resolve prefab from registry
-            GameObject floorPrefab = floorRegistry.Get(floorKey);
-            if (floorPrefab == null)
+            var prefab = floorRegistry != null ? floorRegistry.Get(floorKey) : null;
+            if (prefab == null)
             {
-                Debug.LogError($"[CorridorComponent] Floor key not found: {floorKey}");
+                Debug.LogError($"[CorridorComponent] Floor key not found: {floorKey}", this);
                 return;
             }
 
-            // find or create Floor container
-            Transform floorRoot = transform.Find(FLOOR_CHILD_NAME);
-            if (floorRoot == null)
-            {
-                GameObject root = new GameObject(FLOOR_CHILD_NAME);
-                root.transform.SetParent(transform, false);
-                floorRoot = root.transform;
-            }
+            Transform root = GetOrCreate(FLOOR_CHILD_NAME);
 
-            // clear previous
-            for (int i = floorRoot.childCount - 1; i >= 0; i--)
-                Destroy(floorRoot.GetChild(i).gameObject);
+            GameObject inst = Instantiate(prefab, root);
+            inst.transform.localPosition = Vector3.zero;
+            inst.transform.localRotation = Quaternion.identity;
+            inst.transform.localScale = Vector3.one;
 
-            // instantiate
-            GameObject floorInstance = Instantiate(floorPrefab, floorRoot);
-            floorInstance.transform.localRotation = Quaternion.identity;
-            floorInstance.transform.localScale = Vector3.one;
-            // sprite renderer
-            floorRenderer = floorInstance.GetComponent<SpriteRenderer>();
-            floorRenderer.sortingOrder = SORTING_ORDER;
+            _floorRenderer = inst.GetComponent<SpriteRenderer>();
+            if (_floorRenderer != null) _floorRenderer.sortingOrder = sortingBase;
 
-            // store required values
-            floorHeight = floorRenderer.bounds.size.y;
-
-            // collider
-            floorCollider = floorInstance.GetComponent<BoxCollider2D>();
-
+            _floorCollider = inst.GetComponent<BoxCollider2D>();
         }
 
-
-        // ------------------------------------------------------------
-        // WALL
-        // ------------------------------------------------------------
-        public void BuildWall()
+        private void BuildWall()
         {
-            // resolve prefab from registry
-            GameObject wallPrefab = wallRegistry.Get(wallKey);
-            if (wallPrefab == null)
+            var prefab = wallRegistry != null ? wallRegistry.Get(wallKey) : null;
+            if (prefab == null)
             {
-                Debug.LogError($"[CorridorComponent] Wall key not found: {wallKey}");
+                Debug.LogError($"[CorridorComponent] Wall key not found: {wallKey}", this);
                 return;
             }
 
-            // find or create Wall container
-            Transform wallRoot = transform.Find(WALL_CHILD_NAME);
-            if (wallRoot == null)
-            {
-                GameObject root = new GameObject(WALL_CHILD_NAME);
-                root.transform.SetParent(transform, false);
-                wallRoot = root.transform;
-            }
+            Transform root = GetOrCreate(WALL_CHILD_NAME);
 
-            // clear previous
-            for (int i = wallRoot.childCount - 1; i >= 0; i--)
-                Destroy(wallRoot.GetChild(i).gameObject);
+            GameObject inst = Instantiate(prefab, root);
+            inst.transform.localPosition = new Vector3(0f, _floorTopLocalY, 0f);
+            inst.transform.localRotation = Quaternion.identity;
+            inst.transform.localScale = Vector3.one;
 
-            // instantiate
-            GameObject wallInstance = Instantiate(wallPrefab, wallRoot);
-            wallInstance.transform.localRotation = Quaternion.identity;
-            wallInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
-            // sprite renderer
-            wallRenderer = wallInstance.GetComponent<SpriteRenderer>();
-            wallRenderer.sortingOrder = SORTING_ORDER;
+            _wallRenderer = inst.GetComponent<SpriteRenderer>();
+            if (_wallRenderer != null) _wallRenderer.sortingOrder = sortingBase;
         }
 
-        public void ApplyWallSkirting()
+        private void BuildSkirting()
         {
-            // resolve prefab from registry
-            GameObject skirtingPrefab = skirtingRegistry.Get(skirtingKey);
-            if (skirtingPrefab == null)
+            var prefab = skirtingRegistry != null ? skirtingRegistry.Get(skirtingKey) : null;
+            if (prefab == null)
             {
-                Debug.LogError($"[CorridorComponent] Skirting key not found: {skirtingKey}");
+                Debug.LogError($"[CorridorComponent] Skirting key not found: {skirtingKey}", this);
                 return;
             }
 
-            // find or create Skirting container
-            Transform skirtingRoot = transform.Find(SKIRT_CHILD_NAME);
-            if (skirtingRoot == null)
-            {
-                GameObject root = new GameObject(SKIRT_CHILD_NAME);
-                root.transform.SetParent(transform, false);
-                skirtingRoot = root.transform;
-            }
+            Transform root = GetOrCreate(SKIRT_CHILD_NAME);
 
-            // clear previous
-            for (int i = skirtingRoot.childCount - 1; i >= 0; i--)
-                Destroy(skirtingRoot.GetChild(i).gameObject);
+            GameObject inst = Instantiate(prefab, root);
+            inst.transform.localPosition = new Vector3(0f, _floorTopLocalY, 0f);
+            inst.transform.localRotation = Quaternion.identity;
+            inst.transform.localScale = Vector3.one;
 
-            // instantiate
-            GameObject skirtingInstance = Instantiate(skirtingPrefab, skirtingRoot);
-            skirtingInstance.transform.localRotation = Quaternion.identity;
-            skirtingInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
-
-            // sprite renderer
-            skirtingRenderer = skirtingInstance.GetComponent<SpriteRenderer>();
-            skirtingRenderer.sortingOrder = SORTING_ORDER + 1;
+            _skirtingRenderer = inst.GetComponent<SpriteRenderer>();
+            if (_skirtingRenderer != null) _skirtingRenderer.sortingOrder = sortingBase + 1;
         }
 
-        private void ApplyDoors(float zoom)
+        private void BuildDoors()
         {
-            GameObject doorFramePrefab = doorFrameRegistry.Get(doorFrameKey);
-            GameObject doorLeafPrefab = doorRegistry.Get(doorLeafKey);
+            var framePrefab = doorFrameRegistry != null ? doorFrameRegistry.Get(doorFrameKey) : null;
+            var leafPrefab = doorRegistry != null ? doorRegistry.Get(doorLeafKey) : null;
 
-            if (doorFramePrefab == null || doorLeafPrefab == null)
+            if (framePrefab == null || leafPrefab == null)
             {
-                Debug.LogError("[CorridorComponent] Door prefab missing");
+                Debug.LogError($"[CorridorComponent] Missing door prefabs. Frame={doorFrameKey}, Leaf={doorLeafKey}", this);
                 return;
             }
 
             Transform frameRoot = GetOrCreate(DOOR_FRAME_CHILD_NAME);
             Transform leafRoot = GetOrCreate(DOOR_LEAF_CHILD_NAME);
 
-            float corridorWidthPx = hallwayApartments * appartmentWidth;
-            float startXPx = (appartmentWidth * 0.5f) + (hallwayBleedPx / 2);
+            float startXPx = (appartmentWidth * 0.5f) + (hallwayBleedPx * 0.5f);
 
             for (int i = 0; i < hallwayApartments; i++)
             {
                 float xPx = startXPx + i * appartmentWidth;
-                float xUnits = xPx / PPU / zoom;
+                float xUnitsLocal = xPx / PPU / zoomScale;
 
-                // Door Frame
-                GameObject frame = Instantiate(doorFramePrefab, frameRoot);
-                frame.transform.localPosition = new Vector3(xUnits, floorHeight, 0f);
-                frame.transform.localRotation = Quaternion.identity;
+                // Frame
+                {
+                    GameObject frame = Instantiate(framePrefab, frameRoot);
+                    frame.transform.localPosition = new Vector3(xUnitsLocal, _floorTopLocalY, 0f);
+                    frame.transform.localRotation = Quaternion.identity;
+                    frame.transform.localScale = Vector3.one;
 
-                var frameRenderer = frame.GetComponent<SpriteRenderer>();
-                frameRenderer.sortingOrder = SORTING_ORDER + 3;
+                    var r = frame.GetComponent<SpriteRenderer>();
+                    if (r != null) r.sortingOrder = sortingBase + 3;
+                }
 
-                // Door Leaf
-                GameObject leaf = Instantiate(doorLeafPrefab, leafRoot);
-                leaf.transform.localPosition = new Vector3(xUnits, floorHeight, 0f);
-                leaf.transform.localRotation = Quaternion.identity;
+                // Leaf
+                {
+                    GameObject leaf = Instantiate(leafPrefab, leafRoot);
+                    leaf.transform.localPosition = new Vector3(xUnitsLocal, _floorTopLocalY, 0f);
+                    leaf.transform.localRotation = Quaternion.identity;
+                    leaf.transform.localScale = Vector3.one;
 
-                var leafRenderer = leaf.GetComponent<SpriteRenderer>();
-                leafRenderer.sortingOrder = SORTING_ORDER + 4;
+                    var r = leaf.GetComponent<SpriteRenderer>();
+                    if (r != null) r.sortingOrder = sortingBase + 4;
+                }
             }
         }
 
-
         // ------------------------------------------------------------
-        // HELPERS
+        // Layout / Sizing
         // ------------------------------------------------------------
 
-        public void SetJson(string json)
+        private void ApplyTilingAndCollider()
         {
-            corridorData = json;
+            int corridorWidthPx = hallwayApartments * appartmentWidth;
+            _corridorWidthWorldUnits = (corridorWidthPx + hallwayBleedPx) / PPU;
+
+            // IMPORTANT:
+            // We scale the whole corridor (zoomScale), so tiling width must be divided by zoomScale,
+            // otherwise it becomes huge/small in-world.
+            float widthUnitsLocal = _corridorWidthWorldUnits / zoomScale;
+
+            if (_floorRenderer != null) _floorRenderer.size = new Vector2(widthUnitsLocal, _floorRenderer.size.y);
+            if (_wallRenderer != null) _wallRenderer.size = new Vector2(widthUnitsLocal, _wallRenderer.size.y);
+            if (_skirtingRenderer != null) _skirtingRenderer.size = new Vector2(widthUnitsLocal, _skirtingRenderer.size.y);
+
+            if (_floorCollider != null)
+            {
+                _floorCollider.size = new Vector2(widthUnitsLocal, _floorCollider.size.y);
+                _floorCollider.offset = new Vector2(widthUnitsLocal * 0.5f, _floorCollider.offset.y);
+            }
         }
 
-        private void ScaleCorridor(float zoomScale)
+        private void ResolveFloorTopLocalY()
         {
-            transform.localPosition = new Vector3(19f, -5f, 0f); ;
+            // Need local-space height, not world-space bounds.
+            // bounds includes parent scaling, so divide by zoomScale.
+            if (_floorRenderer != null)
+            {
+                float worldH = _floorRenderer.bounds.size.y;
+                _floorTopLocalY = worldH / zoomScale;
+                return;
+            }
+
+            if (_floorCollider != null)
+            {
+                float worldH = _floorCollider.bounds.size.y;
+                _floorTopLocalY = worldH / zoomScale;
+                return;
+            }
+
+            _floorTopLocalY = 0f;
+        }
+
+        // ------------------------------------------------------------
+        // Presentation / Helpers
+        // ------------------------------------------------------------
+
+        private void ApplyPresentation()
+        {
+            transform.localPosition = localOffset;
             transform.localScale = Vector3.one * zoomScale;
-        }
-
-        private void SetComponentsGlobals(float zoom)
-        {
-            float corridorWidth = hallwayApartments * appartmentWidth;
-            float widthUnits = (corridorWidth + hallwayBleedPx) / PPU / zoom;
-
-            floorRenderer.size = new Vector2(widthUnits, floorRenderer.size.y);
-            wallRenderer.size = new Vector2(widthUnits, wallRenderer.size.y);
-            skirtingRenderer.size = new Vector2(widthUnits, skirtingRenderer.size.y);
-
-            floorCollider.size = new Vector2(
-                widthUnits,
-                floorCollider.size.y
-            );
-
-            floorCollider.offset = new Vector2(
-                widthUnits * 0.5f,
-                floorCollider.offset.y
-            );
         }
 
         private Transform GetOrCreate(string name)
         {
             Transform t = transform.Find(name);
-            if (t != null)
-                return t;
+            if (t == null)
+            {
+                GameObject go = new GameObject(name);
+                go.transform.SetParent(transform, false);
+                t = go.transform;
+            }
 
-            GameObject go = new GameObject(name);
-            go.transform.SetParent(transform, false);
-            return go.transform;
+            for (int i = t.childCount - 1; i >= 0; i--)
+                Destroy(t.GetChild(i).gameObject);
+
+            return t;
         }
 
         private void ClearCorridor()
@@ -293,23 +292,22 @@ namespace CityRush.World.Interior
             ClearChild(DOOR_FRAME_CHILD_NAME);
             ClearChild(DOOR_LEAF_CHILD_NAME);
 
-            floorRenderer = null;
-            wallRenderer = null;
-            skirtingRenderer = null;
-            doorFrameRenderer = null;
-            doorLeafRenderer = null;
-            floorCollider = null;
-            floorHeight = 0f;
+            _floorRenderer = null;
+            _wallRenderer = null;
+            _skirtingRenderer = null;
+            _floorCollider = null;
+
+            _floorTopLocalY = 0f;
+            _corridorWidthWorldUnits = 0f;
         }
 
-        private void ClearChild(string childName)
+        private void ClearChild(string name)
         {
-            Transform child = transform.Find(childName);
-            if (child == null)
-                return;
+            Transform t = transform.Find(name);
+            if (t == null) return;
 
-            for (int i = child.childCount - 1; i >= 0; i--)
-                Destroy(child.GetChild(i).gameObject);
+            for (int i = t.childCount - 1; i >= 0; i--)
+                Destroy(t.GetChild(i).gameObject);
         }
     }
 }
