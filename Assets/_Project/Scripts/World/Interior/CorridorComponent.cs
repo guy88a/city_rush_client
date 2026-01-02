@@ -65,9 +65,12 @@ namespace CityRush.World.Interior
 
         private void Start()
         {
+            ClearCorridor();
+
             BuildFloor();
             BuildWall();
             ApplyWallSkirting();
+
             SetComponentsGlobals();
             ScaleCorridor(ZOOM_SMALL);
         }
@@ -215,6 +218,29 @@ namespace CityRush.World.Interior
                 widthUnits * 0.5f,
                 floorCollider.offset.y
             );
+        }
+
+        private void ClearCorridor()
+        {
+            ClearChild(FLOOR_CHILD_NAME);
+            ClearChild(WALL_CHILD_NAME);
+            ClearChild(SKIRT_CHILD_NAME);
+
+            floorRenderer = null;
+            wallRenderer = null;
+            skirtingRenderer = null;
+            floorCollider = null;
+            floorHeight = 0f;
+        }
+
+        private void ClearChild(string childName)
+        {
+            Transform child = transform.Find(childName);
+            if (child == null)
+                return;
+
+            for (int i = child.childCount - 1; i >= 0; i--)
+                Destroy(child.GetChild(i).gameObject);
         }
     }
 }
