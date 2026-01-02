@@ -26,7 +26,7 @@ namespace CityRush.World.Interior
         [SerializeField] private string corridorData;
 
         [Header("Layout (Pixels)")]
-        [SerializeField] private int hallwaApartments = 3;
+        [SerializeField] private int hallwayApartments = 3;
         [SerializeField] private int appartmentWidth = 400;
         [SerializeField] private int hallwayWidthPx = 900;
         [SerializeField] private int hallwayBleedPx = 100;
@@ -58,7 +58,7 @@ namespace CityRush.World.Interior
         SpriteRenderer doorFrameRenderer;
         SpriteRenderer doorLeafRenderer;
         private float floorHeight;
-        private const int SORTING_ORDER = 16;
+        private const int SORTING_ORDER = 15;
 
         // Collider Properties
         BoxCollider2D floorCollider;
@@ -81,7 +81,7 @@ namespace CityRush.World.Interior
             BuildFloor();
             BuildWall();
             ApplyWallSkirting();
-            //ApplyDoors();
+            ApplyDoors(ZOOM_SMALL);
 
             SetComponentsGlobals(ZOOM_SMALL);
             ScaleCorridor(ZOOM_SMALL);
@@ -198,68 +198,46 @@ namespace CityRush.World.Interior
             skirtingRenderer.sortingOrder = SORTING_ORDER + 1;
         }
 
-        private void ApplyDoors()
+        private void ApplyDoors(float zoom)
         {
-            // Door Frame
             GameObject doorFramePrefab = doorFrameRegistry.Get(doorFrameKey);
-            if (doorFramePrefab == null)
+            GameObject doorLeafPrefab = doorRegistry.Get(doorLeafKey);
+
+            if (doorFramePrefab == null || doorLeafPrefab == null)
             {
-                Debug.LogError($"[CorridorComponent] Door Frame key not found: {doorFrameKey}");
+                Debug.LogError("[CorridorComponent] Door prefab missing");
                 return;
             }
-            // find or create Door Frame container
-            Transform doorFrameRoot = transform.Find(DOOR_FRAME_CHILD_NAME);
-            if (doorFrameRoot == null)
+
+            Transform frameRoot = GetOrCreate(DOOR_FRAME_CHILD_NAME);
+            Transform leafRoot = GetOrCreate(DOOR_LEAF_CHILD_NAME);
+
+            float corridorWidthPx = hallwayApartments * appartmentWidth;
+            float startXPx = (appartmentWidth * 0.5f) + (hallwayBleedPx / 2);
+
+            for (int i = 0; i < hallwayApartments; i++)
             {
-                GameObject root = new GameObject(DOOR_FRAME_CHILD_NAME);
-                root.transform.SetParent(transform, false);
-                doorFrameRoot = root.transform;
+                float xPx = startXPx + i * appartmentWidth;
+                float xUnits = xPx / PPU / zoom;
+
+                // Door Frame
+                GameObject frame = Instantiate(doorFramePrefab, frameRoot);
+                frame.transform.localPosition = new Vector3(xUnits, floorHeight, 0f);
+                frame.transform.localRotation = Quaternion.identity;
+
+                var frameRenderer = frame.GetComponent<SpriteRenderer>();
+                frameRenderer.sortingOrder = SORTING_ORDER + 3;
+
+                // Door Leaf
+                GameObject leaf = Instantiate(doorLeafPrefab, leafRoot);
+                leaf.transform.localPosition = new Vector3(xUnits, floorHeight, 0f);
+                leaf.transform.localRotation = Quaternion.identity;
+
+                var leafRenderer = leaf.GetComponent<SpriteRenderer>();
+                leafRenderer.sortingOrder = SORTING_ORDER + 4;
             }
-
-            // clear previous
-            for (int i = doorFrameRoot.childCount - 1; i >= 0; i--)
-                Destroy(doorFrameRoot.GetChild(i).gameObject);
-
-            // instantiate
-            GameObject foorFrameInstance = Instantiate(doorFramePrefab, doorFrameRoot);
-            foorFrameInstance.transform.localRotation = Quaternion.identity;
-            foorFrameInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
-
-            // sprite renderer
-            doorFrameRenderer = foorFrameInstance.GetComponent<SpriteRenderer>();
-            skirtingRenderer.sortingOrder = SORTING_ORDER + 2;
-
-
-
-            // Door Leaf
-            GameObject doorLeafPrefab = doorFrameRegistry.Get(doorFrameKey);
-            if (doorLeafPrefab == null)
-            {
-                Debug.LogError($"[CorridorComponent] Door Leaf key not found: {doorLeafKey}");
-                return;
-            }
-            // find or create Door Frame container
-            Transform doorLeafRoot = transform.Find(DOOR_LEAF_CHILD_NAME);
-            if (doorLeafRoot == null)
-            {
-                GameObject root = new GameObject(DOOR_LEAF_CHILD_NAME);
-                root.transform.SetParent(transform, false);
-                doorLeafRoot = root.transform;
-            }
-
-            // clear previous
-            for (int i = doorLeafRoot.childCount - 1; i >= 0; i--)
-                Destroy(doorLeafRoot.GetChild(i).gameObject);
-
-            // instantiate
-            GameObject foorLeafInstance = Instantiate(doorLeafPrefab, doorLeafRoot);
-            foorLeafInstance.transform.localRotation = Quaternion.identity;
-            foorLeafInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
-
-            // sprite renderer
-            doorLeafRenderer = foorLeafInstance.GetComponent<SpriteRenderer>();
-            doorLeafRenderer.sortingOrder = SORTING_ORDER + 2;
         }
+
 
         // ------------------------------------------------------------
         // HELPERS
@@ -278,7 +256,7 @@ namespace CityRush.World.Interior
 
         private void SetComponentsGlobals(float zoom)
         {
-            float corridorWidth = hallwaApartments * appartmentWidth;
+            float corridorWidth = hallwayApartments * appartmentWidth;
             float widthUnits = (corridorWidth + hallwayBleedPx) / PPU / zoom;
 
             floorRenderer.size = new Vector2(widthUnits, floorRenderer.size.y);
@@ -296,15 +274,30 @@ namespace CityRush.World.Interior
             );
         }
 
+        private Transform GetOrCreate(string name)
+        {
+            Transform t = transform.Find(name);
+            if (t != null)
+                return t;
+
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            return go.transform;
+        }
+
         private void ClearCorridor()
         {
             ClearChild(FLOOR_CHILD_NAME);
             ClearChild(WALL_CHILD_NAME);
             ClearChild(SKIRT_CHILD_NAME);
+            ClearChild(DOOR_FRAME_CHILD_NAME);
+            ClearChild(DOOR_LEAF_CHILD_NAME);
 
             floorRenderer = null;
             wallRenderer = null;
             skirtingRenderer = null;
+            doorFrameRenderer = null;
+            doorLeafRenderer = null;
             floorCollider = null;
             floorHeight = 0f;
         }
