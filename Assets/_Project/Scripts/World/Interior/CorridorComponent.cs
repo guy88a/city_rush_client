@@ -11,6 +11,8 @@ namespace CityRush.World.Interior
         private const string FLOOR_CHILD_NAME = "Floor";
         private const string WALL_CHILD_NAME = "Wall";
         private const string SKIRT_CHILD_NAME = "Skirt";
+        private const string DOOR_FRAME_CHILD_NAME = "DoorFrame";
+        private const string DOOR_LEAF_CHILD_NAME = "DoorLeaf";
 
         [Header("Registries")]
         [SerializeField] private InteriorWallRegistry wallRegistry;
@@ -24,7 +26,10 @@ namespace CityRush.World.Interior
         [SerializeField] private string corridorData;
 
         [Header("Layout (Pixels)")]
-        [SerializeField] private int hallwayWidthPx = 700;
+        [SerializeField] private int hallwaApartments = 3;
+        [SerializeField] private int appartmentWidth = 400;
+        [SerializeField] private int hallwayWidthPx = 900;
+        [SerializeField] private int hallwayBleedPx = 100;
         [SerializeField] private int hallwayHeightPx = 470;
         [SerializeField] private int floorHeightPx = 170;
 
@@ -37,6 +42,10 @@ namespace CityRush.World.Interior
         [Header("Pannel")]
         [SerializeField] private string skirtingKey = "InteriorSkirting_White_Solid";
 
+        [Header("Door")]
+        [SerializeField] private string doorFrameKey = "InteriorDoorFrame_White_Solid";
+        [SerializeField] private string doorLeafKey = "InteriorDoor_Brown_Cube";
+
         [Header("Zooms")]
         [SerializeField] private const float ZOOM_SMALL = 0.23f;
         [SerializeField] private const float ZOOM_MEDIUM = 0.6f;
@@ -46,6 +55,8 @@ namespace CityRush.World.Interior
         SpriteRenderer floorRenderer;
         SpriteRenderer wallRenderer;
         SpriteRenderer skirtingRenderer;
+        SpriteRenderer doorFrameRenderer;
+        SpriteRenderer doorLeafRenderer;
         private float floorHeight;
         private const int SORTING_ORDER = 16;
 
@@ -70,8 +81,9 @@ namespace CityRush.World.Interior
             BuildFloor();
             BuildWall();
             ApplyWallSkirting();
+            //ApplyDoors();
 
-            SetComponentsGlobals();
+            SetComponentsGlobals(ZOOM_SMALL);
             ScaleCorridor(ZOOM_SMALL);
         }
 
@@ -186,6 +198,69 @@ namespace CityRush.World.Interior
             skirtingRenderer.sortingOrder = SORTING_ORDER + 1;
         }
 
+        private void ApplyDoors()
+        {
+            // Door Frame
+            GameObject doorFramePrefab = doorFrameRegistry.Get(doorFrameKey);
+            if (doorFramePrefab == null)
+            {
+                Debug.LogError($"[CorridorComponent] Door Frame key not found: {doorFrameKey}");
+                return;
+            }
+            // find or create Door Frame container
+            Transform doorFrameRoot = transform.Find(DOOR_FRAME_CHILD_NAME);
+            if (doorFrameRoot == null)
+            {
+                GameObject root = new GameObject(DOOR_FRAME_CHILD_NAME);
+                root.transform.SetParent(transform, false);
+                doorFrameRoot = root.transform;
+            }
+
+            // clear previous
+            for (int i = doorFrameRoot.childCount - 1; i >= 0; i--)
+                Destroy(doorFrameRoot.GetChild(i).gameObject);
+
+            // instantiate
+            GameObject foorFrameInstance = Instantiate(doorFramePrefab, doorFrameRoot);
+            foorFrameInstance.transform.localRotation = Quaternion.identity;
+            foorFrameInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
+
+            // sprite renderer
+            doorFrameRenderer = foorFrameInstance.GetComponent<SpriteRenderer>();
+            skirtingRenderer.sortingOrder = SORTING_ORDER + 2;
+
+
+
+            // Door Leaf
+            GameObject doorLeafPrefab = doorFrameRegistry.Get(doorFrameKey);
+            if (doorLeafPrefab == null)
+            {
+                Debug.LogError($"[CorridorComponent] Door Leaf key not found: {doorLeafKey}");
+                return;
+            }
+            // find or create Door Frame container
+            Transform doorLeafRoot = transform.Find(DOOR_LEAF_CHILD_NAME);
+            if (doorLeafRoot == null)
+            {
+                GameObject root = new GameObject(DOOR_LEAF_CHILD_NAME);
+                root.transform.SetParent(transform, false);
+                doorLeafRoot = root.transform;
+            }
+
+            // clear previous
+            for (int i = doorLeafRoot.childCount - 1; i >= 0; i--)
+                Destroy(doorLeafRoot.GetChild(i).gameObject);
+
+            // instantiate
+            GameObject foorLeafInstance = Instantiate(doorLeafPrefab, doorLeafRoot);
+            foorLeafInstance.transform.localRotation = Quaternion.identity;
+            foorLeafInstance.transform.localPosition = new Vector3(0f, floorHeight, 0f);
+
+            // sprite renderer
+            doorLeafRenderer = foorLeafInstance.GetComponent<SpriteRenderer>();
+            doorLeafRenderer.sortingOrder = SORTING_ORDER + 2;
+        }
+
         // ------------------------------------------------------------
         // HELPERS
         // ------------------------------------------------------------
@@ -201,9 +276,10 @@ namespace CityRush.World.Interior
             transform.localScale = Vector3.one * zoomScale;
         }
 
-        private void SetComponentsGlobals()
+        private void SetComponentsGlobals(float zoom)
         {
-            float widthUnits = hallwayWidthPx / PPU;
+            float corridorWidth = hallwaApartments * appartmentWidth;
+            float widthUnits = (corridorWidth + hallwayBleedPx) / PPU / zoom;
 
             floorRenderer.size = new Vector2(widthUnits, floorRenderer.size.y);
             wallRenderer.size = new Vector2(widthUnits, wallRenderer.size.y);
