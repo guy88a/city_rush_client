@@ -3,6 +3,8 @@ using CityRush.Core.Prefabs;
 using CityRush.Core.States;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
+using CityRush.World.Interior;
+using UnityEngine;
 
 public class GameLoopState : IState
 {
@@ -34,10 +36,16 @@ public class GameLoopState : IState
 
         _navigation = new GameLoopNavigation(_game, _world, _prefabs, _mapManager);
         _navigation.Enter();
+
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
     }
 
     public void Exit()
     {
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnBuildingDoorInteract -= HandleBuildingDoorInteract;
+
         _world?.Exit();
 
         _navigation = null;
@@ -50,5 +58,10 @@ public class GameLoopState : IState
     public void Update(float deltaTime)
     {
         _navigation?.Tick(deltaTime);
+    }
+
+    private void HandleBuildingDoorInteract(BuildingDoor door)
+    {
+        Debug.Log($"[Door] W pressed on BuildingDoor: {door.BuildingId}", door);
     }
 }

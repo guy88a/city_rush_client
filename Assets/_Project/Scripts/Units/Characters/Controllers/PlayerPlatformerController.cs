@@ -20,6 +20,8 @@ namespace CityRush.Units.Characters.Controllers
         private BuildingDoor _currentBuildingDoor;
         public BuildingDoor CurrentBuildingDoor => _currentBuildingDoor;
 
+        public event Action<BuildingDoor> OnBuildingDoorInteract;
+
         public bool IsFrozen { get; private set; }
 
         private void Awake()
@@ -43,7 +45,7 @@ namespace CityRush.Units.Characters.Controllers
 
             if (_currentBuildingDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
             {
-                Debug.Log($"[Door] W pressed on BuildingDoor: {_currentBuildingDoor.BuildingId}", _currentBuildingDoor);
+                OnBuildingDoorInteract?.Invoke(_currentBuildingDoor);
             }
 
             Vector2 move = Vector2.zero;
