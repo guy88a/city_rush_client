@@ -51,6 +51,6 @@ MonoBehaviour:
   doorFrameRegistry: {fileID: 11400000, guid: 2a8c6020e0816e141a61b7fb83cc5e37, type: 2}
   corridorData: 
   hallwayWidthPx: 700
-  hallwayHeightPx: 500
+  hallwayHeightPx: 470
   floorHeightPx: 170
   floorKey: InteriorFloor_Brown_Solid

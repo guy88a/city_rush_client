@@ -81,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 18
   m_Sprite: {fileID: 21300000, guid: 4e1762e44b1a0ee43a3bb44613a044c3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -105,7 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bf33d6e5b119f949a087ece46123798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsObject
-  isOneWayPlatform: 1
   minGroundNormalY: 0.65
   gravityModifier: 1
 --- !u!50 &4553872194742529333

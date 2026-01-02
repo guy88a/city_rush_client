@@ -18,7 +18,7 @@ namespace CityRush.World.Interior
 
         [Header("Layout (Pixels)")]
         [SerializeField] private int hallwayWidthPx = 700;
-        [SerializeField] private int hallwayHeightPx = 500;
+        [SerializeField] private int hallwayHeightPx = 470;
         [SerializeField] private int floorHeightPx = 320;
 
         [Header("Floor")]
@@ -71,7 +71,7 @@ namespace CityRush.World.Interior
             float targetHeightUnits = floorHeightPx / ppu;
 
             sr.size = new Vector2(targetWidthUnits, targetHeightUnits);
-            sr.sortingOrder = 1000;
+            sr.sortingOrder = 16;
 
             // Ensure collider is driven by the tiled size (SpriteRenderer.size does NOT resize colliders).
             // NOTE: floor prefabs may ship with colliders on various children; keep ONE BoxCollider2D and disable the rest.
