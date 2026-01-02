@@ -3,6 +3,7 @@ using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
 using CityRush.Units.Characters.Controllers;
 using CityRush.World.Background;
+using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
@@ -16,7 +17,9 @@ internal sealed class GameLoopWorld
     public ScreenFadeController ScreenFade { get; private set; }
 
     public BackgroundRoot Background { get; private set; }
+
     public StreetComponent Street { get; private set; }
+    public CorridorComponent Corridor { get; private set; }
 
     public GameObject PlayerInstance { get; private set; }
     public Transform PlayerTransform { get; private set; }
@@ -74,16 +77,43 @@ internal sealed class GameLoopWorld
         if (Street != null)
             Object.Destroy(Street.gameObject);
 
+        if (Corridor != null)
+            Object.Destroy(Corridor.gameObject);
+
         if (PlayerInstance != null)
             Object.Destroy(PlayerInstance);
 
         Background = null;
         Street = null;
+        Corridor = null;
+
         PlayerInstance = null;
         PlayerTransform = null;
         PlayerCollider = null;
         PlayerController = null;
         ScreenFade = null;
+    }
+
+    public void UnloadStreet()
+    {
+        if (Street != null)
+            Object.Destroy(Street.gameObject);
+
+        Street = null;
+        StreetLeftX = 0f;
+        StreetRightX = 0f;
+    }
+
+    public void LoadCorridor(CorridorComponent corridorPrefab)
+    {
+        if (Corridor != null)
+            Object.Destroy(Corridor.gameObject);
+
+        Transform parent = Background != null ? Background.transform : null;
+
+        Corridor = parent != null
+            ? Object.Instantiate(corridorPrefab, parent)
+            : Object.Instantiate(corridorPrefab);
     }
 
     /// <summary>
@@ -92,6 +122,12 @@ internal sealed class GameLoopWorld
     /// </summary>
     public void LoadStreet(CorePrefabsRegistry prefabs, StreetRef streetRef)
     {
+        if (Corridor != null)
+        {
+            Object.Destroy(Corridor.gameObject);
+            Corridor = null;
+        }
+
         if (Street != null)
             Object.Destroy(Street.gameObject);
 

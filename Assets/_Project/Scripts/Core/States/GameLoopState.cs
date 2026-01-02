@@ -20,6 +20,9 @@ public class GameLoopState : IState
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
 
+    private bool _isEnteringInterior;
+    private bool _isInInterior;
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -57,11 +60,34 @@ public class GameLoopState : IState
 
     public void Update(float deltaTime)
     {
+        if (_isEnteringInterior || _isInInterior)
+            return;
+
         _navigation?.Tick(deltaTime);
     }
 
     private void HandleBuildingDoorInteract(BuildingDoor door)
     {
-        Debug.Log($"[Door] W pressed on BuildingDoor: {door.BuildingId}", door);
+        if (_isEnteringInterior || _isInInterior)
+            return;
+
+        _isEnteringInterior = true;
+
+        _world.PlayerController.Freeze();
+
+        _world.ScreenFade.FadeOut(() =>
+        {
+            _world.UnloadStreet();
+            _world.LoadCorridor(_prefabs.CorridorPrefab);
+
+            _world.ScreenFade.FadeIn(() =>
+            {
+                _isEnteringInterior = false;
+                _isInInterior = true;
+
+                // keep frozen for now — next step will reposition + unfreeze
+            });
+        });
     }
+
 }
