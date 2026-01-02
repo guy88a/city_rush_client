@@ -5,6 +5,8 @@ namespace CityRush.World.Interior
 {
     public sealed class CorridorComponent : MonoBehaviour
     {
+        private const string FLOOR_CHILD_NAME = "Floor";
+
         [Header("Registries")]
         [SerializeField] private InteriorWallRegistry wallRegistry;
         [SerializeField] private InteriorFloorRegistry floorRegistry;
@@ -19,7 +21,7 @@ namespace CityRush.World.Interior
         [Header("Layout (Pixels)")]
         [SerializeField] private int hallwayWidthPx = 700;
         [SerializeField] private int hallwayHeightPx = 470;
-        [SerializeField] private int floorHeightPx = 320;
+        [SerializeField] private int floorHeightPx = 170;
 
         [Header("Floor")]
         [SerializeField] private string floorKey = "InteriorFloor_Brown_Solid";
@@ -46,16 +48,16 @@ namespace CityRush.World.Interior
             var prefab = floorRegistry != null ? floorRegistry.Get(floorKey) : null;
             if (prefab == null)
             {
-                Debug.LogError("[CorridorComponent] Floor prefab not found for key '" + floorKey + "'.", this);
+                Debug.LogError($"[CorridorComponent] Floor prefab not found for key '{floorKey}'.", this);
                 return;
             }
 
-            var floorTransform = transform.Find("Floor");
-            if (floorTransform != null)
-                Destroy(floorTransform.gameObject);
+            var existing = transform.Find(FLOOR_CHILD_NAME);
+            if (existing != null)
+                Destroy(existing.gameObject);
 
             var floorInstance = Instantiate(prefab, transform);
-            floorInstance.name = "Floor";
+            floorInstance.name = FLOOR_CHILD_NAME;
 
             var sr = floorInstance.GetComponentInChildren<SpriteRenderer>();
             if (sr == null || sr.sprite == null)
@@ -67,54 +69,61 @@ namespace CityRush.World.Interior
             sr.drawMode = SpriteDrawMode.Tiled;
 
             float ppu = sr.sprite.pixelsPerUnit;
-            float targetWidthUnits = hallwayWidthPx / ppu;
-            float targetHeightUnits = floorHeightPx / ppu;
+            float invPpu = 1f / ppu;
 
-            sr.size = new Vector2(targetWidthUnits, targetHeightUnits);
+            var floorSize = new Vector2(hallwayWidthPx * invPpu, floorHeightPx * invPpu);
+            sr.size = floorSize;
             sr.sortingOrder = 16;
 
-            // Ensure collider is driven by the tiled size (SpriteRenderer.size does NOT resize colliders).
-            // NOTE: floor prefabs may ship with colliders on various children; keep ONE BoxCollider2D and disable the rest.
-            BoxCollider2D col = null;
-            var colliders = floorInstance.GetComponentsInChildren<Collider2D>(true);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                if (colliders[i] == null)
-                    continue;
+            SetupFloorCollider(floorInstance, sr, floorSize);
 
-                // Prefer a BoxCollider2D on the same GameObject as the SpriteRenderer (same local space).
-                if (col == null && colliders[i] is BoxCollider2D bc && bc.gameObject == sr.gameObject)
-                {
-                    col = bc;
-                    col.enabled = true;
-                    continue;
-                }
-
-                colliders[i].enabled = false;
-            }
-
-            if (col == null)
-                col = sr.gameObject.AddComponent<BoxCollider2D>();
-
-            col.enabled = true;
-
-            float colliderHeightUnits = sr.size.y * 0.8f;
-            col.size = new Vector2(sr.size.x, colliderHeightUnits);
-
-            // Bottom-aligned in world space (handles non-centered pivots):
-            // colliderCenterY = spriteBottomY + (colliderHeight/2)
-            var desiredWorldCenter = sr.bounds.center;
-            desiredWorldCenter.y = sr.bounds.min.y + (colliderHeightUnits * 0.5f);
-            var localCenter = sr.transform.InverseTransformPoint(desiredWorldCenter);
-            col.offset = new Vector2(localCenter.x, localCenter.y);
-
-            float panelHalfHeightUnits = (hallwayHeightPx * 0.5f) / ppu;
-            float floorHalfHeightUnits = (floorHeightPx * 0.5f) / ppu;
+            float panelHalfHeightUnits = (hallwayHeightPx * 0.5f) * invPpu;
+            float floorHalfHeightUnits = (floorHeightPx * 0.5f) * invPpu;
             float y = -panelHalfHeightUnits + floorHalfHeightUnits;
 
             floorInstance.transform.localPosition = new Vector3(0f, y, 0f);
             floorInstance.transform.localRotation = Quaternion.identity;
             floorInstance.transform.localScale = Vector3.one;
+        }
+
+        private static void SetupFloorCollider(GameObject floorInstance, SpriteRenderer sr, Vector2 floorSize)
+        {
+            // Ensure collider is driven by the tiled size (SpriteRenderer.size does NOT resize colliders).
+            // NOTE: floor prefabs may ship with colliders on various children; keep ONE BoxCollider2D and disable the rest.
+            BoxCollider2D box = null;
+            var colliders = floorInstance.GetComponentsInChildren<Collider2D>(true);
+
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                var c = colliders[i];
+                if (c == null)
+                    continue;
+
+                if (box == null && c is BoxCollider2D bc && bc.gameObject == sr.gameObject)
+                {
+                    box = bc;
+                    box.enabled = true;
+                }
+                else
+                {
+                    c.enabled = false;
+                }
+            }
+
+            if (box == null)
+                box = sr.gameObject.AddComponent<BoxCollider2D>();
+
+            box.enabled = true;
+
+            float colliderHeight = floorSize.y * 0.8f;
+            box.size = new Vector2(floorSize.x, colliderHeight);
+
+            // Bottom-aligned in world space (handles non-centered pivots).
+            var desiredWorldCenter = sr.bounds.center;
+            desiredWorldCenter.y = sr.bounds.min.y + (colliderHeight * 0.5f);
+
+            var localCenter = sr.transform.InverseTransformPoint(desiredWorldCenter);
+            box.offset = new Vector2(localCenter.x, localCenter.y);
         }
 
         public void SetJson(string json)
