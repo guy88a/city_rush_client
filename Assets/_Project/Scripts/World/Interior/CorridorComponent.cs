@@ -347,7 +347,7 @@ namespace CityRush.World.Interior
             get
             {
                 if (_floorCollider == null) return transform.position.y;
-                // collider top = position + (offset.y + size.y/2) in world, including scale
+
                 Vector3 p = _floorCollider.transform.position;
                 float scaleY = _floorCollider.transform.lossyScale.y;
                 return p.y + (_floorCollider.offset.y + (_floorCollider.size.y * 0.5f)) * scaleY;

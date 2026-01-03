@@ -1,6 +1,3 @@
-using CityRush.World.Map;
-using CityRush.World.Map.Runtime;
-
 namespace CityRush.World.Map.Runtime
 {
     public sealed class MapManager

@@ -32,8 +32,7 @@ namespace CityRush.World.Street
 
         private void Start()
         {
-            //if (!string.IsNullOrEmpty(streetJson))
-            //    BuildStreetFromJson(streetJson);
+            
         }
 
         public void Initialize(Camera camera)
@@ -147,10 +146,5 @@ namespace CityRush.World.Street
                 return streetData.spawn.x;
             }
         }
-
-        //public void SetCamera(Camera camera)
-        //{
-        //    _camera = camera;
-        //}
     }
 }

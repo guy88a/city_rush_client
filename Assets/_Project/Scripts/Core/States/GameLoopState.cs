@@ -133,10 +133,6 @@ public class GameLoopState : IState
             if (_corridorExitTrigger != null)
                 _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
 
-            //// Destroy corridor root via trigger ref (no need to know GameLoopWorld corridor property name)
-            //if (_corridorExitTrigger != null)
-            //    Object.Destroy(_corridorExitTrigger.transform.root.gameObject);
-
             _corridorExitTrigger = null;
 
             // Load the same street (no CommitMove)
