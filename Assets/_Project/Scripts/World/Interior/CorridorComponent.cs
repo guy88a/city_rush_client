@@ -13,6 +13,8 @@ namespace CityRush.World.Interior
         private const string DOOR_FRAME_CHILD_NAME = "DoorFrame";
         private const string DOOR_LEAF_CHILD_NAME = "DoorLeaf";
 
+        private const string EXIT_LEFT_TRIGGER_NAME = "ExitLeftTrigger";
+
         [Header("Registries")]
         [SerializeField] private InteriorWallRegistry wallRegistry;
         [SerializeField] private InteriorFloorRegistry floorRegistry;
@@ -54,6 +56,18 @@ namespace CityRush.World.Interior
         [Header("Render")]
         [SerializeField] private int sortingBase = 15;
 
+        [Header("Collision (Bounds)")]
+        [SerializeField] private float boundsThicknessWorld = 0.25f; // world units
+
+        [Header("Collision (Exit Trigger)")]
+        [SerializeField] private float exitTriggerWidthWorld = 0.8f;   // world units
+        [SerializeField] private float exitTriggerInsetWorld = 0.15f;  // how far inside from left edge
+
+        private const string BOUNDS_ROOT_NAME = "Bounds";
+        private const string BOUNDS_LEFT_NAME = "BoundsLeft";
+        private const string BOUNDS_RIGHT_NAME = "BoundsRight";
+        private const string BOUNDS_TOP_NAME = "BoundsTop";
+
         // runtime refs
         private SpriteRenderer _floorRenderer;
         private SpriteRenderer _wallRenderer;
@@ -91,6 +105,7 @@ namespace CityRush.World.Interior
             BuildDoors();
 
             ApplyTilingAndCollider();
+            BuildBoundsColliders();
         }
 
         public void SetJson(string json) => corridorData = json;
@@ -291,6 +306,7 @@ namespace CityRush.World.Interior
             ClearChild(SKIRT_CHILD_NAME);
             ClearChild(DOOR_FRAME_CHILD_NAME);
             ClearChild(DOOR_LEAF_CHILD_NAME);
+            ClearChild(BOUNDS_ROOT_NAME);
 
             _floorRenderer = null;
             _wallRenderer = null;
@@ -338,5 +354,93 @@ namespace CityRush.World.Interior
             }
         }
 
+        private void BuildBoundsColliders()
+        {
+            if (_floorCollider == null)
+                return;
+
+            Bounds floorB = FloorBoundsWorld;
+            Bounds visB = VisualBoundsWorld;
+
+            if (floorB.size == Vector3.zero || visB.size == Vector3.zero)
+                return;
+
+            float t = Mathf.Max(0.01f, boundsThicknessWorld);
+
+            float leftX = floorB.min.x;
+            float rightX = floorB.max.x;
+            float bottomY = floorB.min.y;
+            float topY = visB.max.y;
+
+            float midY = (bottomY + topY) * 0.5f;
+            float height = (topY - bottomY) + (t * 2f);
+
+            Transform root = GetOrCreate(BOUNDS_ROOT_NAME);
+
+            // Left wall: blocks going past floor minX
+            CreateBoundsBox(
+                root,
+                BOUNDS_LEFT_NAME,
+                new Vector2(leftX - (t * 0.5f), midY),
+                new Vector2(t, height));
+
+            // Right wall: blocks going past floor maxX
+            CreateBoundsBox(
+                root,
+                BOUNDS_RIGHT_NAME,
+                new Vector2(rightX + (t * 0.5f), midY),
+                new Vector2(t, height));
+
+            // Top cap: blocks going above visuals maxY
+            CreateBoundsBox(
+                root,
+                BOUNDS_TOP_NAME,
+                new Vector2((leftX + rightX) * 0.5f, topY + (t * 0.5f)),
+                new Vector2((rightX - leftX) + (t * 2f), t));
+
+            // Exit trigger (left side, inside the corridor)
+            {
+                float w = Mathf.Max(0.01f, exitTriggerWidthWorld);
+                float inset = Mathf.Max(0f, exitTriggerInsetWorld);
+
+                float triggerCenterX = leftX + inset + (w * 0.5f);
+                Vector2 triggerCenter = new Vector2(triggerCenterX, midY);
+                Vector2 triggerSize = new Vector2(w, height);
+
+                CreateTriggerBox(root, EXIT_LEFT_TRIGGER_NAME, triggerCenter, triggerSize);
+            }
+        }
+
+        private void CreateBoundsBox(Transform parent, string name, Vector2 worldCenter, Vector2 worldSize)
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.position = new Vector3(worldCenter.x, worldCenter.y, parent.position.z);
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            BoxCollider2D col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = false;
+
+            Vector3 s = go.transform.lossyScale;
+            col.size = new Vector2(worldSize.x / s.x, worldSize.y / s.y);
+            col.offset = Vector2.zero;
+        }
+
+        private void CreateTriggerBox(Transform parent, string name, Vector2 worldCenter, Vector2 worldSize)
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.position = new Vector3(worldCenter.x, worldCenter.y, parent.position.z);
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            BoxCollider2D col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+
+            Vector3 s = go.transform.lossyScale;
+            col.size = new Vector2((worldSize.x / s.x) * 3, worldSize.y / s.y);
+            col.offset = Vector2.zero;
+        }
     }
 }
