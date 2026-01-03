@@ -441,6 +441,8 @@ namespace CityRush.World.Interior
             Vector3 s = go.transform.lossyScale;
             col.size = new Vector2((worldSize.x / s.x) * 3, worldSize.y / s.y);
             col.offset = Vector2.zero;
+
+            go.AddComponent<CorridorExitTrigger>();
         }
     }
 }
