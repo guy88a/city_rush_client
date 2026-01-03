@@ -26,8 +26,9 @@ namespace CityRush.Units.Characters.Controllers
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            animator = GetComponent<Animator>();
+            Transform graphic = transform.Find("Graphic");
+            spriteRenderer = graphic.GetComponent<SpriteRenderer>();
+            animator = graphic.GetComponent<Animator>();
         }
 
         void Start()
