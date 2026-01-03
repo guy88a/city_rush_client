@@ -1,3 +1,4 @@
+using System;
 using CityRush.Units.Characters.Controllers;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ namespace CityRush.World.Interior
     [DisallowMultipleComponent]
     public sealed class CorridorExitTrigger : MonoBehaviour
     {
+        public event Action ExitRequested;
+
         [Range(0.01f, 0.99f)]
         [SerializeField] private float requiredOverlap01 = 0.5f;
 
@@ -51,7 +54,10 @@ namespace CityRush.World.Interior
             if (pct >= requiredOverlap01)
             {
                 _fired = true;
+
                 Debug.Log($"[CorridorExitTrigger] overlap >= {requiredOverlap01:0.00} (now {pct:0.00})", this);
+
+                ExitRequested?.Invoke();
             }
         }
 

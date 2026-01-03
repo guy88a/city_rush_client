@@ -23,6 +23,13 @@ public class GameLoopState : IState
     private bool _isEnteringInterior;
     private bool _isInInterior;
 
+    private bool _isExitingInterior;
+
+    private Vector3 _returnStreetPlayerPos;
+    private Vector3 _returnStreetCameraPos;
+
+    private CorridorExitTrigger _corridorExitTrigger;
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -49,6 +56,11 @@ public class GameLoopState : IState
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract -= HandleBuildingDoorInteract;
 
+        if (_corridorExitTrigger != null)
+            _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+        _corridorExitTrigger = null;
+
         _world?.Exit();
 
         _navigation = null;
@@ -60,7 +72,7 @@ public class GameLoopState : IState
 
     public void Update(float deltaTime)
     {
-        if (_isEnteringInterior || _isInInterior)
+        if (_isEnteringInterior || _isExitingInterior || _isInInterior)
             return;
 
         _navigation?.Tick(deltaTime);
@@ -70,6 +82,9 @@ public class GameLoopState : IState
     {
         if (_isEnteringInterior || _isInInterior)
             return;
+
+        _returnStreetPlayerPos = _world.PlayerTransform.position;
+        _returnStreetCameraPos = _game.CameraTransform.position;
 
         _isEnteringInterior = true;
 
@@ -86,6 +101,59 @@ public class GameLoopState : IState
             {
                 _isEnteringInterior = false;
                 _isInInterior = true;
+
+                BindCorridorExitTrigger();
+
+                _world.PlayerController.Unfreeze();
+            });
+        });
+    }
+
+    private void BindCorridorExitTrigger()
+    {
+        if (_corridorExitTrigger != null)
+            _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+        _corridorExitTrigger = Object.FindFirstObjectByType<CorridorExitTrigger>();
+
+        if (_corridorExitTrigger != null)
+            _corridorExitTrigger.ExitRequested += HandleCorridorExitRequested;
+    }
+
+    private void HandleCorridorExitRequested()
+    {
+        if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
+            return;
+
+        _isExitingInterior = true;
+        _world.PlayerController.Freeze();
+
+        _world.ScreenFade.FadeOut(() =>
+        {
+            if (_corridorExitTrigger != null)
+                _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+            //// Destroy corridor root via trigger ref (no need to know GameLoopWorld corridor property name)
+            //if (_corridorExitTrigger != null)
+            //    Object.Destroy(_corridorExitTrigger.transform.root.gameObject);
+
+            _corridorExitTrigger = null;
+
+            // Load the same street (no CommitMove)
+            StreetRef streetRef = _mapManager.GetCurrentStreet();
+            _world.LoadStreet(_prefabs, streetRef);
+
+            // Restore player + camera where they were before entering corridor
+            _world.PlayerTransform.position = _returnStreetPlayerPos;
+            _game.CameraTransform.position = _returnStreetCameraPos;
+
+            // Reset navigation state cleanly
+            _navigation.Enter();
+
+            _world.ScreenFade.FadeIn(() =>
+            {
+                _isInInterior = false;
+                _isExitingInterior = false;
 
                 _world.PlayerController.Unfreeze();
             });

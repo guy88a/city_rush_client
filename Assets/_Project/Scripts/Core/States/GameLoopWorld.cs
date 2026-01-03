@@ -116,6 +116,9 @@ internal sealed class GameLoopWorld
             : Object.Instantiate(corridorPrefab);
 
         Corridor.Rebuild();
+
+        if (Background != null)
+            Background.SetLayersActive(false);
     }
 
     /// <summary>
@@ -137,6 +140,9 @@ internal sealed class GameLoopWorld
         Street.Initialize(_game.GlobalCamera);
 
         BuildStreet(streetRef);
+
+        if (Background != null)
+            Background.SetLayersActive(true);
 
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
