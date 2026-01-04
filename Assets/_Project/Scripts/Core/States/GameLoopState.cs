@@ -4,6 +4,7 @@ using CityRush.Core.States;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Interior;
+using UnityEngine.InputSystem;
 using UnityEngine;
 
 public class GameLoopState : IState
@@ -30,6 +31,8 @@ public class GameLoopState : IState
 
     private CorridorExitTrigger _corridorExitTrigger;
 
+    private bool _isInDoorPOV;
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -49,6 +52,8 @@ public class GameLoopState : IState
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
+
+        _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
     }
 
     public void Exit()
@@ -58,6 +63,8 @@ public class GameLoopState : IState
 
         if (_corridorExitTrigger != null)
             _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+        _world.PlayerController.OnApartmentDoorInteract -= HandleApartmentDoorInteract;
 
         _corridorExitTrigger = null;
 
@@ -72,6 +79,18 @@ public class GameLoopState : IState
 
     public void Update(float deltaTime)
     {
+        // Door POV (interior-only): allow exit
+        if (_isInInterior && _isInDoorPOV)
+        {
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                _world.ExitCorridorDoorPOV();
+                _isInDoorPOV = false;
+            }
+
+            return;
+        }
+
         if (_isEnteringInterior || _isExitingInterior || _isInInterior)
             return;
 
@@ -154,6 +173,32 @@ public class GameLoopState : IState
                 _world.PlayerController.Unfreeze();
             });
         });
+    }
+
+    public void EnterCorridorDoorPOV(Transform focus)
+    {
+        if (!_isInInterior || _isEnteringInterior || _isExitingInterior)
+            return;
+
+        _world.EnterCorridorDoorPOV(focus);
+        _isInDoorPOV = true;
+    }
+
+    public void ExitCorridorDoorPOV()
+    {
+        if (!_isInInterior || !_isInDoorPOV)
+            return;
+
+        _world.ExitCorridorDoorPOV();
+        _isInDoorPOV = false;
+    }
+
+    private void HandleApartmentDoorInteract(ApartmentDoor door)
+    {
+        if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
+            return;
+
+        EnterCorridorDoorPOV(door.transform);
     }
 
 }

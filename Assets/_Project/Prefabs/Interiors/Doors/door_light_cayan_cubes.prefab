@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5271634823506245385}
   - component: {fileID: 6600829072126742229}
   - component: {fileID: 1787563970405479938}
+  - component: {fileID: -2000115914003041946}
   m_Layer: 0
   m_Name: door_light_cayan_cubes
   m_TagString: Untagged
@@ -137,3 +138,17 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 9.5625, y: 20.520834}
   m_EdgeRadius: 0
+--- !u!114 &-2000115914003041946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4151857720039904132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bce4ff71a2fefe4790361b8ea8ebacf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Interior.ApartmentDoor
+  doorId: 
+  apartmentId: 

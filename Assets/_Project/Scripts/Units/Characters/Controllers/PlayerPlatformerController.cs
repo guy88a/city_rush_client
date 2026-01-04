@@ -22,6 +22,11 @@ namespace CityRush.Units.Characters.Controllers
 
         public event Action<BuildingDoor> OnBuildingDoorInteract;
 
+        private ApartmentDoor _currentApartmentDoor;
+        public ApartmentDoor CurrentApartmentDoor => _currentApartmentDoor;
+
+        public event Action<ApartmentDoor> OnApartmentDoorInteract;
+
         public bool IsFrozen { get; private set; }
 
         private void Awake()
@@ -47,6 +52,11 @@ namespace CityRush.Units.Characters.Controllers
             if (_currentBuildingDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
             {
                 OnBuildingDoorInteract?.Invoke(_currentBuildingDoor);
+            }
+
+            if (_currentApartmentDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                OnApartmentDoorInteract?.Invoke(_currentApartmentDoor);
             }
 
             Vector2 move = Vector2.zero;
@@ -101,16 +111,30 @@ namespace CityRush.Units.Characters.Controllers
             targetVelocity = Vector2.zero; // reset stale frame
         }
 
+        public void ClearInteractionState()
+        {
+            _currentBuildingDoor = null;
+            _currentApartmentDoor = null;
+            jumpPressed = false;
+            jumpReleased = false;
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            BuildingDoor door = other.GetComponentInParent<BuildingDoor>();
-            if (door != null) _currentBuildingDoor = door;
+            BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
+            if (buildingDoor != null) { _currentBuildingDoor = buildingDoor; return; }
+
+            ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
+            if (apartmentDoor != null) _currentApartmentDoor = apartmentDoor;
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            BuildingDoor door = other.GetComponentInParent<BuildingDoor>();
-            if (door != null && door == _currentBuildingDoor) _currentBuildingDoor = null;
+            BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
+            if (buildingDoor != null && buildingDoor == _currentBuildingDoor) _currentBuildingDoor = null;
+
+            ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
+            if (apartmentDoor != null && apartmentDoor == _currentApartmentDoor) _currentApartmentDoor = null;
         }
     }
 }

@@ -15,6 +15,10 @@ namespace CityRush.World.Interior
 
         private const string EXIT_LEFT_TRIGGER_NAME = "ExitLeftTrigger";
 
+        private bool _doorPOVActive;
+        private Vector3 _doorPOVPrevPos;
+        private Vector3 _doorPOVPrevScale;
+
         [Header("Registries")]
         [SerializeField] private InteriorWallRegistry wallRegistry;
         [SerializeField] private InteriorFloorRegistry floorRegistry;
@@ -443,6 +447,40 @@ namespace CityRush.World.Interior
             col.offset = Vector2.zero;
 
             go.AddComponent<CorridorExitTrigger>();
+        }
+
+        public void EnterDoorPOV(Transform focus, Transform cameraTransform)
+        {
+            if (_doorPOVActive) return;
+            if (focus == null || cameraTransform == null) return;
+
+            _doorPOVActive = true;
+
+            // Cache corridor root transform
+            _doorPOVPrevPos = transform.position;
+            _doorPOVPrevScale = transform.localScale;
+
+            // Scale corridor back to 1 (full zoom)
+            transform.localScale = Vector3.one;
+
+            // Center the focus (door trigger owner) on screen center (camera position)
+            Vector3 camPos = cameraTransform.position;
+            Vector3 focusPos = focus.position;
+
+            float dx = camPos.x - focusPos.x;
+            float dy = camPos.y - focusPos.y;
+
+            transform.position += new Vector3(dx, dy, 0f);
+        }
+
+        public void ExitDoorPOV()
+        {
+            if (!_doorPOVActive) return;
+            _doorPOVActive = false;
+
+            // Restore corridor root transform
+            transform.position = _doorPOVPrevPos;
+            transform.localScale = _doorPOVPrevScale;
         }
     }
 }

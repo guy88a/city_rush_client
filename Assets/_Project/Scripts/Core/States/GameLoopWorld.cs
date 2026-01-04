@@ -7,6 +7,7 @@ using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
+using CityRush.Units.Characters.View;
 using UnityEngine;
 
 internal sealed class GameLoopWorld
@@ -29,6 +30,8 @@ internal sealed class GameLoopWorld
     public float CameraHalfWidth { get; private set; }
     public float StreetLeftX { get; private set; }
     public float StreetRightX { get; private set; }
+
+    public PlayerPOVController PlayerPOV { get; private set; }
 
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
@@ -64,6 +67,7 @@ internal sealed class GameLoopWorld
         PlayerTransform = PlayerInstance.transform;
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
+        PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
@@ -91,6 +95,7 @@ internal sealed class GameLoopWorld
         PlayerTransform = null;
         PlayerCollider = null;
         PlayerController = null;
+        PlayerPOV = null;
         ScreenFade = null;
     }
 
@@ -216,5 +221,21 @@ internal sealed class GameLoopWorld
         Corridor.transform.position += new Vector3(dx, dy, 0f);
     }
 
+    public void EnterCorridorDoorPOV(Transform focus)
+    {
+        if (Corridor == null || PlayerPOV == null || focus == null)
+            return;
 
+        PlayerPOV.EnterPOV();
+        Corridor.EnterDoorPOV(focus, _game.CameraTransform);
+    }
+
+    public void ExitCorridorDoorPOV()
+    {
+        if (Corridor == null || PlayerPOV == null)
+            return;
+
+        Corridor.ExitDoorPOV();
+        PlayerPOV.ExitPOV();
+    }
 }
