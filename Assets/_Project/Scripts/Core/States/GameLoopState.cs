@@ -82,7 +82,7 @@ public class GameLoopState : IState
         // Door POV (interior-only): allow exit
         if (_isInInterior && _isInDoorPOV)
         {
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
             {
                 _world.ExitCorridorDoorPOV();
                 _isInDoorPOV = false;
