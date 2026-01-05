@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Apartment_01
       objectReference: {fileID: 0}
+    - target: {fileID: 1601543910021365102, guid: 270ae377becb291419554b4b102a13a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9083448744306021732, guid: 270ae377becb291419554b4b102a13a4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1
