@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 367601232238242411}
   m_Layer: 0
-  m_Name: Sofa_01
+  m_Name: Prop_Sofa_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,12 +197,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3818390801746260309}
-  - {fileID: 2115394171064162909}
-  - {fileID: 3664948688164506216}
+  - {fileID: 4817556745772564010}
   - {fileID: 1065859209092210009}
-  - {fileID: 1773465388632584928}
   - {fileID: 6072473383000077189}
+  - {fileID: 1773465388632584928}
   m_Father: {fileID: 6676824253695731055}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6166417129644542968
@@ -235,10 +233,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7036040407529914372}
-  - {fileID: 4364936202339385646}
   m_Father: {fileID: 9083448744306021732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7864030692598806898
+--- !u!1 &6612720252017417528
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -246,28 +243,31 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4364936202339385646}
+  - component: {fileID: 4817556745772564010}
   m_Layer: 0
-  m_Name: View_WindowCloseup
+  m_Name: SofaBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4364936202339385646
+--- !u!4 &4817556745772564010
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7864030692598806898}
+  m_GameObject: {fileID: 6612720252017417528}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 31.5, y: 3.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 980927603008123902}
+  m_Children:
+  - {fileID: 3818390801746260309}
+  - {fileID: 2115394171064162909}
+  - {fileID: 3664948688164506216}
+  m_Father: {fileID: 367601232238242411}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8411065070027299800
 GameObject:
@@ -419,7 +419,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3163687665601206953, guid: 6302c10a283a98f4ca1b2cbf9259ee2b, type: 3}
       propertyPath: m_Name
-      value: Plant_01
+      value: Prop_Inspect_Plant_01
       objectReference: {fileID: 0}
     - target: {fileID: 3775131156405783532, guid: 6302c10a283a98f4ca1b2cbf9259ee2b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -539,7 +539,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 367601232238242411}
+    m_TransformParent: {fileID: 4817556745772564010}
     m_Modifications:
     - target: {fileID: 2356166059197077647, guid: 72b2eaded52b209428a0aa6475a9dd27, type: 3}
       propertyPath: m_LocalPosition.x
@@ -675,7 +675,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 579379079482027981, guid: 59628432d786ac14a8e8e72ba9b14bee, type: 3}
       propertyPath: m_Name
-      value: sofa_overlay_68
+      value: Prop_Inspect_SofaPillow_C
+      objectReference: {fileID: 0}
+    - target: {fileID: 744057156688680976, guid: 59628432d786ac14a8e8e72ba9b14bee, type: 3}
+      propertyPath: m_SortingOrder
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8135030701084305854, guid: 59628432d786ac14a8e8e72ba9b14bee, type: 3}
       propertyPath: m_LocalPosition.x
@@ -893,7 +897,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4089626313074740794, guid: 5c9a682598fef9f43a5f41de135d7b6a, type: 3}
       propertyPath: m_Name
-      value: sofa_overlay_66
+      value: Prop_Inspect_SofaPillow_L
+      objectReference: {fileID: 0}
+    - target: {fileID: 8269544782834738574, guid: 5c9a682598fef9f43a5f41de135d7b6a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 22
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1027,11 +1035,11 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 367601232238242411}
+    m_TransformParent: {fileID: 4817556745772564010}
     m_Modifications:
     - target: {fileID: 2708382564094750487, guid: dc46ae164a457a142998f9111c765dc5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.125561
+      value: 13.12556
       objectReference: {fileID: 0}
     - target: {fileID: 2708382564094750487, guid: dc46ae164a457a142998f9111c765dc5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1068,6 +1076,10 @@ PrefabInstance:
     - target: {fileID: 2708382564094750487, guid: dc46ae164a457a142998f9111c765dc5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565746377174301831, guid: dc46ae164a457a142998f9111c765dc5, type: 3}
+      propertyPath: m_SortingOrder
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 8487091736580340379, guid: dc46ae164a457a142998f9111c765dc5, type: 3}
       propertyPath: m_Name
@@ -1151,15 +1163,19 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 367601232238242411}
+    m_TransformParent: {fileID: 4817556745772564010}
     m_Modifications:
     - target: {fileID: 485213308737218887, guid: 45bd53d576ef9f34ebfbade9c61f8cc4, type: 3}
       propertyPath: m_Name
       value: sofa_overlay_31 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3016926161825813542, guid: 45bd53d576ef9f34ebfbade9c61f8cc4, type: 3}
+      propertyPath: m_SortingOrder
+      value: 21
+      objectReference: {fileID: 0}
     - target: {fileID: 8003567111043872643, guid: 45bd53d576ef9f34ebfbade9c61f8cc4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 23.345562
+      value: 23.345558
       objectReference: {fileID: 0}
     - target: {fileID: 8003567111043872643, guid: 45bd53d576ef9f34ebfbade9c61f8cc4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1347,9 +1363,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 367601232238242411}
     m_Modifications:
+    - target: {fileID: 377257578966796451, guid: a9461dab965b3754583fb7bb4c63e9be, type: 3}
+      propertyPath: m_SortingOrder
+      value: 22
+      objectReference: {fileID: 0}
     - target: {fileID: 6855383008604509376, guid: a9461dab965b3754583fb7bb4c63e9be, type: 3}
       propertyPath: m_Name
-      value: sofa_overlay_69
+      value: Prop_Inspect_SofaPillow_R
       objectReference: {fileID: 0}
     - target: {fileID: 9221460011687225519, guid: a9461dab965b3754583fb7bb4c63e9be, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1465,7 +1485,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4380756208932983823, guid: 016d5aee39ceb6e42ba5abad0a942780, type: 3}
       propertyPath: m_Name
-      value: Window_01
+      value: Window_Nav_01
       objectReference: {fileID: 0}
     - target: {fileID: 7177255605314387011, guid: 016d5aee39ceb6e42ba5abad0a942780, type: 3}
       propertyPath: m_LocalPosition.x
