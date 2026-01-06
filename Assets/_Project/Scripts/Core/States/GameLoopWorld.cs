@@ -21,6 +21,7 @@ internal sealed class GameLoopWorld
 
     public StreetComponent Street { get; private set; }
     public CorridorComponent Corridor { get; private set; }
+    public ApartmentComponent Apartment { get; private set; }
 
     public GameObject PlayerInstance { get; private set; }
     public Transform PlayerTransform { get; private set; }
@@ -87,15 +88,23 @@ internal sealed class GameLoopWorld
         if (PlayerInstance != null)
             Object.Destroy(PlayerInstance);
 
+        if (Apartment != null)
+            Object.Destroy(Apartment.gameObject);
+
+        if (ScreenFade != null)
+            Object.Destroy(ScreenFade.gameObject);
+
         Background = null;
         Street = null;
         Corridor = null;
+        Apartment = null;
 
         PlayerInstance = null;
         PlayerTransform = null;
         PlayerCollider = null;
         PlayerController = null;
         PlayerPOV = null;
+
         ScreenFade = null;
     }
 
@@ -152,6 +161,43 @@ internal sealed class GameLoopWorld
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
     }
+
+    public void LoadApartment(ApartmentComponent apartmentPrefab)
+    {
+        if (Apartment != null)
+            Object.Destroy(Apartment.gameObject);
+
+        Transform parent = Background != null ? Background.transform : null;
+
+        Apartment = parent != null
+            ? Object.Instantiate(apartmentPrefab, parent)
+            : Object.Instantiate(apartmentPrefab);
+
+        if (Corridor != null)
+            Corridor.gameObject.SetActive(false);
+
+        // Move camera to apartment full view anchor
+        Transform viewFull = Apartment.transform.Find("Anchors/View_Full");
+        if (viewFull != null)
+        {
+            Vector3 camPos = _game.CameraTransform.position;
+            camPos.x = viewFull.position.x;
+            camPos.y = viewFull.position.y;
+            _game.CameraTransform.position = camPos;
+        }
+    }
+
+    public void UnloadApartment()
+    {
+        if (Apartment != null)
+            Object.Destroy(Apartment.gameObject);
+
+        Apartment = null;
+
+        if (Corridor != null)
+            Corridor.gameObject.SetActive(true);
+    }
+
 
     /// <summary>
     /// Repositions the player to the correct entering edge and hard-resets camera X to match.

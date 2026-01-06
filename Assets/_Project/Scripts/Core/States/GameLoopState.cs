@@ -18,6 +18,8 @@ public class GameLoopState : IState
     private GameLoopWorld _world;
     private GameLoopNavigation _navigation;
 
+    private ApartmentDoor _activeApartmentDoor;
+
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
 
@@ -26,8 +28,13 @@ public class GameLoopState : IState
 
     private bool _isExitingInterior;
 
+    private bool _isEnteringApartment;
+    private bool _isInApartment;
+    private bool _isExitingApartment;
+
     private Vector3 _returnStreetPlayerPos;
     private Vector3 _returnStreetCameraPos;
+    private Vector3 _returnCorridorCameraPos;
 
     private CorridorExitTrigger _corridorExitTrigger;
 
@@ -79,13 +86,73 @@ public class GameLoopState : IState
 
     public void Update(float deltaTime)
     {
-        // Door POV (interior-only): allow exit
-        if (_isInInterior && _isInDoorPOV)
+        // Apartment (interior-only): allow exit back to corridor
+        if (_isInInterior && _isInApartment)
         {
+            if (_isEnteringApartment || _isExitingApartment)
+                return;
+
             if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
             {
-                _world.ExitCorridorDoorPOV();
-                _isInDoorPOV = false;
+                _isExitingApartment = true;
+
+                _world.ScreenFade.FadeOut(() =>
+                {
+                    _world.UnloadApartment();
+                    _isInDoorPOV = false;
+                    _world.ExitCorridorDoorPOV(); // returns corridor to normal + exits POV
+                    _game.CameraTransform.position = _returnCorridorCameraPos;
+
+                    _world.ScreenFade.FadeIn(() =>
+                    {
+                        _isInApartment = false;
+                        _isExitingApartment = false;
+                        _isEnteringApartment = false;
+                        _activeApartmentDoor = null;
+                    });
+                });
+            }
+
+            return;
+        }
+
+        // Door POV (interior-only): allow exit / enter apartment
+        if (_isInInterior && _isInDoorPOV)
+        {
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.sKey.wasPressedThisFrame)
+                {
+                    _world.ExitCorridorDoorPOV();
+                    _isInDoorPOV = false;
+
+                    _isEnteringApartment = false;
+
+                    _activeApartmentDoor = null;
+                }
+                else if (Keyboard.current.wKey.wasPressedThisFrame)
+                {
+                    if (_isEnteringApartment || _isExitingApartment || _isInApartment)
+                        return;
+
+                    if (_activeApartmentDoor == null || _prefabs?.ApartmentPrefab == null)
+                        return;
+
+                    _isEnteringApartment = true;
+                    _isInDoorPOV = false;
+
+                    _world.ScreenFade.FadeOut(() =>
+                    {
+                        _world.LoadApartment(_prefabs.ApartmentPrefab);
+
+                        _world.ScreenFade.FadeIn(() =>
+                        {
+                            _isEnteringApartment = false;
+                            _isInApartment = true;
+                            _isInDoorPOV = false; // now controlled by apartment block
+                        });
+                    });
+                }
             }
 
             return;
@@ -144,6 +211,9 @@ public class GameLoopState : IState
         if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
             return;
 
+        if (_isEnteringApartment || _isExitingApartment || _isInApartment || _isInDoorPOV)
+            return;
+
         _isExitingInterior = true;
         _world.PlayerController.Freeze();
 
@@ -180,6 +250,8 @@ public class GameLoopState : IState
         if (!_isInInterior || _isEnteringInterior || _isExitingInterior)
             return;
 
+        _returnCorridorCameraPos = _game.CameraTransform.position;
+
         _world.EnterCorridorDoorPOV(focus);
         _isInDoorPOV = true;
     }
@@ -198,6 +270,10 @@ public class GameLoopState : IState
         if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
             return;
 
+        if (_isEnteringApartment || _isExitingApartment || _isInApartment)
+            return;
+
+        _activeApartmentDoor = door;
         EnterCorridorDoorPOV(door.transform);
     }
 
