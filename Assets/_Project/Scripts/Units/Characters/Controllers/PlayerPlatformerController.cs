@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CityRush.World.Interior;
 using UnityEngine.InputSystem;
 
 namespace CityRush.Units.Characters.Controllers
@@ -16,12 +17,23 @@ namespace CityRush.Units.Characters.Controllers
         private SpriteRenderer spriteRenderer;
         private Animator animator;
 
+        private BuildingDoor _currentBuildingDoor;
+        public BuildingDoor CurrentBuildingDoor => _currentBuildingDoor;
+
+        public event Action<BuildingDoor> OnBuildingDoorInteract;
+
+        private ApartmentDoor _currentApartmentDoor;
+        public ApartmentDoor CurrentApartmentDoor => _currentApartmentDoor;
+
+        public event Action<ApartmentDoor> OnApartmentDoorInteract;
+
         public bool IsFrozen { get; private set; }
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            animator = GetComponent<Animator>();
+            Transform graphic = transform.Find("Graphic");
+            spriteRenderer = graphic.GetComponent<SpriteRenderer>();
+            animator = graphic.GetComponent<Animator>();
         }
 
         void Start()
@@ -36,6 +48,16 @@ namespace CityRush.Units.Characters.Controllers
         protected override void ComputeVelocity()
         {
             if (IsFrozen) { return; }
+
+            if (_currentBuildingDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                OnBuildingDoorInteract?.Invoke(_currentBuildingDoor);
+            }
+
+            if (_currentApartmentDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                OnApartmentDoorInteract?.Invoke(_currentApartmentDoor);
+            }
 
             Vector2 move = Vector2.zero;
 
@@ -87,6 +109,32 @@ namespace CityRush.Units.Characters.Controllers
             Debug.Log("PLAYER UNFREEZE!!!");
             IsFrozen = false;
             targetVelocity = Vector2.zero; // reset stale frame
+        }
+
+        public void ClearInteractionState()
+        {
+            _currentBuildingDoor = null;
+            _currentApartmentDoor = null;
+            jumpPressed = false;
+            jumpReleased = false;
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
+            if (buildingDoor != null) { _currentBuildingDoor = buildingDoor; return; }
+
+            ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
+            if (apartmentDoor != null) _currentApartmentDoor = apartmentDoor;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
+            if (buildingDoor != null && buildingDoor == _currentBuildingDoor) _currentBuildingDoor = null;
+
+            ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
+            if (apartmentDoor != null && apartmentDoor == _currentApartmentDoor) _currentApartmentDoor = null;
         }
     }
 }

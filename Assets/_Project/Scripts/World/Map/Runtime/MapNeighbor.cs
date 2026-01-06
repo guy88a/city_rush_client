@@ -1,5 +1,3 @@
-using CityRush.World.Map;
-
 namespace CityRush.World.Map.Runtime
 {
     public readonly struct MapNeighbor

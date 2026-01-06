@@ -54,5 +54,16 @@ namespace CityRush.World.Background
 
             _lastCameraX = cameraX;
         }
+
+        public void SetLayersActive(bool isActive)
+        {
+            if (Layers == null) return;
+
+            for (int i = 0; i < Layers.Length; i++)
+            {
+                if (Layers[i] != null)
+                    Layers[i].gameObject.SetActive(isActive);
+            }
+        }
     }
 }

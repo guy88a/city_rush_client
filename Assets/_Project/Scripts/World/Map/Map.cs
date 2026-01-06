@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using CityRush.World.Street.Data;
 
 namespace CityRush.World.Map
 {
