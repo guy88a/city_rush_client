@@ -16,6 +16,7 @@ namespace CityRush.Core.Prefabs
         [SerializeField] private BackgroundRoot backgroundPrefab;
         [SerializeField] private StreetComponent streetPrefab;
         [SerializeField] private CorridorComponent corridorPrefab;
+        [SerializeField] private ApartmentComponent apartmentPrefab;
 
         [Header("Core UI / Transitions")]
         [SerializeField] private GameObject screenFadeCanvasPrefab;
@@ -27,6 +28,7 @@ namespace CityRush.Core.Prefabs
         public BackgroundRoot BackgroundPrefab => backgroundPrefab;
         public StreetComponent StreetPrefab => streetPrefab;
         public CorridorComponent CorridorPrefab => corridorPrefab;
+        public ApartmentComponent ApartmentPrefab => apartmentPrefab;
 
         public GameObject ScreenFadeCanvasPrefab => screenFadeCanvasPrefab;
         public GameObject PlayerPrefab => playerPrefab;
