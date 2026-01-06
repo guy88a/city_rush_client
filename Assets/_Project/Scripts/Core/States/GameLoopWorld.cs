@@ -2,16 +2,23 @@ using CityRush.Core;
 using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
 using CityRush.Units.Characters.Controllers;
+using CityRush.Units.Characters.View;
 using CityRush.World.Background;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
-using CityRush.Units.Characters.View;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.U2D;
 
 internal sealed class GameLoopWorld
 {
+    private PixelPerfectCamera _ppc;
+    private int _ppcRefX;
+    private int _ppcRefY;
+    private bool _ppcCached;
+
     private readonly Game _game;
     private readonly float _navSpawnGapModifier;
 
@@ -60,6 +67,14 @@ internal sealed class GameLoopWorld
         // Cache bounds and camera metrics (after build)
         Camera cam = _game.GlobalCamera;
         CameraHalfWidth = cam.orthographicSize * cam.aspect;
+        _ppc = cam.GetComponent<PixelPerfectCamera>();
+        if (_ppc != null)
+        {
+            _ppcRefX = _ppc.refResolutionX;
+            _ppcRefY = _ppc.refResolutionY;
+            _ppcCached = true;
+        }
+
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
 
@@ -283,5 +298,19 @@ internal sealed class GameLoopWorld
 
         Corridor.ExitDoorPOV();
         PlayerPOV.ExitPOV();
+    }
+
+    public void SetCameraRefResolution(int x, int y)
+    {
+        if (_ppc == null) return;
+        _ppc.refResolutionX = x;
+        _ppc.refResolutionY = y;
+    }
+
+    public void RestoreCameraRefResolution()
+    {
+        if (_ppc == null || !_ppcCached) return;
+        _ppc.refResolutionX = _ppcRefX;
+        _ppc.refResolutionY = _ppcRefY;
     }
 }

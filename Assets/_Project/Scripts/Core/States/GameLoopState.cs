@@ -101,7 +101,10 @@ public class GameLoopState : IState
                     _world.UnloadApartment();
                     _isInDoorPOV = false;
                     _world.ExitCorridorDoorPOV(); // returns corridor to normal + exits POV
+
                     _game.CameraTransform.position = _returnCorridorCameraPos;
+
+                    _world.RestoreCameraRefResolution();
 
                     _world.ScreenFade.FadeIn(() =>
                     {
@@ -144,6 +147,7 @@ public class GameLoopState : IState
                     _world.ScreenFade.FadeOut(() =>
                     {
                         _world.LoadApartment(_prefabs.ApartmentPrefab);
+                        _world.SetCameraRefResolution(3840, 2160);
 
                         _world.ScreenFade.FadeIn(() =>
                         {

@@ -16,5 +16,6 @@ MonoBehaviour:
   backgroundPrefab: {fileID: 7562059905275938921, guid: 769c503b78c8dd64f9be3a6e6a9e7619, type: 3}
   streetPrefab: {fileID: 5984691592662099914, guid: 50ec00d7bf3cb864b8d8d56ac2459192, type: 3}
   corridorPrefab: {fileID: 9116321647638455435, guid: cf56aa7c4c9b9524c8e52669072af663, type: 3}
+  apartmentPrefab: {fileID: -29974400429541044, guid: 270ae377becb291419554b4b102a13a4, type: 3}
   screenFadeCanvasPrefab: {fileID: 1052849499389073530, guid: 7b33bc11bc4dad1469848b9130b386bc, type: 3}
   playerPrefab: {fileID: 8471212319856264224, guid: b67fb71b0dba6594088e1be1fe77125c, type: 3}
