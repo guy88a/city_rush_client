@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4234535324492921392}
   - component: {fileID: 5936967153311358253}
   - component: {fileID: -5777110001278739381}
+  - component: {fileID: -930215576252891519}
   m_Layer: 0
   m_Name: window_10
   m_TagString: Untagged
@@ -137,3 +138,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 10.3125, y: 16}
   m_EdgeRadius: 0
+--- !u!114 &-930215576252891519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5397929436736639544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57cab0d3d35a2c4890b643d509371c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Interior.ApartmentWindowNavTarget
+  cameraAnchor: {fileID: 0}

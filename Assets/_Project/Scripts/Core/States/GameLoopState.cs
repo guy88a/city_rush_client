@@ -32,6 +32,12 @@ public class GameLoopState : IState
     private bool _isInApartment;
     private bool _isExitingApartment;
 
+    private bool _isInApartmentWindowView;
+
+    private int _apartmentFullRefX;
+    private int _apartmentFullRefY;
+    private bool _apartmentFullRefCached;
+
     private Vector3 _returnStreetPlayerPos;
     private Vector3 _returnStreetCameraPos;
     private Vector3 _returnCorridorCameraPos;
@@ -94,6 +100,37 @@ public class GameLoopState : IState
 
             if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
             {
+                // S in WINDOW view => return to full apartment view (not exit apartment)
+                if (_isInApartmentWindowView)
+                {
+                    _world.ScreenFade.FadeOut(() =>
+                    {
+                        // Move camera to apartment full view anchor
+                        Transform viewFull = _world.Apartment != null
+                            ? _world.Apartment.transform.Find("Anchors/View_Full")
+                            : null;
+
+                        if (viewFull != null)
+                        {
+                            Vector3 camPos = _game.CameraTransform.position;
+                            camPos.x = viewFull.position.x;
+                            camPos.y = viewFull.position.y;
+                            _game.CameraTransform.position = camPos;
+                        }
+
+                        if (_apartmentFullRefCached)
+                            _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
+
+                        _world.ScreenFade.FadeIn(() =>
+                        {
+                            _isInApartmentWindowView = false;
+                        });
+                    });
+
+                    return;
+                }
+
+                // S in FULL apartment view => exit back to corridor (your existing flow)
                 _isExitingApartment = true;
 
                 _world.ScreenFade.FadeOut(() =>
@@ -106,6 +143,9 @@ public class GameLoopState : IState
 
                     _world.RestoreCameraRefResolution();
 
+                    _isInApartmentWindowView = false;
+                    _apartmentFullRefCached = false;
+
                     _world.ScreenFade.FadeIn(() =>
                     {
                         _isInApartment = false;
@@ -114,6 +154,41 @@ public class GameLoopState : IState
                         _activeApartmentDoor = null;
                     });
                 });
+
+                return;
+            }
+
+            if (!_isInApartmentWindowView && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                Vector2 screen = Mouse.current.position.ReadValue();
+                float z = -_game.GlobalCamera.transform.position.z; // assumes world plane is z=0
+                Vector3 wp3 = _game.GlobalCamera.ScreenToWorldPoint(new Vector3(screen.x, screen.y, z));
+                Vector2 wp = new Vector2(wp3.x, wp3.y);
+
+                Collider2D hit = Physics2D.OverlapPoint(wp);
+                if (hit != null)
+                {
+                    ApartmentWindowNavTarget target = hit.GetComponentInParent<ApartmentWindowNavTarget>();
+                    if (target != null)
+                    {
+                        Vector3 focus = target.GetCameraFocusPosition();
+
+                        _world.ScreenFade.FadeOut(() =>
+                        {
+                            Vector3 camPos = _game.CameraTransform.position;
+                            camPos.x = focus.x;
+                            camPos.y = focus.y;
+                            _game.CameraTransform.position = camPos;
+
+                            _world.SetCameraRefResolution(1920, 1080);
+
+                            _world.ScreenFade.FadeIn(() =>
+                            {
+                                _isInApartmentWindowView = true;
+                            });
+                        });
+                    }
+                }
             }
 
             return;
@@ -147,7 +222,14 @@ public class GameLoopState : IState
                     _world.ScreenFade.FadeOut(() =>
                     {
                         _world.LoadApartment(_prefabs.ApartmentPrefab);
-                        _world.SetCameraRefResolution(3840, 2160);
+
+                        _apartmentFullRefX = 3840;
+                        _apartmentFullRefY = 2160;
+                        _apartmentFullRefCached = true;
+
+                        _isInApartmentWindowView = false;
+
+                        _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
 
                         _world.ScreenFade.FadeIn(() =>
                         {
