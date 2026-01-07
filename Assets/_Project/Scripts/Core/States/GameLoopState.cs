@@ -33,6 +33,7 @@ public class GameLoopState : IState
     private bool _isExitingApartment;
 
     private bool _isInApartmentWindowView;
+    private bool _isApartmentViewTransitioning;
 
     private int _apartmentFullRefX;
     private int _apartmentFullRefY;
@@ -98,11 +99,16 @@ public class GameLoopState : IState
             if (_isEnteringApartment || _isExitingApartment)
                 return;
 
+            if (_isApartmentViewTransitioning)
+                return;
+
             if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
             {
                 // S in WINDOW view => return to full apartment view (not exit apartment)
                 if (_isInApartmentWindowView)
                 {
+                    _isApartmentViewTransitioning = true;
+
                     _world.ScreenFade.FadeOut(() =>
                     {
                         // Move camera to apartment full view anchor
@@ -124,6 +130,7 @@ public class GameLoopState : IState
                         _world.ScreenFade.FadeIn(() =>
                         {
                             _isInApartmentWindowView = false;
+                            _isApartmentViewTransitioning = false;
                         });
                     });
 
@@ -132,6 +139,7 @@ public class GameLoopState : IState
 
                 // S in FULL apartment view => exit back to corridor (your existing flow)
                 _isExitingApartment = true;
+                _isApartmentViewTransitioning = true;
 
                 _world.ScreenFade.FadeOut(() =>
                 {
@@ -152,6 +160,8 @@ public class GameLoopState : IState
                         _isExitingApartment = false;
                         _isEnteringApartment = false;
                         _activeApartmentDoor = null;
+
+                        _isApartmentViewTransitioning = false;
                     });
                 });
 
@@ -173,6 +183,8 @@ public class GameLoopState : IState
                     {
                         Vector3 focus = target.GetCameraFocusPosition();
 
+                        _isApartmentViewTransitioning = true;
+
                         _world.ScreenFade.FadeOut(() =>
                         {
                             Vector3 camPos = _game.CameraTransform.position;
@@ -185,6 +197,7 @@ public class GameLoopState : IState
                             _world.ScreenFade.FadeIn(() =>
                             {
                                 _isInApartmentWindowView = true;
+                                _isApartmentViewTransitioning = false;
                             });
                         });
                     }
