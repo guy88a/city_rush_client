@@ -22,11 +22,17 @@ internal sealed class GameLoopWorld
     private readonly Game _game;
     private readonly float _navSpawnGapModifier;
 
+    private Vector3 _streetPosBeforeApartment;
+    private Vector3 _backgroundPosBeforeApartment;
+    private bool _apartmentBgStreetPosCached;
+
     public ScreenFadeController ScreenFade { get; private set; }
 
     public BackgroundRoot Background { get; private set; }
 
     public StreetComponent Street { get; private set; }
+
+    private Transform InteriorRoot;
     public CorridorComponent Corridor { get; private set; }
     public ApartmentComponent Apartment { get; private set; }
 
@@ -63,6 +69,9 @@ internal sealed class GameLoopWorld
 
         StreetRef streetRef = mapManager.GetCurrentStreet();
         BuildStreet(streetRef);
+
+        // Interior Root (Corridor + Apartment live here, not under Background)
+        InteriorRoot = new GameObject("InteriorRoot").transform;
 
         // Cache bounds and camera metrics (after build)
         Camera cam = _game.GlobalCamera;
@@ -109,7 +118,13 @@ internal sealed class GameLoopWorld
         if (ScreenFade != null)
             Object.Destroy(ScreenFade.gameObject);
 
+        if (InteriorRoot != null)
+            Object.Destroy(InteriorRoot.gameObject);
+
+
         Background = null;
+
+        InteriorRoot = null;
         Street = null;
         Corridor = null;
         Apartment = null;
@@ -147,7 +162,7 @@ internal sealed class GameLoopWorld
         if (Corridor != null)
             Object.Destroy(Corridor.gameObject);
 
-        Transform parent = Background != null ? Background.transform : null;
+        Transform parent = InteriorRoot;
 
         Corridor = parent != null
             ? Object.Instantiate(corridorPrefab, parent)
@@ -199,9 +214,32 @@ internal sealed class GameLoopWorld
         if (Apartment != null)
             Object.Destroy(Apartment.gameObject);
 
+        if (!_apartmentBgStreetPosCached)
+        {
+            if (Street != null) _streetPosBeforeApartment = Street.transform.position;
+            if (Background != null) _backgroundPosBeforeApartment = Background.transform.position;
+            _apartmentBgStreetPosCached = true;
+        }
+
+        // Background Y = 13 (keep X/Z)
+        if (Background != null)
+        {
+            Vector3 p = Background.transform.position;
+            p.y = 13f;
+            Background.transform.position = p;
+        }
+
+        // Street Y = 4 (keep X/Z)
+        if (Street != null)
+        {
+            Vector3 p = Street.transform.position;
+            p.y = 4f;
+            Street.transform.position = p;
+        }
+
         SetStreetActive(true);
 
-        Transform parent = Background != null ? Background.transform : null;
+        Transform parent = InteriorRoot;
 
         Apartment = parent != null
             ? Object.Instantiate(apartmentPrefab, parent)
@@ -227,6 +265,13 @@ internal sealed class GameLoopWorld
             Object.Destroy(Apartment.gameObject);
 
         Apartment = null;
+
+        if (_apartmentBgStreetPosCached)
+        {
+            if (Background != null) Background.transform.position = _backgroundPosBeforeApartment;
+            if (Street != null) Street.transform.position = _streetPosBeforeApartment;
+            _apartmentBgStreetPosCached = false;
+        }
 
         SetStreetActive(false);
 
