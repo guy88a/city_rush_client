@@ -8,10 +8,11 @@ internal sealed class GameLoopNavigation
 {
     private readonly Game _game;
     private readonly GameLoopWorld _world;
+
+    // kept for constructor compatibility (not used anymore in Step 3)
     private readonly CorePrefabsRegistry _prefabs;
     private readonly MapManager _mapManager;
 
-    private bool _isTransitioning;
     private bool _canNavigate;
     private bool _suppressNavigationThisFrame;
 
@@ -39,38 +40,13 @@ internal sealed class GameLoopNavigation
 
     public void Enter()
     {
-        _isTransitioning = false;
         _navigationIntent = StreetNavigationIntent.None;
-
         _suppressNavigationThisFrame = false;
-
-        // Keep same behavior as current GameLoopState.Enter (no "one frame later" gate)
         _canNavigate = true;
     }
 
     public void Tick(float deltaTime)
     {
-        // Handle transition FIRST (allowed while frozen)
-        if (_navigationIntent != StreetNavigationIntent.None && !_isTransitioning)
-        {
-            _isTransitioning = true;
-
-            _world.ScreenFade.FadeOut(() =>
-            {
-                LoadNextStreet();
-
-                _world.ScreenFade.FadeIn(() =>
-                {
-                    _isTransitioning = false;
-
-                    // MUST behave exactly the same as current code
-                    _suppressNavigationThisFrame = false;
-                });
-            });
-
-            return;
-        }
-
         // Block gameplay logic while frozen
         if (_world.PlayerController.IsFrozen)
             return;
@@ -89,8 +65,13 @@ internal sealed class GameLoopNavigation
         camPos.x = clampedX;
         _game.CameraTransform.position = camPos;
 
-        // Navigation only when allowed
-        if (!_canNavigate || _suppressNavigationThisFrame)
+        // Suppress navigation checks for exactly one Tick (camera follow still runs)
+        bool allowNav = _canNavigate && !_suppressNavigationThisFrame;
+
+        if (_suppressNavigationThisFrame)
+            _suppressNavigationThisFrame = false;
+
+        if (!allowNav)
             return;
 
         float cameraLeftX = camPos.x - _world.CameraHalfWidth;
@@ -111,55 +92,38 @@ internal sealed class GameLoopNavigation
         }
     }
 
-    private void LoadNextStreet()
+    public bool TryConsumeStreetTransition(out MapDirection direction)
     {
+        direction = default;
+
+        if (_navigationIntent == StreetNavigationIntent.None)
+            return false;
+
         StreetNavigationIntent intent = _navigationIntent;
         _navigationIntent = StreetNavigationIntent.None;
-
-        MapDirection direction;
 
         switch (intent)
         {
             case StreetNavigationIntent.Right:
                 direction = MapDirection.Right;
-                break;
+                return true;
 
             case StreetNavigationIntent.Left:
                 direction = MapDirection.Left;
-                break;
+                return true;
 
             default:
-                _world.PlayerController.Unfreeze();
-                _canNavigate = true;
-                return;
+                return false;
         }
+    }
 
-        if (!_mapManager.CanMove(direction))
-        {
-            _world.PlayerController.Unfreeze();
-            _canNavigate = true;
-            return;
-        }
-
-        // Destroy old street BEFORE commit move (same ordering as current)
-        if (_world.Street != null)
-            Object.Destroy(_world.Street.gameObject);
-
-        // Commit move
-        _mapManager.CommitMove(direction);
-
-        // Load new street
-        StreetRef nextStreet = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, nextStreet);
-
-        // Reposition player + reset camera
-        _world.RepositionPlayerForStreetEntry(direction);
-
-        // Resume play
-        _world.PlayerController.Unfreeze();
+    public void EndStreetTransition()
+    {
+        // Always resume play after the fade completes (even if move was blocked)
+        
         _canNavigate = true;
 
-        // MUST behave exactly the same as current code
+        // MUST suppress for one Tick after transition completes
         _suppressNavigationThisFrame = true;
     }
 }
