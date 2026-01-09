@@ -228,7 +228,13 @@ internal sealed class GameLoopWorld
             PlayerTransform.position = new Vector3(spawnX, PlayerTransform.position.y, 0f);
 
         Vector3 camPos = _game.CameraTransform.position;
-        camPos.x = spawnX;
+
+        float minX = StreetLeftX + CameraHalfWidth;
+        float maxX = StreetRightX - CameraHalfWidth;
+
+        // IMPORTANT: prevent 1-frame snap on first Tick after fade-in
+        camPos.x = Mathf.Clamp(spawnX, minX, maxX);
+
         _game.CameraTransform.position = camPos;
 
         return spawnX;

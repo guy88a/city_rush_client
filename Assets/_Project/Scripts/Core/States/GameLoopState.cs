@@ -23,17 +23,17 @@ public class GameLoopState : IState
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
 
-    private bool _isEnteringInterior;
-    private bool _isInInterior;
+    private enum LoopMode
+    {
+        Street,
+        Corridor,
+        DoorPOV,
+        ApartmentFull,
+        ApartmentWindow
+    }
 
-    private bool _isExitingInterior;
-
-    private bool _isEnteringApartment;
-    private bool _isInApartment;
-    private bool _isExitingApartment;
-
-    private bool _isInApartmentWindowView;
-    private bool _isApartmentViewTransitioning;
+    private LoopMode _mode;
+    private bool _isTransitioning;
 
     private int _apartmentFullRefX;
     private int _apartmentFullRefY;
@@ -43,9 +43,25 @@ public class GameLoopState : IState
     private Vector3 _returnStreetCameraPos;
     private Vector3 _returnCorridorCameraPos;
 
+    private MapDirection _pendingStreetDirection;
+    private bool _pendingStreetDirectionSet;
+
     private CorridorExitTrigger _corridorExitTrigger;
 
-    private bool _isInDoorPOV;
+    // Transition runner (non-capturing fade callbacks)
+    private System.Action _transitionOutWork;
+    private System.Action _transitionInDone;
+    private bool _transitionFreezePlayer;
+    private bool _transitionUnfreezePlayer;
+    private bool _unfreezeAtFadeInStart;
+
+    // Small transition payload (avoid capturing locals)
+    private Vector3 _pendingCameraPos;
+    private bool _pendingCameraPosSet;
+
+    private int _pendingRefX;
+    private int _pendingRefY;
+    private bool _pendingRefSet;
 
     public GameLoopState(Game game, GameContext context)
     {
@@ -64,10 +80,14 @@ public class GameLoopState : IState
         _navigation = new GameLoopNavigation(_game, _world, _prefabs, _mapManager);
         _navigation.Enter();
 
+        _mode = LoopMode.Street;
+        _isTransitioning = false;
+
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
 
-        _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
     }
 
     public void Exit()
@@ -78,7 +98,8 @@ public class GameLoopState : IState
         if (_corridorExitTrigger != null)
             _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
 
-        _world.PlayerController.OnApartmentDoorInteract -= HandleApartmentDoorInteract;
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnApartmentDoorInteract -= HandleApartmentDoorInteract;
 
         _corridorExitTrigger = null;
 
@@ -89,209 +110,400 @@ public class GameLoopState : IState
 
         _prefabs = null;
         _mapManager = null;
+
+        ClearTransition();
     }
 
     public void Update(float deltaTime)
     {
-        // Apartment (interior-only): allow exit back to corridor
-        if (_isInInterior && _isInApartment)
+        if (_isTransitioning)
+            return;
+
+        switch (_mode)
         {
-            if (_isEnteringApartment || _isExitingApartment)
-                return;
+            case LoopMode.Street:
+                _navigation?.Tick(deltaTime);
 
-            if (_isApartmentViewTransitioning)
-                return;
-
-            if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
-            {
-                // S in WINDOW view => return to full apartment view (not exit apartment)
-                if (_isInApartmentWindowView)
+                if (_navigation != null && _navigation.TryConsumeStreetTransition(out MapDirection dir))
                 {
-                    _isApartmentViewTransitioning = true;
+                    _pendingStreetDirection = dir;
+                    _pendingStreetDirectionSet = true;
 
-                    _world.ScreenFade.FadeOut(() =>
-                    {
-                        // Move camera to apartment full view anchor
-                        Transform viewFull = _world.Apartment != null
-                            ? _world.Apartment.transform.Find("Anchors/View_Full")
-                            : null;
-
-                        if (viewFull != null)
-                        {
-                            Vector3 camPos = _game.CameraTransform.position;
-                            camPos.x = viewFull.position.x;
-                            camPos.y = viewFull.position.y;
-                            _game.CameraTransform.position = camPos;
-                        }
-
-                        if (_apartmentFullRefCached)
-                            _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
-
-                        _world.ScreenFade.FadeIn(() =>
-                        {
-                            _isInApartmentWindowView = false;
-                            _isApartmentViewTransitioning = false;
-                        });
-                    });
-
-                    return;
+                    StartTransition(
+                        outWork: StreetTransitionOutWork,
+                        inDone: StreetTransitionInDone,
+                        freezePlayer: false,
+                        unfreezePlayer: true,
+                        unfreezeAtFadeInStart: true
+                    );
                 }
 
-                // S in FULL apartment view => exit back to corridor (your existing flow)
-                _isExitingApartment = true;
-                _isApartmentViewTransitioning = true;
-
-                _world.ScreenFade.FadeOut(() =>
-                {
-                    _world.UnloadApartment();
-                    _isInDoorPOV = false;
-                    _world.ExitCorridorDoorPOV(); // returns corridor to normal + exits POV
-
-                    _game.CameraTransform.position = _returnCorridorCameraPos;
-
-                    _world.RestoreCameraRefResolution();
-
-                    _isInApartmentWindowView = false;
-                    _apartmentFullRefCached = false;
-
-                    _world.ScreenFade.FadeIn(() =>
-                    {
-                        _isInApartment = false;
-                        _isExitingApartment = false;
-                        _isEnteringApartment = false;
-                        _activeApartmentDoor = null;
-
-                        _isApartmentViewTransitioning = false;
-                    });
-                });
-
                 return;
-            }
 
-            if (!_isInApartmentWindowView && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                Vector2 screen = Mouse.current.position.ReadValue();
-                float z = -_game.GlobalCamera.transform.position.z; // assumes world plane is z=0
-                Vector3 wp3 = _game.GlobalCamera.ScreenToWorldPoint(new Vector3(screen.x, screen.y, z));
-                Vector2 wp = new Vector2(wp3.x, wp3.y);
+            case LoopMode.Corridor:
+                // Corridor idle. Door / exit triggers drive transitions via events.
+                return;
 
-                Collider2D hit = Physics2D.OverlapPoint(wp);
-                if (hit != null)
-                {
-                    ApartmentWindowNavTarget target = hit.GetComponentInParent<ApartmentWindowNavTarget>();
-                    if (target != null)
-                    {
-                        Vector3 focus = target.GetCameraFocusPosition();
+            case LoopMode.DoorPOV:
+                TickDoorPOV();
+                return;
 
-                        _isApartmentViewTransitioning = true;
+            case LoopMode.ApartmentFull:
+                TickApartmentFull();
+                return;
 
-                        _world.ScreenFade.FadeOut(() =>
-                        {
-                            Vector3 camPos = _game.CameraTransform.position;
-                            camPos.x = focus.x;
-                            camPos.y = focus.y;
-                            _game.CameraTransform.position = camPos;
-
-                            _world.SetCameraRefResolution(1920, 1080);
-
-                            _world.ScreenFade.FadeIn(() =>
-                            {
-                                _isInApartmentWindowView = true;
-                                _isApartmentViewTransitioning = false;
-                            });
-                        });
-                    }
-                }
-            }
-
-            return;
+            case LoopMode.ApartmentWindow:
+                TickApartmentWindow();
+                return;
         }
-
-        // Door POV (interior-only): allow exit / enter apartment
-        if (_isInInterior && _isInDoorPOV)
-        {
-            if (Keyboard.current != null)
-            {
-                if (Keyboard.current.sKey.wasPressedThisFrame)
-                {
-                    _world.ExitCorridorDoorPOV();
-                    _isInDoorPOV = false;
-
-                    _isEnteringApartment = false;
-
-                    _activeApartmentDoor = null;
-                }
-                else if (Keyboard.current.wKey.wasPressedThisFrame)
-                {
-                    if (_isEnteringApartment || _isExitingApartment || _isInApartment)
-                        return;
-
-                    if (_activeApartmentDoor == null || _prefabs?.ApartmentPrefab == null)
-                        return;
-
-                    _isEnteringApartment = true;
-                    _isInDoorPOV = false;
-
-                    _world.ScreenFade.FadeOut(() =>
-                    {
-                        _world.LoadApartment(_prefabs.ApartmentPrefab);
-
-                        _apartmentFullRefX = 3840;
-                        _apartmentFullRefY = 2160;
-                        _apartmentFullRefCached = true;
-
-                        _isInApartmentWindowView = false;
-
-                        _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
-
-                        _world.ScreenFade.FadeIn(() =>
-                        {
-                            _isEnteringApartment = false;
-                            _isInApartment = true;
-                            _isInDoorPOV = false; // now controlled by apartment block
-                        });
-                    });
-                }
-            }
-
-            return;
-        }
-
-        if (_isEnteringInterior || _isExitingInterior || _isInInterior)
-            return;
-
-        _navigation?.Tick(deltaTime);
     }
+
+    // ----------------------------
+    // Transition Runner
+    // ----------------------------
+
+    private void StartTransition(
+        System.Action outWork,
+        System.Action inDone,
+        bool freezePlayer,
+        bool unfreezePlayer,
+        bool unfreezeAtFadeInStart
+    )
+    {
+        if (_isTransitioning || _world == null || _world.ScreenFade == null)
+            return;
+
+        _isTransitioning = true;
+
+        _transitionOutWork = outWork;
+        _transitionInDone = inDone;
+        _transitionFreezePlayer = freezePlayer;
+        _transitionUnfreezePlayer = unfreezePlayer;
+        _unfreezeAtFadeInStart = unfreezeAtFadeInStart;
+
+        if (_transitionFreezePlayer && _world.PlayerController != null)
+            _world.PlayerController.Freeze();
+
+        _world.ScreenFade.FadeOut(OnTransitionFadeOutComplete);
+    }
+
+    private void OnTransitionFadeOutComplete()
+    {
+        // Apply optional camera move (payload)
+        if (_pendingCameraPosSet)
+        {
+            Vector3 camPos = _game.CameraTransform.position;
+            camPos.x = _pendingCameraPos.x;
+            camPos.y = _pendingCameraPos.y;
+            _game.CameraTransform.position = camPos;
+
+            _pendingCameraPosSet = false;
+        }
+
+        // Apply optional ref-res (payload)
+        if (_pendingRefSet)
+        {
+            _world.SetCameraRefResolution(_pendingRefX, _pendingRefY);
+            _pendingRefSet = false;
+        }
+
+        _transitionOutWork?.Invoke();
+
+        _world.ScreenFade.FadeIn(OnTransitionFadeInComplete);
+
+        if (_unfreezeAtFadeInStart && _transitionUnfreezePlayer && _world.PlayerController != null)
+        {
+            _world.PlayerController.Unfreeze();
+            _transitionUnfreezePlayer = false; // prevent double unfreeze in FadeInComplete
+        }
+    }
+
+    private void OnTransitionFadeInComplete()
+    {
+        if (_transitionUnfreezePlayer && _world.PlayerController != null)
+            _world.PlayerController.Unfreeze();
+
+        _transitionInDone?.Invoke();
+
+        ClearTransition();
+    }
+
+    private void ClearTransition()
+    {
+        _isTransitioning = false;
+
+        _transitionOutWork = null;
+        _transitionInDone = null;
+
+        _transitionFreezePlayer = false;
+        _transitionUnfreezePlayer = false;
+        _unfreezeAtFadeInStart = false;
+
+        _pendingCameraPosSet = false;
+        _pendingRefSet = false;
+    }
+
+    private void StreetTransitionOutWork()
+    {
+        if (!_pendingStreetDirectionSet)
+            return;
+
+        _pendingStreetDirectionSet = false;
+
+        MapDirection direction = _pendingStreetDirection;
+
+        if (!_mapManager.CanMove(direction))
+            return;
+
+        // Destroy old street BEFORE commit move (same ordering as before)
+        if (_world.Street != null)
+            Object.Destroy(_world.Street.gameObject);
+
+        _mapManager.CommitMove(direction);
+
+        StreetRef nextStreet = _mapManager.GetCurrentStreet();
+        _world.LoadStreet(_prefabs, nextStreet);
+
+        _world.RepositionPlayerForStreetEntry(direction);
+    }
+
+    private void StreetTransitionInDone()
+    {
+        _navigation.EndStreetTransition();
+    }
+
+    private void EnterCorridorOutWork()
+    {
+        _world.UnloadStreet();
+        _world.LoadCorridor(_prefabs.CorridorPrefab);
+        _world.CenterCorridorOnCamera();
+        _world.RepositionPlayerForCorridorSpawn();
+    }
+
+    private void EnterCorridorInDone()
+    {
+        _mode = LoopMode.Corridor;
+        BindCorridorExitTrigger();
+    }
+
+    private void DoorPOVEnterApartmentOutWork()
+    {
+        // Preserve current behavior: do NOT exit POV here.
+        _world.LoadApartment(_prefabs.ApartmentPrefab);
+
+        _apartmentFullRefX = 3840;
+        _apartmentFullRefY = 2160;
+        _apartmentFullRefCached = true;
+
+        _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
+    }
+
+    private void DoorPOVEnterApartmentInDone()
+    {
+        _mode = LoopMode.ApartmentFull;
+    }
+
+    private void ExitApartmentToCorridorOutWork()
+    {
+        _world.UnloadApartment();
+
+        // Preserve existing flow: exit POV when leaving apartment back to corridor.
+        _world.ExitCorridorDoorPOV();
+
+        _game.CameraTransform.position = _returnCorridorCameraPos;
+
+        _world.RestoreCameraRefResolution();
+
+        _apartmentFullRefCached = false;
+        _activeApartmentDoor = null;
+    }
+
+    private void ExitApartmentToCorridorInDone()
+    {
+        _mode = LoopMode.Corridor;
+    }
+
+    private void EnterApartmentWindowInDone()
+    {
+        _mode = LoopMode.ApartmentWindow;
+    }
+
+    private void ExitApartmentWindowOutWork()
+    {
+        // Move camera to apartment full view anchor
+        Transform viewFull = _world.Apartment != null
+            ? _world.Apartment.transform.Find("Anchors/View_Full")
+            : null;
+
+        if (viewFull != null)
+        {
+            Vector3 camPos = _game.CameraTransform.position;
+            camPos.x = viewFull.position.x;
+            camPos.y = viewFull.position.y;
+            _game.CameraTransform.position = camPos;
+        }
+
+        if (_apartmentFullRefCached)
+            _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
+    }
+
+    private void ExitApartmentWindowInDone()
+    {
+        _mode = LoopMode.ApartmentFull;
+    }
+
+    private void ExitCorridorToStreetOutWork()
+    {
+        if (_corridorExitTrigger != null)
+            _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+        _corridorExitTrigger = null;
+
+        // Load the same street (no CommitMove)
+        StreetRef streetRef = _mapManager.GetCurrentStreet();
+        _world.LoadStreet(_prefabs, streetRef);
+
+        // Restore player + camera where they were before entering corridor
+        _world.PlayerTransform.position = _returnStreetPlayerPos;
+        _game.CameraTransform.position = _returnStreetCameraPos;
+
+        // Reset navigation state cleanly
+        _navigation.Enter();
+    }
+
+    private void ExitCorridorToStreetInDone()
+    {
+        _mode = LoopMode.Street;
+    }
+
+
+    private void SetPendingCameraMove(Vector3 focus)
+    {
+        _pendingCameraPos = focus;
+        _pendingCameraPosSet = true;
+    }
+
+    private void SetPendingRefResolution(int x, int y)
+    {
+        _pendingRefX = x;
+        _pendingRefY = y;
+        _pendingRefSet = true;
+    }
+
+    // ----------------------------
+    // Mode Ticks
+    // ----------------------------
+
+    private void TickDoorPOV()
+    {
+        if (Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            _world.ExitCorridorDoorPOV();
+            _mode = LoopMode.Corridor;
+
+            _activeApartmentDoor = null;
+            return;
+        }
+
+        if (!Keyboard.current.wKey.wasPressedThisFrame)
+            return;
+
+        if (_activeApartmentDoor == null || _prefabs?.ApartmentPrefab == null)
+            return;
+
+        StartTransition(
+            outWork: DoorPOVEnterApartmentOutWork,
+            inDone: DoorPOVEnterApartmentInDone,
+            freezePlayer: false,
+            unfreezePlayer: false,
+            unfreezeAtFadeInStart: false
+        );
+    }
+
+    private void TickApartmentFull()
+    {
+        // S in FULL apartment view => exit back to corridor
+        if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            StartTransition(
+                outWork: ExitApartmentToCorridorOutWork,
+                inDone: ExitApartmentToCorridorInDone,
+                freezePlayer: false,
+                unfreezePlayer: false,
+                unfreezeAtFadeInStart: false
+            );
+
+            return;
+        }
+
+        // LMB on window target => go to window view
+        if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame)
+            return;
+
+        Vector2 screen = Mouse.current.position.ReadValue();
+        float z = -_game.GlobalCamera.transform.position.z; // assumes world plane is z=0
+        Vector3 wp3 = _game.GlobalCamera.ScreenToWorldPoint(new Vector3(screen.x, screen.y, z));
+        Vector2 wp = new Vector2(wp3.x, wp3.y);
+
+        Collider2D hit = Physics2D.OverlapPoint(wp);
+        if (hit == null)
+            return;
+
+        ApartmentWindowNavTarget target = hit.GetComponentInParent<ApartmentWindowNavTarget>();
+        if (target == null)
+            return;
+
+        Vector3 focus = target.GetCameraFocusPosition();
+
+        // Prepare payload: camera + ref res are applied automatically during FadeOut.
+        SetPendingCameraMove(focus);
+        SetPendingRefResolution(1920, 1080);
+
+        StartTransition(
+            outWork: null,
+            inDone: EnterApartmentWindowInDone,
+            freezePlayer: false,
+            unfreezePlayer: false,
+            unfreezeAtFadeInStart: false
+        );
+    }
+
+    private void TickApartmentWindow()
+    {
+        if (Keyboard.current == null || !Keyboard.current.sKey.wasPressedThisFrame)
+            return;
+
+        StartTransition(
+            outWork: ExitApartmentWindowOutWork,
+            inDone: ExitApartmentWindowInDone,
+            freezePlayer: false,
+            unfreezePlayer: false,
+            unfreezeAtFadeInStart: false
+        );
+    }
+
+    // ----------------------------
+    // Interactions / Events
+    // ----------------------------
 
     private void HandleBuildingDoorInteract(BuildingDoor door)
     {
-        if (_isEnteringInterior || _isInInterior)
+        if (_isTransitioning || _mode != LoopMode.Street)
             return;
 
         _returnStreetPlayerPos = _world.PlayerTransform.position;
         _returnStreetCameraPos = _game.CameraTransform.position;
 
-        _isEnteringInterior = true;
-
-        _world.PlayerController.Freeze();
-
-        _world.ScreenFade.FadeOut(() =>
-        {
-            _world.UnloadStreet();
-            _world.LoadCorridor(_prefabs.CorridorPrefab);
-            _world.CenterCorridorOnCamera();
-            _world.RepositionPlayerForCorridorSpawn();
-
-            _world.ScreenFade.FadeIn(() =>
-            {
-                _isEnteringInterior = false;
-                _isInInterior = true;
-
-                BindCorridorExitTrigger();
-
-                _world.PlayerController.Unfreeze();
-            });
-        });
+        StartTransition(
+            outWork: EnterCorridorOutWork,
+            inDone: EnterCorridorInDone,
+            freezePlayer: true,
+            unfreezePlayer: true,
+            unfreezeAtFadeInStart: false
+        );
     }
 
     private void BindCorridorExitTrigger()
@@ -307,73 +519,44 @@ public class GameLoopState : IState
 
     private void HandleCorridorExitRequested()
     {
-        if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
+        if (_isTransitioning || _mode != LoopMode.Corridor)
             return;
 
-        if (_isEnteringApartment || _isExitingApartment || _isInApartment || _isInDoorPOV)
-            return;
-
-        _isExitingInterior = true;
-        _world.PlayerController.Freeze();
-
-        _world.ScreenFade.FadeOut(() =>
-        {
-            if (_corridorExitTrigger != null)
-                _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
-
-            _corridorExitTrigger = null;
-
-            // Load the same street (no CommitMove)
-            StreetRef streetRef = _mapManager.GetCurrentStreet();
-            _world.LoadStreet(_prefabs, streetRef);
-
-            // Restore player + camera where they were before entering corridor
-            _world.PlayerTransform.position = _returnStreetPlayerPos;
-            _game.CameraTransform.position = _returnStreetCameraPos;
-
-            // Reset navigation state cleanly
-            _navigation.Enter();
-
-            _world.ScreenFade.FadeIn(() =>
-            {
-                _isInInterior = false;
-                _isExitingInterior = false;
-
-                _world.PlayerController.Unfreeze();
-            });
-        });
+        StartTransition(
+            outWork: ExitCorridorToStreetOutWork,
+            inDone: ExitCorridorToStreetInDone,
+            freezePlayer: true,
+            unfreezePlayer: true,
+            unfreezeAtFadeInStart: false
+        );
     }
 
     public void EnterCorridorDoorPOV(Transform focus)
     {
-        if (!_isInInterior || _isEnteringInterior || _isExitingInterior)
+        if (_isTransitioning || _mode != LoopMode.Corridor)
             return;
 
         _returnCorridorCameraPos = _game.CameraTransform.position;
 
         _world.EnterCorridorDoorPOV(focus);
-        _isInDoorPOV = true;
+        _mode = LoopMode.DoorPOV;
     }
 
     public void ExitCorridorDoorPOV()
     {
-        if (!_isInInterior || !_isInDoorPOV)
+        if (_isTransitioning || _mode != LoopMode.DoorPOV)
             return;
 
         _world.ExitCorridorDoorPOV();
-        _isInDoorPOV = false;
+        _mode = LoopMode.Corridor;
     }
 
     private void HandleApartmentDoorInteract(ApartmentDoor door)
     {
-        if (_isEnteringInterior || _isExitingInterior || !_isInInterior)
-            return;
-
-        if (_isEnteringApartment || _isExitingApartment || _isInApartment)
+        if (_isTransitioning || _mode != LoopMode.Corridor)
             return;
 
         _activeApartmentDoor = door;
         EnterCorridorDoorPOV(door.transform);
     }
-
 }
