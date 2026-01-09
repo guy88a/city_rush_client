@@ -133,6 +133,15 @@ internal sealed class GameLoopWorld
         StreetRightX = 0f;
     }
 
+    public void SetStreetActive(bool active)
+    {
+        if (Street != null)
+            Street.gameObject.SetActive(active);
+
+        if (Background != null)
+            Background.SetLayersActive(active);
+    }
+
     public void LoadCorridor(CorridorComponent corridorPrefab)
     {
         if (Corridor != null)
@@ -148,6 +157,14 @@ internal sealed class GameLoopWorld
 
         if (Background != null)
             Background.SetLayersActive(false);
+    }
+
+    public void UnloadCorridor()
+    {
+        if (Corridor != null)
+            Object.Destroy(Corridor.gameObject);
+
+        Corridor = null;
     }
 
     /// <summary>
@@ -182,6 +199,8 @@ internal sealed class GameLoopWorld
         if (Apartment != null)
             Object.Destroy(Apartment.gameObject);
 
+        SetStreetActive(true);
+
         Transform parent = Background != null ? Background.transform : null;
 
         Apartment = parent != null
@@ -208,6 +227,8 @@ internal sealed class GameLoopWorld
             Object.Destroy(Apartment.gameObject);
 
         Apartment = null;
+
+        SetStreetActive(false);
 
         if (Corridor != null)
             Corridor.gameObject.SetActive(true);

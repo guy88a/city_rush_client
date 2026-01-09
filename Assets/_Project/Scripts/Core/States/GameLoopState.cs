@@ -274,7 +274,7 @@ public class GameLoopState : IState
 
     private void EnterCorridorOutWork()
     {
-        _world.UnloadStreet();
+        _world.SetStreetActive(false);
         _world.LoadCorridor(_prefabs.CorridorPrefab);
         _world.CenterCorridorOnCamera();
         _world.RepositionPlayerForCorridorSpawn();
@@ -360,8 +360,8 @@ public class GameLoopState : IState
         _corridorExitTrigger = null;
 
         // Load the same street (no CommitMove)
-        StreetRef streetRef = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, streetRef);
+        _world.UnloadCorridor();
+        _world.SetStreetActive(true);
 
         // Restore player + camera where they were before entering corridor
         _world.PlayerTransform.position = _returnStreetPlayerPos;
