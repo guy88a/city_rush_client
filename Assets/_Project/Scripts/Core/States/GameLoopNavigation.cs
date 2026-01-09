@@ -48,7 +48,7 @@ internal sealed class GameLoopNavigation
     public void Tick(float deltaTime)
     {
         // Block gameplay logic while frozen
-        if (_world.PlayerController.IsFrozen)
+        if (_world.PlayerController == null || _world.PlayerController.IsFrozen)
             return;
 
         if (_world.PlayerTransform == null || _world.PlayerCollider == null)

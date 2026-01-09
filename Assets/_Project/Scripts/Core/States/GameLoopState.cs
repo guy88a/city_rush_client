@@ -86,7 +86,8 @@ public class GameLoopState : IState
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
 
-        _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
     }
 
     public void Exit()
@@ -271,6 +272,111 @@ public class GameLoopState : IState
         _navigation.EndStreetTransition();
     }
 
+    private void EnterCorridorOutWork()
+    {
+        _world.UnloadStreet();
+        _world.LoadCorridor(_prefabs.CorridorPrefab);
+        _world.CenterCorridorOnCamera();
+        _world.RepositionPlayerForCorridorSpawn();
+    }
+
+    private void EnterCorridorInDone()
+    {
+        _mode = LoopMode.Corridor;
+        BindCorridorExitTrigger();
+    }
+
+    private void DoorPOVEnterApartmentOutWork()
+    {
+        // Preserve current behavior: do NOT exit POV here.
+        _world.LoadApartment(_prefabs.ApartmentPrefab);
+
+        _apartmentFullRefX = 3840;
+        _apartmentFullRefY = 2160;
+        _apartmentFullRefCached = true;
+
+        _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
+    }
+
+    private void DoorPOVEnterApartmentInDone()
+    {
+        _mode = LoopMode.ApartmentFull;
+    }
+
+    private void ExitApartmentToCorridorOutWork()
+    {
+        _world.UnloadApartment();
+
+        // Preserve existing flow: exit POV when leaving apartment back to corridor.
+        _world.ExitCorridorDoorPOV();
+
+        _game.CameraTransform.position = _returnCorridorCameraPos;
+
+        _world.RestoreCameraRefResolution();
+
+        _apartmentFullRefCached = false;
+        _activeApartmentDoor = null;
+    }
+
+    private void ExitApartmentToCorridorInDone()
+    {
+        _mode = LoopMode.Corridor;
+    }
+
+    private void EnterApartmentWindowInDone()
+    {
+        _mode = LoopMode.ApartmentWindow;
+    }
+
+    private void ExitApartmentWindowOutWork()
+    {
+        // Move camera to apartment full view anchor
+        Transform viewFull = _world.Apartment != null
+            ? _world.Apartment.transform.Find("Anchors/View_Full")
+            : null;
+
+        if (viewFull != null)
+        {
+            Vector3 camPos = _game.CameraTransform.position;
+            camPos.x = viewFull.position.x;
+            camPos.y = viewFull.position.y;
+            _game.CameraTransform.position = camPos;
+        }
+
+        if (_apartmentFullRefCached)
+            _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
+    }
+
+    private void ExitApartmentWindowInDone()
+    {
+        _mode = LoopMode.ApartmentFull;
+    }
+
+    private void ExitCorridorToStreetOutWork()
+    {
+        if (_corridorExitTrigger != null)
+            _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
+
+        _corridorExitTrigger = null;
+
+        // Load the same street (no CommitMove)
+        StreetRef streetRef = _mapManager.GetCurrentStreet();
+        _world.LoadStreet(_prefabs, streetRef);
+
+        // Restore player + camera where they were before entering corridor
+        _world.PlayerTransform.position = _returnStreetPlayerPos;
+        _game.CameraTransform.position = _returnStreetCameraPos;
+
+        // Reset navigation state cleanly
+        _navigation.Enter();
+    }
+
+    private void ExitCorridorToStreetInDone()
+    {
+        _mode = LoopMode.Street;
+    }
+
+
     private void SetPendingCameraMove(Vector3 focus)
     {
         _pendingCameraPos = focus;
@@ -309,21 +415,8 @@ public class GameLoopState : IState
             return;
 
         StartTransition(
-            outWork: () =>
-            {
-                // Preserve current behavior: do NOT exit POV here.
-                _world.LoadApartment(_prefabs.ApartmentPrefab);
-
-                _apartmentFullRefX = 3840;
-                _apartmentFullRefY = 2160;
-                _apartmentFullRefCached = true;
-
-                _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
-            },
-            inDone: () =>
-            {
-                _mode = LoopMode.ApartmentFull;
-            },
+            outWork: DoorPOVEnterApartmentOutWork,
+            inDone: DoorPOVEnterApartmentInDone,
             freezePlayer: false,
             unfreezePlayer: false,
             unfreezeAtFadeInStart: false
@@ -336,24 +429,8 @@ public class GameLoopState : IState
         if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
         {
             StartTransition(
-                outWork: () =>
-                {
-                    _world.UnloadApartment();
-
-                    // Preserve existing flow: exit POV when leaving apartment back to corridor.
-                    _world.ExitCorridorDoorPOV();
-
-                    _game.CameraTransform.position = _returnCorridorCameraPos;
-
-                    _world.RestoreCameraRefResolution();
-
-                    _apartmentFullRefCached = false;
-                    _activeApartmentDoor = null;
-                },
-                inDone: () =>
-                {
-                    _mode = LoopMode.Corridor;
-                },
+                outWork: ExitApartmentToCorridorOutWork,
+                inDone: ExitApartmentToCorridorInDone,
                 freezePlayer: false,
                 unfreezePlayer: false,
                 unfreezeAtFadeInStart: false
@@ -387,10 +464,7 @@ public class GameLoopState : IState
 
         StartTransition(
             outWork: null,
-            inDone: () =>
-            {
-                _mode = LoopMode.ApartmentWindow;
-            },
+            inDone: EnterApartmentWindowInDone,
             freezePlayer: false,
             unfreezePlayer: false,
             unfreezeAtFadeInStart: false
@@ -403,28 +477,8 @@ public class GameLoopState : IState
             return;
 
         StartTransition(
-            outWork: () =>
-            {
-                // Move camera to apartment full view anchor
-                Transform viewFull = _world.Apartment != null
-                    ? _world.Apartment.transform.Find("Anchors/View_Full")
-                    : null;
-
-                if (viewFull != null)
-                {
-                    Vector3 camPos = _game.CameraTransform.position;
-                    camPos.x = viewFull.position.x;
-                    camPos.y = viewFull.position.y;
-                    _game.CameraTransform.position = camPos;
-                }
-
-                if (_apartmentFullRefCached)
-                    _world.SetCameraRefResolution(_apartmentFullRefX, _apartmentFullRefY);
-            },
-            inDone: () =>
-            {
-                _mode = LoopMode.ApartmentFull;
-            },
+            outWork: ExitApartmentWindowOutWork,
+            inDone: ExitApartmentWindowInDone,
             freezePlayer: false,
             unfreezePlayer: false,
             unfreezeAtFadeInStart: false
@@ -444,18 +498,8 @@ public class GameLoopState : IState
         _returnStreetCameraPos = _game.CameraTransform.position;
 
         StartTransition(
-            outWork: () =>
-            {
-                _world.UnloadStreet();
-                _world.LoadCorridor(_prefabs.CorridorPrefab);
-                _world.CenterCorridorOnCamera();
-                _world.RepositionPlayerForCorridorSpawn();
-            },
-            inDone: () =>
-            {
-                _mode = LoopMode.Corridor;
-                BindCorridorExitTrigger();
-            },
+            outWork: EnterCorridorOutWork,
+            inDone: EnterCorridorInDone,
             freezePlayer: true,
             unfreezePlayer: true,
             unfreezeAtFadeInStart: false
@@ -479,28 +523,8 @@ public class GameLoopState : IState
             return;
 
         StartTransition(
-            outWork: () =>
-            {
-                if (_corridorExitTrigger != null)
-                    _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
-
-                _corridorExitTrigger = null;
-
-                // Load the same street (no CommitMove)
-                StreetRef streetRef = _mapManager.GetCurrentStreet();
-                _world.LoadStreet(_prefabs, streetRef);
-
-                // Restore player + camera where they were before entering corridor
-                _world.PlayerTransform.position = _returnStreetPlayerPos;
-                _game.CameraTransform.position = _returnStreetCameraPos;
-
-                // Reset navigation state cleanly
-                _navigation.Enter();
-            },
-            inDone: () =>
-            {
-                _mode = LoopMode.Street;
-            },
+            outWork: ExitCorridorToStreetOutWork,
+            inDone: ExitCorridorToStreetInDone,
             freezePlayer: true,
             unfreezePlayer: true,
             unfreezeAtFadeInStart: false
