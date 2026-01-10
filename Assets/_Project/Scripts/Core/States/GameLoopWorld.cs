@@ -25,6 +25,7 @@ internal sealed class GameLoopWorld
     private Vector3 _streetPosBeforeApartment;
     private Vector3 _backgroundPosBeforeApartment;
     private bool _apartmentBgStreetPosCached;
+    private const float ApartmentBackgroundRootX = -20f;
 
     public ScreenFadeController ScreenFade { get; private set; }
 
@@ -209,7 +210,7 @@ internal sealed class GameLoopWorld
         StreetRightX = Street.RightBoundX;
     }
 
-    public void LoadApartment(ApartmentComponent apartmentPrefab)
+    public void LoadApartment(ApartmentComponent apartmentPrefab, float streetT)
     {
         if (Apartment != null)
             Object.Destroy(Apartment.gameObject);
@@ -256,6 +257,28 @@ internal sealed class GameLoopWorld
             camPos.x = viewFull.position.x;
             camPos.y = viewFull.position.y;
             _game.CameraTransform.position = camPos;
+        }
+
+        streetT = Mathf.Clamp01(streetT);
+
+        if (Street != null)
+        {
+            const float leftX = 0f;     // most-left building
+            const float rightX = -50f;  // most-right building
+
+            streetT = Mathf.Clamp01(streetT);
+            float targetStreetX = Mathf.Lerp(leftX, rightX, streetT);
+
+            Vector3 sp = Street.transform.position;
+            sp.x = targetStreetX;
+            Street.transform.position = sp;
+        }
+
+        if (Background != null)
+        {
+            Vector3 bp = Background.transform.position;
+            bp.x = ApartmentBackgroundRootX;
+            Background.transform.position = bp;
         }
     }
 
@@ -323,19 +346,29 @@ internal sealed class GameLoopWorld
 
         Bounds floor = Corridor.FloorBoundsWorld;
 
-        float x = floor.center.x;
+        // Always spawn near the corridor's left edge (2 world units in),
+        // and keep the player fully inside the floor bounds.
+        float desiredX = floor.min.x + 2f;
+
+        float playerHalfW = 0f;
+        float playerHalfH = 0f;
+
+        if (PlayerCollider != null)
+        {
+            playerHalfW = PlayerCollider.bounds.extents.x;
+            playerHalfH = PlayerCollider.bounds.extents.y;
+        }
+
+        float minX = floor.min.x + playerHalfW;
+        float maxX = floor.max.x - playerHalfW;
+
+        float x = Mathf.Clamp(desiredX, minX, maxX);
+
         float y = Corridor.FloorTopWorldY_FromCollider;
 
-        float playerHalfH = 0f;
-        if (PlayerCollider != null)
-            playerHalfH = PlayerCollider.bounds.extents.y;
-
         PlayerTransform.position = new Vector3(x, y + playerHalfH + 1f, 0f);
-
-        //Vector3 camPos = _game.CameraTransform.position;
-        //camPos.x = x;
-        //_game.CameraTransform.position = camPos;
     }
+
 
     public void CenterCorridorOnCamera()
     {

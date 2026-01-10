@@ -20,8 +20,12 @@ public class GameLoopState : IState
 
     private ApartmentDoor _activeApartmentDoor;
 
+
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
+
+    private float _enterBuildingStreetT;
+    private bool _enterBuildingStreetTSet;
 
     private enum LoopMode
     {
@@ -277,6 +281,9 @@ public class GameLoopState : IState
         _world.SetStreetActive(false);
         _world.LoadCorridor(_prefabs.CorridorPrefab);
         _world.CenterCorridorOnCamera();
+
+        Physics2D.SyncTransforms();
+
         _world.RepositionPlayerForCorridorSpawn();
     }
 
@@ -289,7 +296,8 @@ public class GameLoopState : IState
     private void DoorPOVEnterApartmentOutWork()
     {
         // Preserve current behavior: do NOT exit POV here.
-        _world.LoadApartment(_prefabs.ApartmentPrefab);
+        float t = _enterBuildingStreetTSet ? _enterBuildingStreetT : 0.5f;
+        _world.LoadApartment(_prefabs.ApartmentPrefab, t);
 
         _apartmentFullRefX = 3840;
         _apartmentFullRefY = 2160;
@@ -358,6 +366,8 @@ public class GameLoopState : IState
             _corridorExitTrigger.ExitRequested -= HandleCorridorExitRequested;
 
         _corridorExitTrigger = null;
+
+        _enterBuildingStreetTSet = false;
 
         // Load the same street (no CommitMove)
         _world.UnloadCorridor();
@@ -496,6 +506,14 @@ public class GameLoopState : IState
 
         _returnStreetPlayerPos = _world.PlayerTransform.position;
         _returnStreetCameraPos = _game.CameraTransform.position;
+
+        float doorX = door != null ? door.transform.position.x : _world.PlayerTransform.position.x;
+
+        float left = Mathf.Min(_world.StreetLeftX, _world.StreetRightX);
+        float right = Mathf.Max(_world.StreetLeftX, _world.StreetRightX);
+
+        _enterBuildingStreetT = Mathf.InverseLerp(left, right, doorX);
+        _enterBuildingStreetTSet = true;
 
         StartTransition(
             outWork: EnterCorridorOutWork,
