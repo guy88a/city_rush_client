@@ -27,6 +27,14 @@ namespace CityRush.Units.Characters.Controllers
 
         public event Action<ApartmentDoor> OnApartmentDoorInteract;
 
+        public bool IsMovementEnabled { get; private set; } = true;
+
+        // Raw horizontal input from the Move action (A/D). Updated every ComputeVelocity().
+        public float MoveInputX { get; private set; }
+
+        // True when the player is pressing A/D (even if movement is currently locked).
+        public bool IsMovingInput => Mathf.Abs(MoveInputX) > 0.01f;
+
         public bool IsFrozen { get; private set; }
 
         private void Awake()
@@ -62,7 +70,10 @@ namespace CityRush.Units.Characters.Controllers
             Vector2 move = Vector2.zero;
 
             Vector2 input = controls.Player.Move.ReadValue<Vector2>();
-            move.x = input.x;
+            MoveInputX = input.x;
+
+            // Always read input for logic, but optionally prevent applying it to movement.
+            move.x = IsMovementEnabled ? MoveInputX : 0f;
 
             if (jumpPressed && grounded)
             {
@@ -109,6 +120,23 @@ namespace CityRush.Units.Characters.Controllers
             Debug.Log("PLAYER UNFREEZE!!!");
             IsFrozen = false;
             targetVelocity = Vector2.zero; // reset stale frame
+        }
+
+        public void SetMovementEnabled(bool enabled)
+        {
+            IsMovementEnabled = enabled;
+
+            if (!enabled)
+            {
+                // Stop horizontal motion immediately, keep vertical physics.
+                targetVelocity = Vector2.zero;
+                velocity = new Vector2(0f, velocity.y);
+            }
+            else
+            {
+                // Reset stale frame; next ComputeVelocity will apply input normally.
+                targetVelocity = Vector2.zero;
+            }
         }
 
         public void ClearInteractionState()
