@@ -8,7 +8,7 @@ namespace CityRush.Core.States
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly GameContext _context;
-        private const string SceneToLoad = "PrototypeLevel";
+        private const string SceneToLoad = "CR_10_Gameplay";
         private readonly ISceneLoaderService _sceneLoader;
 
         public LoadLevelState(GameStateMachine gameStateMachine, GameContext context)
