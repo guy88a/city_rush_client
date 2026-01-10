@@ -260,7 +260,7 @@ internal sealed class GameLoopWorld
         {
             const float leftX = 0f;     // most-left building
             const float rightX = -50f;  // most-right building
-            const float scale = 0.6f;
+            const float scale = 0.63f;
 
             // Apply scale for apartment view
             Street.transform.localScale = new Vector3(scale, scale, 1f);
