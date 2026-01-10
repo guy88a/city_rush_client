@@ -171,9 +171,9 @@ namespace CityRush.Units.Characters.Combat
             {
                 if (isAlt)
                 {
-                    SetUziFiring(false);
+                    if (!_controller.IsGrounded) return;
 
-                    // RMB: always Shotgun. If moving, stop movement, shoot, then resume automatically.
+                    SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: true, isAltChannel: true);
                     _nextAltTime = now + shotgunCooldown;
                     return;
@@ -191,9 +191,9 @@ namespace CityRush.Units.Characters.Combat
                 }
                 else
                 {
-                    // Idle: stop uzi anim, use shotgun (lock).
-                    SetUziFiring(false);
+                    if (!_controller.IsGrounded) return;
 
+                    SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: false, isAltChannel: false);
                     _nextPrimaryTime = now + shotgunCooldown;
                 }

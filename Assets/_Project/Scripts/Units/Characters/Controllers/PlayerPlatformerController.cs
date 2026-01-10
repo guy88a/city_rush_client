@@ -13,6 +13,8 @@ namespace CityRush.Units.Characters.Controllers
         private bool jumpPressed = false;
         private bool jumpReleased = false;
 
+        public bool IsGrounded => grounded;
+
         private PlayerControls controls;
         private SpriteRenderer spriteRenderer;
         private Animator animator;
