@@ -23,6 +23,7 @@ internal sealed class GameLoopWorld
     private readonly float _navSpawnGapModifier;
 
     private Vector3 _streetPosBeforeApartment;
+    private Vector3 _streetScaleBeforeApartment;
     private Vector3 _backgroundPosBeforeApartment;
     private bool _apartmentBgStreetPosCached;
     private const float ApartmentBackgroundRootX = -20f;
@@ -218,7 +219,9 @@ internal sealed class GameLoopWorld
         if (!_apartmentBgStreetPosCached)
         {
             if (Street != null) _streetPosBeforeApartment = Street.transform.position;
+            if (Street != null) _streetScaleBeforeApartment = Street.transform.localScale;
             if (Background != null) _backgroundPosBeforeApartment = Background.transform.position;
+
             _apartmentBgStreetPosCached = true;
         }
 
@@ -228,14 +231,6 @@ internal sealed class GameLoopWorld
             Vector3 p = Background.transform.position;
             p.y = 13f;
             Background.transform.position = p;
-        }
-
-        // Street Y = 4 (keep X/Z)
-        if (Street != null)
-        {
-            Vector3 p = Street.transform.position;
-            p.y = 4f;
-            Street.transform.position = p;
         }
 
         SetStreetActive(true);
@@ -265,14 +260,25 @@ internal sealed class GameLoopWorld
         {
             const float leftX = 0f;     // most-left building
             const float rightX = -50f;  // most-right building
+            const float scale = 0.6f;
 
-            streetT = Mathf.Clamp01(streetT);
+            // Apply scale for apartment view
+            Street.transform.localScale = new Vector3(scale, scale, 1f);
+
+            // Compute target X from door position
             float targetStreetX = Mathf.Lerp(leftX, rightX, streetT);
 
-            Vector3 sp = Street.transform.position;
-            sp.x = targetStreetX;
-            Street.transform.position = sp;
+            // Compensate because street pivot is left-anchored
+            float width = Mathf.Abs(StreetRightX - StreetLeftX);
+            float offsetX = width * (1f - scale) * 0.5f;
+
+            // Set BOTH X and Y in one place
+            Vector3 p = Street.transform.position;
+            p.y = 4f;
+            p.x = targetStreetX + offsetX;
+            Street.transform.position = p;
         }
+
 
         if (Background != null)
         {
@@ -293,6 +299,7 @@ internal sealed class GameLoopWorld
         {
             if (Background != null) Background.transform.position = _backgroundPosBeforeApartment;
             if (Street != null) Street.transform.position = _streetPosBeforeApartment;
+            if (Street != null) Street.transform.localScale = _streetScaleBeforeApartment;
             _apartmentBgStreetPosCached = false;
         }
 
