@@ -16,8 +16,11 @@ namespace CityRush.Units.Characters.Combat
         [Header("Mode")]
         [SerializeField] private WeaponMode selectedMode = WeaponMode.Gun;
 
+        [SerializeField] private string boolIsUziFiring = "isUziFiring";
+
         [Header("Cooldowns (seconds)")]
-        [SerializeField] private float uziCooldown = 0.08f;
+        //[SerializeField] private float uziCooldown = 0.08f;
+        [SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
         [SerializeField] private float shotgunCooldown = 0.45f;
         [SerializeField] private float punchCooldown = 0.25f;
         [SerializeField] private float throwCooldown = 0.6f;
@@ -28,7 +31,7 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private float throwLockDuration = 0.22f;
 
         [Header("Animator (set these to match your Animator Controller)")]
-        [SerializeField] private string trigUzi = "Uzi";
+        //[SerializeField] private string trigUzi = "Uzi";
         [SerializeField] private string trigShotgun = "Shotgun";
         [SerializeField] private string trigPunch = "Punch";
         [SerializeField] private string trigThrow = "Throw";
@@ -109,6 +112,8 @@ namespace CityRush.Units.Characters.Combat
             }
             else
             {
+                SetUziFiring(false);
+
                 if (_primaryLoop != null)
                 {
                     StopCoroutine(_primaryLoop);
@@ -166,6 +171,8 @@ namespace CityRush.Units.Characters.Combat
             {
                 if (isAlt)
                 {
+                    SetUziFiring(false);
+
                     // RMB: always Shotgun. If moving, stop movement, shoot, then resume automatically.
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: true, isAltChannel: true);
                     _nextAltTime = now + shotgunCooldown;
@@ -175,13 +182,18 @@ namespace CityRush.Units.Characters.Combat
                 // LMB
                 if (movingInput)
                 {
-                    // Moving: Uzi, no lock.
+                    // Moving: Uzi continuous animation + shoot at shots/sec.
+                    SetUziFiring(true);
+
+                    float interval = 1f / Mathf.Max(1f, uziShotsPerSecond);
                     FireUzi(isAltChannel: false);
-                    _nextPrimaryTime = now + uziCooldown;
+                    _nextPrimaryTime = now + interval;
                 }
                 else
                 {
-                    // Idle: Shotgun, lock.
+                    // Idle: stop uzi anim, use shotgun (lock).
+                    SetUziFiring(false);
+
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: false, isAltChannel: false);
                     _nextPrimaryTime = now + shotgunCooldown;
                 }
@@ -204,7 +216,16 @@ namespace CityRush.Units.Characters.Combat
 
         private void FireUzi(bool isAltChannel)
         {
-            Trigger(trigUzi);
+            // Shoot logic only (spawn projectile / consume ammo later).
+            // No animation trigger here. Animation is controlled by isUziFiring.
+        }
+
+        private void SetUziFiring(bool isFiring)
+        {
+            if (_animator == null) return;
+            if (string.IsNullOrEmpty(boolIsUziFiring)) return;
+
+            _animator.SetBool(boolIsUziFiring, isFiring);
         }
 
         private void FireShotgun(bool lockMovement, float lockDuration, bool resumeOnUnlock, bool isAltChannel)

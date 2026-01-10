@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.PlayerCombatDriver
   selectedMode: 0
-  uziCooldown: 0.08
+  uziCooldown: 0.4
   shotgunCooldown: 0.45
   punchCooldown: 0.25
   throwCooldown: 0.6
