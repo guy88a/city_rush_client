@@ -1,3 +1,4 @@
+// File: Assets/Project/Scripts/Units/Characters/Combat/PlayerCombatDriver.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,8 +19,10 @@ namespace CityRush.Units.Characters.Combat
 
         [SerializeField] private string boolIsUziFiring = "isUziFiring";
 
+        [Header("Uzi")]
+        [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
+
         [Header("Cooldowns (seconds)")]
-        //[SerializeField] private float uziCooldown = 0.08f;
         [SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
         [SerializeField] private float shotgunCooldown = 0.45f;
         [SerializeField] private float punchCooldown = 0.25f;
@@ -31,7 +34,6 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private float throwLockDuration = 0.22f;
 
         [Header("Animator (set these to match your Animator Controller)")]
-        //[SerializeField] private string trigUzi = "Uzi";
         [SerializeField] private string trigShotgun = "Shotgun";
         [SerializeField] private string trigPunch = "Punch";
         [SerializeField] private string trigThrow = "Throw";
@@ -40,6 +42,10 @@ namespace CityRush.Units.Characters.Combat
 
         private PlayerPlatformerController _controller;
         private Animator _animator;
+        private Transform _graphic;
+        private SpriteRenderer _graphicSprite;
+
+        private WeaponShooter _weaponShooter;
 
         private InputAction _primaryAction;
         private InputAction _altAction;
@@ -56,12 +62,16 @@ namespace CityRush.Units.Characters.Combat
         private void Awake()
         {
             _controller = GetComponent<PlayerPlatformerController>();
+            _weaponShooter = GetComponent<WeaponShooter>();
 
-            Transform graphic = transform.Find("Graphic");
-            if (graphic != null)
-                _animator = graphic.GetComponent<Animator>();
+            _graphic = transform.Find("Graphic");
+            if (_graphic != null)
+                _animator = _graphic.GetComponent<Animator>();
 
-            // Self-contained actions so we do not depend on your generated PlayerControls yet.
+            if (_graphic != null)
+                _graphicSprite = _graphic.GetComponent<SpriteRenderer>();
+
+            // Self-contained actions so we do not depend on generated PlayerControls yet.
             _primaryAction = new InputAction("FirePrimary", InputActionType.Button, "<Mouse>/leftButton");
             _altAction = new InputAction("FireAlt", InputActionType.Button, "<Mouse>/rightButton");
         }
@@ -146,7 +156,7 @@ namespace CityRush.Units.Characters.Combat
             while ((isAlt && _isAltHeld) || (!isAlt && _isPrimaryHeld))
             {
                 TryFireOnce(isAlt);
-                yield return null; // allows immediate responsiveness; cooldown gates the actual fire
+                yield return null; // cooldown gates the actual fire
             }
         }
 
@@ -174,7 +184,7 @@ namespace CityRush.Units.Characters.Combat
                     if (!_controller.IsGrounded) return;
 
                     SetUziFiring(false);
-                    FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: true, isAltChannel: true);
+                    FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
                     _nextAltTime = now + shotgunCooldown;
                     return;
                 }
@@ -182,11 +192,10 @@ namespace CityRush.Units.Characters.Combat
                 // LMB
                 if (movingInput)
                 {
-                    // Moving: Uzi continuous animation + shoot at shots/sec.
                     SetUziFiring(true);
 
                     float interval = 1f / Mathf.Max(1f, uziShotsPerSecond);
-                    FireUzi(isAltChannel: false);
+                    FireUzi();
                     _nextPrimaryTime = now + interval;
                 }
                 else
@@ -194,7 +203,7 @@ namespace CityRush.Units.Characters.Combat
                     if (!_controller.IsGrounded) return;
 
                     SetUziFiring(false);
-                    FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration, resumeOnUnlock: false, isAltChannel: false);
+                    FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
                     _nextPrimaryTime = now + shotgunCooldown;
                 }
 
@@ -214,10 +223,23 @@ namespace CityRush.Units.Characters.Combat
             }
         }
 
-        private void FireUzi(bool isAltChannel)
+        private Vector2 GetFacingDirection()
         {
-            // Shoot logic only (spawn projectile / consume ammo later).
-            // No animation trigger here. Animation is controlled by isUziFiring.
+            if (_graphicSprite != null && _graphicSprite.flipX)
+                return Vector2.left;
+
+            return Vector2.right;
+        }
+
+
+        private void FireUzi()
+        {
+            if (_weaponShooter == null) return;
+
+            Vector2 dir = GetFacingDirection();
+            Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * dir.x, uziSpawnOffset.y);
+
+            _weaponShooter.FireUzi(origin, dir);
         }
 
         private void SetUziFiring(bool isFiring)
@@ -228,7 +250,7 @@ namespace CityRush.Units.Characters.Combat
             _animator.SetBool(boolIsUziFiring, isFiring);
         }
 
-        private void FireShotgun(bool lockMovement, float lockDuration, bool resumeOnUnlock, bool isAltChannel)
+        private void FireShotgun(bool lockMovement, float lockDuration)
         {
             Trigger(trigShotgun);
 
@@ -260,7 +282,6 @@ namespace CityRush.Units.Characters.Combat
         {
             if (_controller == null) return;
 
-            // Do not stack locks.
             if (IsActionLocked) return;
 
             IsActionLocked = true;

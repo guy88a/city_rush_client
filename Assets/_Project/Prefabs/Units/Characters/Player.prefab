@@ -127,8 +127,12 @@ GameObject:
   - component: {fileID: 2703299279716658985}
   - component: {fileID: 1994779479807403598}
   - component: {fileID: -4016052276002922149}
+  - component: {fileID: 6640801237431526193}
   - component: {fileID: 2392595085974460766}
+  - component: {fileID: 97952642742423684}
+  - component: {fileID: 6020026575177228638}
   - component: {fileID: 313232343323134633}
+  - component: {fileID: 7819575289298165788}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -269,6 +273,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb73f79beb5724441b74caeb8843e34c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.View.PlayerPOVController
+--- !u!114 &6640801237431526193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4010644873dd9f4b8e3cebd5634692f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.Health
+  maxHp: 100
+  currentHp: 100
 --- !u!114 &2392595085974460766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +299,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a0d02be6da5e843ba04809ae02e649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.CombatSystem
+--- !u!114 &97952642742423684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf1ae569c5d4a547a2a359bef042431, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.CombatStats
+  power: 2
+  armor: 1
+--- !u!114 &6020026575177228638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb15c244641e9fb4e90a24e039f1e4cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageResolver
+  clampToMinimumOne: 1
 --- !u!114 &313232343323134633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,14 +339,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.PlayerCombatDriver
   selectedMode: 0
-  uziCooldown: 0.4
+  boolIsUziFiring: isUziFiring
+  uziSpawnOffset: {x: 2.2, y: -0.4}
+  uziShotsPerSecond: 12
   shotgunCooldown: 0.45
   punchCooldown: 0.25
   throwCooldown: 0.6
   shotgunLockDuration: 0.18
   meleeLockDuration: 0.22
   throwLockDuration: 0.22
-  trigUzi: Uzi
   trigShotgun: Shotgun
   trigPunch: Punch
   trigThrow: Throw
+--- !u!114 &7819575289298165788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ed63c65afef32441ac8dbefceaabfa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponShooter
+  uziBulletPrefab: {fileID: 3096333484048804432, guid: 2be416c09adaf42469bb459568459d3f, type: 3}
+  uziPoolSize: 40
+  uziBulletSpeed: 18
+  uziBulletLifetime: 1.2
+  uziBaseDamage: 4
