@@ -124,8 +124,11 @@ GameObject:
   - component: {fileID: 3270529147631256197}
   - component: {fileID: 4376358975332805431}
   - component: {fileID: -3936171824208857221}
+  - component: {fileID: 2703299279716658985}
   - component: {fileID: 1994779479807403598}
   - component: {fileID: -4016052276002922149}
+  - component: {fileID: 2392595085974460766}
+  - component: {fileID: 313232343323134633}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -222,6 +225,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2703299279716658985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88cc59ca04793a4ea0703e43228262b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.CharacterUnit
+  entryType: 0
+  entryId: 1
+  instanceGuid: 
+  displayName: Bob
 --- !u!114 &1994779479807403598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,3 +269,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb73f79beb5724441b74caeb8843e34c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.View.PlayerPOVController
+--- !u!114 &2392595085974460766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a0d02be6da5e843ba04809ae02e649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.CombatSystem
+--- !u!114 &313232343323134633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 968ce6a44543e2c489ea2b9e531fe15d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.PlayerCombatDriver
+  selectedMode: 0
+  uziCooldown: 0.4
+  shotgunCooldown: 0.45
+  punchCooldown: 0.25
+  throwCooldown: 0.6
+  shotgunLockDuration: 0.18
+  meleeLockDuration: 0.22
+  throwLockDuration: 0.22
+  trigUzi: Uzi
+  trigShotgun: Shotgun
+  trigPunch: Punch
+  trigThrow: Throw

@@ -4,6 +4,8 @@ using CityRush.Core.States;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Interior;
+using CityRush.Units.Characters; // CombatSystem
+using CityRush.Core.Services;    // whatever namespace ILoggerService is in
 using UnityEngine.InputSystem;
 using UnityEngine;
 
@@ -20,6 +22,10 @@ public class GameLoopState : IState
 
     private ApartmentDoor _activeApartmentDoor;
 
+    private ILoggerService _logger;
+
+    private CombatSystem _playerCombat;
+    private bool _combatHooksBound;
 
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
@@ -75,6 +81,9 @@ public class GameLoopState : IState
 
     public void Enter()
     {
+        _logger = _context.Get<ILoggerService>();
+        _logger?.Info("[GameLoopState] Entered.");
+
         _prefabs = _context.GetData<CorePrefabsRegistry>();
         _mapManager = _context.GetData<MapManager>();
 
@@ -92,6 +101,8 @@ public class GameLoopState : IState
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
+
+        EnsurePlayerCombatBound();
     }
 
     public void Exit()
@@ -106,6 +117,16 @@ public class GameLoopState : IState
             _world.PlayerController.OnApartmentDoorInteract -= HandleApartmentDoorInteract;
 
         _corridorExitTrigger = null;
+
+        if (_playerCombat != null && _combatHooksBound)
+        {
+            _playerCombat.OnAimStarted -= HandleAimStarted;
+            _playerCombat.OnAimCanceled -= HandleAimCanceled;
+            _playerCombat.OnAimReleased -= HandleAimReleased;
+        }
+
+        _playerCombat = null;
+        _combatHooksBound = false;
 
         _world?.Exit();
 
@@ -483,8 +504,24 @@ public class GameLoopState : IState
 
     private void TickApartmentWindow()
     {
+        EnsurePlayerCombatBound();
+
+        // ADS (example: RMB hold/release)
+        if (Mouse.current != null && _playerCombat != null)
+        {
+            if (Mouse.current.rightButton.wasPressedThisFrame)
+                _playerCombat.StartAim();
+
+            if (Mouse.current.rightButton.wasReleasedThisFrame)
+                _playerCombat.ReleaseAim();
+        }
+
+        // S => exit window view
         if (Keyboard.current == null || !Keyboard.current.sKey.wasPressedThisFrame)
             return;
+
+        // Hard stop aim when leaving window mode
+        _playerCombat?.CancelAim();
 
         StartTransition(
             outWork: ExitApartmentWindowOutWork,
@@ -577,4 +614,32 @@ public class GameLoopState : IState
         _activeApartmentDoor = door;
         EnterCorridorDoorPOV(door.transform);
     }
+
+    // ----------------------------
+    // Player Stuff
+    // ----------------------------
+    private void EnsurePlayerCombatBound()
+    {
+        if (_playerCombat == null)
+        {
+            _playerCombat = _world != null ? _world.PlayerCombat : null;
+
+            if (_playerCombat == null)
+                _logger?.Info("[Combat] ERROR: PlayerCombat (CombatSystem) missing on Player prefab root.");
+        }
+
+        if (_playerCombat == null || _combatHooksBound) return;
+
+        _playerCombat.OnAimStarted += HandleAimStarted;
+        _playerCombat.OnAimCanceled += HandleAimCanceled;
+        _playerCombat.OnAimReleased += HandleAimReleased;
+
+        _combatHooksBound = true;
+        _logger?.Info("[Combat] Bound player combat logs.");
+    }
+
+    private void HandleAimStarted() => _logger?.Info("[Combat] AimStarted");
+    private void HandleAimCanceled() => _logger?.Info("[Combat] AimCanceled");
+    private void HandleAimReleased() => _logger?.Info("[Combat] AimReleased");
+
 }

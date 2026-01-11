@@ -3,6 +3,7 @@ using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
 using CityRush.Units.Characters.Controllers;
 using CityRush.Units.Characters.View;
+using CityRush.Units.Characters;
 using CityRush.World.Background;
 using CityRush.World.Interior;
 using CityRush.World.Map;
@@ -48,6 +49,8 @@ internal sealed class GameLoopWorld
     public float StreetRightX { get; private set; }
 
     public PlayerPOVController PlayerPOV { get; private set; }
+    public CharacterUnit PlayerUnit { get; private set; }
+    public CombatSystem PlayerCombat { get; private set; }
 
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
@@ -95,6 +98,8 @@ internal sealed class GameLoopWorld
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
+        PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
+        PlayerCombat = PlayerInstance.GetComponent<CombatSystem>();
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
@@ -136,6 +141,8 @@ internal sealed class GameLoopWorld
         PlayerCollider = null;
         PlayerController = null;
         PlayerPOV = null;
+        PlayerUnit = null;
+        PlayerCombat = null;
 
         ScreenFade = null;
     }
