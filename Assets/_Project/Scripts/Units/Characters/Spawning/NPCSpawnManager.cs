@@ -12,6 +12,9 @@ namespace CityRush.Units.Characters.Spawning
 
         private GameObject _agentPrefab;
 
+        private readonly System.Collections.Generic.List<NPCController> _active = new();
+        private readonly System.Collections.Generic.Stack<NPCController> _pool = new();
+
         public void Enter(GameObject agentPrefab)
         {
             _agentPrefab = agentPrefab;
@@ -37,32 +40,72 @@ namespace CityRush.Units.Characters.Spawning
 
         public void ClearAll()
         {
-            if (_root == null) return;
+            for (int i = _active.Count - 1; i >= 0; i--)
+                ReturnToPool(_active[i]);
 
-            for (int i = _root.childCount - 1; i >= 0; i--)
-                Object.Destroy(_root.GetChild(i).gameObject);
+            _active.Clear();
         }
+
 
         public void SpawnAgents(int count)
         {
-            if (_root == null) return;
-            if (_agentPrefab == null) return;
+            if (_root == null || _agentPrefab == null) return;
 
             for (int i = 0; i < count; i++)
             {
-                GameObject npc = Object.Instantiate(_agentPrefab, _root);
+                NPCController ctrl = GetOrCreate();
+                if (ctrl == null) continue;
 
                 float x = Random.Range(_streetLeftX + 1f, _streetRightX - 1f);
-                npc.transform.position = new Vector3(x, 0f, 0f);
+                ctrl.transform.position = new Vector3(x, 0f, 0f);
 
-                NPCController ctrl = npc.GetComponent<NPCController>();
-                if (ctrl != null)
-                {
-                    ctrl.SetStreetBounds(_streetLeftX, _streetRightX);
-                    ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
-                    ctrl.MaxSpeed = Random.Range(3f, 7f);
-                }
+                ctrl.SetStreetBounds(_streetLeftX, _streetRightX);
+                ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
+                ctrl.MaxSpeed = Random.Range(3f, 7f);
+
+                ctrl.gameObject.SetActive(true);
+                _active.Add(ctrl);
             }
         }
+
+
+        private NPCController GetOrCreate()
+        {
+            NPCController ctrl;
+
+            if (_pool.Count > 0)
+            {
+                ctrl = _pool.Pop();
+            }
+            else
+            {
+                GameObject go = Object.Instantiate(_agentPrefab, _root);
+                ctrl = go.GetComponent<NPCController>();
+            }
+
+            if (ctrl != null)
+            {
+                ctrl.OnDespawn = HandleDespawn;
+                if (ctrl.transform.parent != _root)
+                    ctrl.transform.SetParent(_root, false);
+            }
+
+            return ctrl;
+        }
+
+        private void HandleDespawn(NPCController ctrl)
+        {
+            ReturnToPool(ctrl);
+            _active.Remove(ctrl);
+        }
+
+        private void ReturnToPool(NPCController ctrl)
+        {
+            if (ctrl == null) return;
+
+            ctrl.gameObject.SetActive(false);
+            _pool.Push(ctrl);
+        }
+
     }
 }

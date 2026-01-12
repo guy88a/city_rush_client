@@ -20,6 +20,8 @@ namespace CityRush.Units.Characters.Controllers
         private SpriteRenderer _spriteRenderer;
         private Animator _animator;
 
+        public Action<NPCController> OnDespawn;
+
         public float MaxSpeed
         {
             get => maxSpeed;
@@ -60,6 +62,7 @@ namespace CityRush.Units.Characters.Controllers
                 float x = transform.position.x;
                 if (x < _streetMinX - despawnMargin || x > _streetMaxX + despawnMargin)
                 {
+                    OnDespawn?.Invoke(this);
                     gameObject.SetActive(false);
                     return;
                 }
