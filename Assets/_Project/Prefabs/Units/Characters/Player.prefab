@@ -259,7 +259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterControll
   minGroundNormalY: 0.65
   gravityModifier: 1
-  maxSpeed: 7
+  maxSpeed: 7.5
   jumpTakeoffSpeed: 9
 --- !u!114 &-4016052276002922149
 MonoBehaviour:
