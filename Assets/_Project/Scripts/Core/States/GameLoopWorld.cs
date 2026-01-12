@@ -265,9 +265,9 @@ internal sealed class GameLoopWorld
 
         if (Street != null)
         {
+            const float scale = 0.5f;
             const float leftX = 0f;     // most-left building
             const float rightX = -50f;  // most-right building
-            const float scale = 0.63f;
 
             // Apply scale for apartment view
             Street.transform.localScale = new Vector3(scale, scale, 1f);
@@ -281,7 +281,7 @@ internal sealed class GameLoopWorld
 
             // Set BOTH X and Y in one place
             Vector3 p = Street.transform.position;
-            p.y = 4f;
+            p.y = 8f;
             p.x = targetStreetX + offsetX;
             Street.transform.position = p;
         }
