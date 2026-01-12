@@ -29,6 +29,8 @@ internal sealed class GameLoopWorld
     private bool _apartmentBgStreetPosCached;
     private const float ApartmentBackgroundRootX = -20f;
 
+    private CityRush.Units.Characters.Spawning.NPCSpawnManager _npcs;
+
     public ScreenFadeController ScreenFade { get; private set; }
 
     public BackgroundRoot Background { get; private set; }
@@ -92,6 +94,11 @@ internal sealed class GameLoopWorld
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
 
+        _npcs = new CityRush.Units.Characters.Spawning.NPCSpawnManager();
+        _npcs.Enter(prefabs.NPCPrefab);
+        _npcs.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs.SpawnAgents(5);
+
         // Player (after Street build)
         PlayerInstance = Object.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
@@ -128,6 +135,7 @@ internal sealed class GameLoopWorld
         if (InteriorRoot != null)
             Object.Destroy(InteriorRoot.gameObject);
 
+        _npcs?.Exit();
 
         Background = null;
 
@@ -144,11 +152,15 @@ internal sealed class GameLoopWorld
         PlayerUnit = null;
         PlayerCombat = null;
 
+        _npcs = null;
+
         ScreenFade = null;
     }
 
     public void UnloadStreet()
     {
+        _npcs?.ClearAll();
+
         if (Street != null)
             Object.Destroy(Street.gameObject);
 
@@ -216,6 +228,10 @@ internal sealed class GameLoopWorld
 
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
+
+        _npcs?.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs?.ClearAll();
+        _npcs?.SpawnAgents(5);
     }
 
     public void LoadApartment(ApartmentComponent apartmentPrefab, float streetT)

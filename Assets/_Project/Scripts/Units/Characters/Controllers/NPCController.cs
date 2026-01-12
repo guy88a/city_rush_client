@@ -39,6 +39,13 @@ namespace CityRush.Units.Characters.Controllers
             _hasStreetBounds = true;
         }
 
+        public void SetupPatrol(float minX, float maxX, int moveDir, float speed)
+        {
+            SetStreetBounds(minX, maxX);
+            MoveDir = moveDir;
+            MaxSpeed = speed;
+        }
+
         private void Awake()
         {
             Transform graphic = transform.Find("Graphic");
@@ -53,7 +60,7 @@ namespace CityRush.Units.Characters.Controllers
                 float x = transform.position.x;
                 if (x < _streetMinX - despawnMargin || x > _streetMaxX + despawnMargin)
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                     return;
                 }
             }
