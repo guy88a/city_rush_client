@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 7377966504881829695}
   - component: {fileID: -6623481950835524620}
   - component: {fileID: -457987301196439072}
-  - component: {fileID: 622240952811039424}
+  - component: {fileID: 6602541041314397640}
+  - component: {fileID: -4434741104940079437}
   - component: {fileID: 7778092973846962177}
   - component: {fileID: 3605924977295424972}
   - component: {fileID: 5809041375406666379}
   - component: {fileID: 4526217930563338770}
   - component: {fileID: 1400324003508877898}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +114,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &622240952811039424
+--- !u!114 &6602541041314397640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,11 +123,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 470628288414811201}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bf33d6e5b119f949a087ece46123798, type: 3}
+  m_Script: {fileID: 11500000, guid: c88cc59ca04793a4ea0703e43228262b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PhysicsObject
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.CharacterUnit
+  entryType: 0
+  entryId: 0
+  instanceGuid: 
+  displayName: 
+--- !u!114 &-4434741104940079437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470628288414811201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff9d9fbb74ec2747b8aa237e8b74f1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Controllers.NPCController
   minGroundNormalY: 0.65
   gravityModifier: 1
+  maxSpeed: 6
+  despawnMargin: 2
 --- !u!114 &7778092973846962177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +227,7 @@ GameObject:
   - component: {fileID: 7384389165543375597}
   - component: {fileID: 3402033130066220409}
   - component: {fileID: 6128162501246408885}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -276,7 +295,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_Sprite: {fileID: 21300000, guid: d8bf3096e29cc804598c13b695d2f877, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
