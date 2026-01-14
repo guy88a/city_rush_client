@@ -5,6 +5,17 @@ namespace CityRush.Units.Characters.Spawning
 {
     public sealed class NPCSpawnManager
     {
+        private NPCSpawnRunner _runner;
+        private int _spawnToken; // increments to invalidate pending respawns
+
+        private float _spawnMarginX = 1f;
+        private float _minSpeed = 3f;
+        private float _maxSpeed = 7f;
+        private float _respawnDelayMin = 2f;
+        private float _respawnDelayMax = 3f;
+
+        private float _groundY = 0f;
+
         private Transform _root;
 
         private float _streetLeftX;
@@ -19,6 +30,8 @@ namespace CityRush.Units.Characters.Spawning
         {
             _agentPrefab = agentPrefab;
             _root = new GameObject("NPCsRoot").transform;
+            _runner = _root.gameObject.AddComponent<NPCSpawnRunner>();
+            _spawnToken++;
         }
 
         public void Exit()
@@ -27,6 +40,9 @@ namespace CityRush.Units.Characters.Spawning
 
             if (_root != null)
                 Object.Destroy(_root.gameObject);
+
+            _spawnToken++;
+            _runner?.CancelAll();
 
             _root = null;
             _agentPrefab = null;
@@ -38,8 +54,16 @@ namespace CityRush.Units.Characters.Spawning
             _streetRightX = rightX;
         }
 
+        public void SetGroundY(float y)
+        {
+            _groundY = y;
+        }
+
         public void ClearAll()
         {
+            _spawnToken++;
+            _runner?.CancelAll();
+
             for (int i = _active.Count - 1; i >= 0; i--)
                 ReturnToPool(_active[i]);
 
@@ -97,6 +121,8 @@ namespace CityRush.Units.Characters.Spawning
         {
             ReturnToPool(ctrl);
             _active.Remove(ctrl);
+
+            ScheduleRespawnOne();
         }
 
         private void ReturnToPool(NPCController ctrl)
@@ -106,6 +132,44 @@ namespace CityRush.Units.Characters.Spawning
             ctrl.gameObject.SetActive(false);
             _pool.Push(ctrl);
         }
+
+        private void ScheduleRespawnOne()
+        {
+            if (_runner == null) return;
+
+            int token = _spawnToken;
+            float delay = Random.Range(_respawnDelayMin, _respawnDelayMax);
+            _runner.Run(RespawnAfterDelay(delay, token));
+        }
+
+        private System.Collections.IEnumerator RespawnAfterDelay(float delay, int token)
+        {
+            yield return new WaitForSeconds(delay);
+
+            // canceled / street changed / cleared
+            if (token != _spawnToken) yield break;
+
+            SpawnOne();
+        }
+
+        private void SpawnOne()
+        {
+            if (_root == null || _agentPrefab == null) return;
+
+            NPCController ctrl = GetOrCreate();
+            if (ctrl == null) return;
+
+            float x = Random.Range(_streetLeftX + _spawnMarginX, _streetRightX - _spawnMarginX);
+            ctrl.transform.position = new Vector3(x, _groundY, 0f);
+
+            ctrl.SetStreetBounds(_streetLeftX, _streetRightX);
+            ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
+            ctrl.MaxSpeed = Random.Range(_minSpeed, _maxSpeed);
+
+            ctrl.gameObject.SetActive(true);
+            _active.Add(ctrl);
+        }
+
 
     }
 }

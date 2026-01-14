@@ -281,8 +281,8 @@ public class GameLoopState : IState
             return;
 
         // Destroy old street BEFORE commit move (same ordering as before)
-        if (_world.Street != null)
-            Object.Destroy(_world.Street.gameObject);
+        //if (_world.Street != null)
+        //    Object.Destroy(_world.Street.gameObject);
 
         _mapManager.CommitMove(direction);
 
