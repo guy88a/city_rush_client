@@ -18,8 +18,12 @@ namespace CityRush.Units.Characters.Spawning
 
         private Transform _root;
 
+        // Treat these as "street-space" bounds (local/design space).
         private float _streetLeftX;
         private float _streetRightX;
+
+        // Optional transform that converts street-space -> world-space (used for ApartmentWindow).
+        private Transform _streetSpace;
 
         private GameObject _agentPrefab;
 
@@ -46,12 +50,18 @@ namespace CityRush.Units.Characters.Spawning
 
             _root = null;
             _agentPrefab = null;
+            _streetSpace = null;
         }
 
         public void SetStreetBounds(float leftX, float rightX)
         {
             _streetLeftX = leftX;
             _streetRightX = rightX;
+        }
+
+        public void SetStreetSpace(Transform streetSpace)
+        {
+            _streetSpace = streetSpace;
         }
 
         public void SetGroundY(float y)
@@ -70,28 +80,38 @@ namespace CityRush.Units.Characters.Spawning
             _active.Clear();
         }
 
-
         public void SpawnAgents(int count)
         {
             if (_root == null || _agentPrefab == null) return;
+
+            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
+            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
+
+            float minX = leftLocal + _spawnMarginX;
+            float maxX = rightLocal - _spawnMarginX;
+
+            if (maxX <= minX)
+                return;
+
+            GetWorldStreetBounds(out float leftWorld, out float rightWorld);
 
             for (int i = 0; i < count; i++)
             {
                 NPCController ctrl = GetOrCreate();
                 if (ctrl == null) continue;
 
-                float x = Random.Range(_streetLeftX + 1f, _streetRightX - 1f);
-                ctrl.transform.position = new Vector3(x, 0f, 0f);
+                float xLocal = Random.Range(minX, maxX);
+                ctrl.transform.position = ToWorld(xLocal, _groundY);
+                ApplyVisualScale(ctrl);
 
-                ctrl.SetStreetBounds(_streetLeftX, _streetRightX);
+                ctrl.SetStreetBounds(leftWorld, rightWorld);
                 ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
-                ctrl.MaxSpeed = Random.Range(3f, 7f);
+                ctrl.MaxSpeed = Random.Range(_minSpeed, _maxSpeed);
 
                 ctrl.gameObject.SetActive(true);
                 _active.Add(ctrl);
             }
         }
-
 
         private NPCController GetOrCreate()
         {
@@ -156,13 +176,25 @@ namespace CityRush.Units.Characters.Spawning
         {
             if (_root == null || _agentPrefab == null) return;
 
+            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
+            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
+
+            float minX = leftLocal + _spawnMarginX;
+            float maxX = rightLocal - _spawnMarginX;
+
+            if (maxX <= minX)
+                return;
+
             NPCController ctrl = GetOrCreate();
             if (ctrl == null) return;
 
-            float x = Random.Range(_streetLeftX + _spawnMarginX, _streetRightX - _spawnMarginX);
-            ctrl.transform.position = new Vector3(x, _groundY, 0f);
+            float xLocal = Random.Range(minX, maxX);
+            ctrl.transform.position = ToWorld(xLocal, _groundY);
+            ApplyVisualScale(ctrl);
 
-            ctrl.SetStreetBounds(_streetLeftX, _streetRightX);
+            GetWorldStreetBounds(out float leftWorld, out float rightWorld);
+
+            ctrl.SetStreetBounds(leftWorld, rightWorld);
             ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
             ctrl.MaxSpeed = Random.Range(_minSpeed, _maxSpeed);
 
@@ -170,6 +202,46 @@ namespace CityRush.Units.Characters.Spawning
             _active.Add(ctrl);
         }
 
+        private Vector3 ToWorld(float xLocal, float yLocal)
+        {
+            if (_streetSpace == null)
+                return new Vector3(xLocal, yLocal, 0f);
 
+            return _streetSpace.TransformPoint(new Vector3(xLocal, yLocal, 0f));
+        }
+
+        private void GetWorldStreetBounds(out float leftWorld, out float rightWorld)
+        {
+            if (_streetSpace == null)
+            {
+                leftWorld = _streetLeftX;
+                rightWorld = _streetRightX;
+            }
+            else
+            {
+                leftWorld = _streetSpace.TransformPoint(new Vector3(_streetLeftX, 0f, 0f)).x;
+                rightWorld = _streetSpace.TransformPoint(new Vector3(_streetRightX, 0f, 0f)).x;
+            }
+
+            if (leftWorld > rightWorld)
+            {
+                float t = leftWorld;
+                leftWorld = rightWorld;
+                rightWorld = t;
+            }
+        }
+
+        private void ApplyVisualScale(NPCController ctrl)
+        {
+            if (ctrl == null) return;
+
+            float s = 1f;
+
+            // Window mode: street is scaled down (0.5f), so match that visually.
+            if (_streetSpace != null)
+                s = _streetSpace.lossyScale.x;
+
+            ctrl.transform.localScale = new Vector3(s, s, 1f);
+        }
     }
 }
