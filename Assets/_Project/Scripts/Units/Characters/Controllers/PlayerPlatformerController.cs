@@ -29,6 +29,11 @@ namespace CityRush.Units.Characters.Controllers
 
         public event Action<ApartmentDoor> OnApartmentDoorInteract;
 
+        private WorldObjectUnit _currentWorldObject;
+        public WorldObjectUnit CurrentWorldObject => _currentWorldObject;
+
+        public event Action<WorldObjectUnit> OnWorldObjectInteract;
+
         public bool IsMovementEnabled { get; private set; } = true;
 
         // Raw horizontal input from the Move action (A/D). Updated every ComputeVelocity().
@@ -67,6 +72,11 @@ namespace CityRush.Units.Characters.Controllers
             if (_currentApartmentDoor != null && Keyboard.current != null && Keyboard.current.wKey.wasPressedThisFrame)
             {
                 OnApartmentDoorInteract?.Invoke(_currentApartmentDoor);
+            }
+
+            if (_currentWorldObject != null && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                OnWorldObjectInteract?.Invoke(_currentWorldObject);
             }
 
             Vector2 move = Vector2.zero;
@@ -145,6 +155,7 @@ namespace CityRush.Units.Characters.Controllers
         {
             _currentBuildingDoor = null;
             _currentApartmentDoor = null;
+            _currentWorldObject = null;
             jumpPressed = false;
             jumpReleased = false;
         }
@@ -156,6 +167,9 @@ namespace CityRush.Units.Characters.Controllers
 
             ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
             if (apartmentDoor != null) _currentApartmentDoor = apartmentDoor;
+
+            WorldObjectUnit worldObject = other.GetComponentInParent<WorldObjectUnit>();
+            if (worldObject != null) _currentWorldObject = worldObject;
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -165,6 +179,9 @@ namespace CityRush.Units.Characters.Controllers
 
             ApartmentDoor apartmentDoor = other.GetComponentInParent<ApartmentDoor>();
             if (apartmentDoor != null && apartmentDoor == _currentApartmentDoor) _currentApartmentDoor = null;
+
+            WorldObjectUnit worldObject = other.GetComponentInParent<WorldObjectUnit>();
+            if (worldObject != null && worldObject == _currentWorldObject) _currentWorldObject = null;
         }
     }
 }

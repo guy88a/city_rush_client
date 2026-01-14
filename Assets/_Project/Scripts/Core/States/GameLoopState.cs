@@ -1,13 +1,14 @@
 using CityRush.Core;
 using CityRush.Core.Prefabs;
+using CityRush.Core.Services;    // whatever namespace ILoggerService is in
 using CityRush.Core.States;
+using CityRush.Units;
+using CityRush.Units.Characters; // CombatSystem
+using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
-using CityRush.World.Interior;
-using CityRush.Units.Characters; // CombatSystem
-using CityRush.Core.Services;    // whatever namespace ILoggerService is in
-using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameLoopState : IState
 {
@@ -106,6 +107,9 @@ public class GameLoopState : IState
         if (_world?.PlayerController != null)
             _world.PlayerController.OnApartmentDoorInteract += HandleApartmentDoorInteract;
 
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnWorldObjectInteract += HandleWorldObjectInteract;
+
         EnsurePlayerCombatBound();
     }
 
@@ -119,6 +123,9 @@ public class GameLoopState : IState
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnApartmentDoorInteract -= HandleApartmentDoorInteract;
+
+        if (_world?.PlayerController != null)
+            _world.PlayerController.OnWorldObjectInteract -= HandleWorldObjectInteract;
 
         _corridorExitTrigger = null;
 
@@ -632,6 +639,23 @@ public class GameLoopState : IState
         _activeApartmentDoor = door;
         EnterCorridorDoorPOV(door.transform);
     }
+
+    private void HandleWorldObjectInteract(WorldObjectUnit worldObject)
+    {
+        if (_isTransitioning)
+            return;
+
+        // Allow interactions in street + apartment window (as you said street objects appear there too).
+        if (_mode != LoopMode.Street && _mode != LoopMode.ApartmentWindow)
+            return;
+
+        if (worldObject == null)
+            return;
+
+        // Next step: route to interaction components (Destroyable, Lockpickable, Readable, etc.)
+        _logger?.Info($"[WorldObject] Interact: {worldObject.EntryKey} guid={worldObject.InstanceGuid}");
+    }
+
 
     // ----------------------------
     // Player Stuff
