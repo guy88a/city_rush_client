@@ -23,6 +23,7 @@ namespace CityRush.Core.Prefabs
 
         [Header("Player")]
         [SerializeField] private GameObject playerPrefab;
+        [SerializeField] private GameObject npcPrefab;
 
         public Camera GlobalCameraPrefab => globalCameraPrefab;
         public BackgroundRoot BackgroundPrefab => backgroundPrefab;
@@ -32,5 +33,6 @@ namespace CityRush.Core.Prefabs
 
         public GameObject ScreenFadeCanvasPrefab => screenFadeCanvasPrefab;
         public GameObject PlayerPrefab => playerPrefab;
+        public GameObject NPCPrefab => npcPrefab;
     }
 }

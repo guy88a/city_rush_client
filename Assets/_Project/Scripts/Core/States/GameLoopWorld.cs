@@ -29,6 +29,8 @@ internal sealed class GameLoopWorld
     private bool _apartmentBgStreetPosCached;
     private const float ApartmentBackgroundRootX = -20f;
 
+    private CityRush.Units.Characters.Spawning.NPCSpawnManager _npcs;
+
     public ScreenFadeController ScreenFade { get; private set; }
 
     public BackgroundRoot Background { get; private set; }
@@ -92,6 +94,11 @@ internal sealed class GameLoopWorld
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
 
+        _npcs = new CityRush.Units.Characters.Spawning.NPCSpawnManager();
+        _npcs.Enter(prefabs.NPCPrefab);
+        _npcs.SetStreetBounds(StreetLeftX, StreetRightX);
+        //_npcs.SpawnAgents(5); // ***TOREMOVE***
+
         // Player (after Street build)
         PlayerInstance = Object.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
@@ -128,6 +135,7 @@ internal sealed class GameLoopWorld
         if (InteriorRoot != null)
             Object.Destroy(InteriorRoot.gameObject);
 
+        _npcs?.Exit();
 
         Background = null;
 
@@ -144,11 +152,18 @@ internal sealed class GameLoopWorld
         PlayerUnit = null;
         PlayerCombat = null;
 
+        _npcs?.SetStreetSpace(null);
+        _npcs?.Exit();
+        _npcs = null;
+
         ScreenFade = null;
     }
 
     public void UnloadStreet()
     {
+        _npcs?.SetStreetSpace(null);
+        _npcs?.ClearAll();
+
         if (Street != null)
             Object.Destroy(Street.gameObject);
 
@@ -216,6 +231,11 @@ internal sealed class GameLoopWorld
 
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
+
+        _npcs?.SetStreetSpace(null);
+        _npcs?.SetStreetBounds(StreetLeftX, StreetRightX);
+        //_npcs?.ClearAll();
+        //_npcs?.SpawnAgents(5); // ***TOREMOVE***
     }
 
     public void LoadApartment(ApartmentComponent apartmentPrefab, float streetT)
@@ -432,4 +452,33 @@ internal sealed class GameLoopWorld
         _ppc.refResolutionX = _ppcRefX;
         _ppc.refResolutionY = _ppcRefY;
     }
+
+    public void Npcs_Clear()
+    {
+        _npcs?.SetStreetSpace(null);
+        _npcs?.ClearAll();
+    }
+
+    public void Npcs_SpawnStreet(int count)
+    {
+        if (_npcs == null) return;
+
+        _npcs.SetStreetSpace(null);
+        _npcs.SetGroundY(0f);
+        _npcs.ClearAll();
+        _npcs.SpawnAgents(count);
+    }
+
+    public void Npcs_SpawnApartmentWindow(int count)
+    {
+        if (_npcs == null || Street == null) return;
+
+        // Street already has p.y = 8f and scale = 0.5f set in LoadApartment(),
+        // so street-space -> world-space conversion will account for it.
+        _npcs.SetStreetSpace(Street.transform);
+        _npcs.SetGroundY(0f);
+        _npcs.ClearAll();
+        _npcs.SpawnAgents(count);
+    }
+
 }

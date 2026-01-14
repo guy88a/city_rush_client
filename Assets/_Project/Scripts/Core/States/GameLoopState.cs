@@ -22,6 +22,8 @@ public class GameLoopState : IState
 
     private ApartmentDoor _activeApartmentDoor;
 
+    private const int DefaultNpcCount = 5;
+
     private ILoggerService _logger;
 
     private CombatSystem _playerCombat;
@@ -95,6 +97,8 @@ public class GameLoopState : IState
 
         _mode = LoopMode.Street;
         _isTransitioning = false;
+
+        _world.Npcs_SpawnStreet(DefaultNpcCount);
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
@@ -281,8 +285,8 @@ public class GameLoopState : IState
             return;
 
         // Destroy old street BEFORE commit move (same ordering as before)
-        if (_world.Street != null)
-            Object.Destroy(_world.Street.gameObject);
+        //if (_world.Street != null)
+        //    Object.Destroy(_world.Street.gameObject);
 
         _mapManager.CommitMove(direction);
 
@@ -290,6 +294,9 @@ public class GameLoopState : IState
         _world.LoadStreet(_prefabs, nextStreet);
 
         _world.RepositionPlayerForStreetEntry(direction);
+
+        _world.RepositionPlayerForStreetEntry(direction);
+        _world.Npcs_SpawnStreet(DefaultNpcCount);
     }
 
     private void StreetTransitionInDone()
@@ -299,6 +306,8 @@ public class GameLoopState : IState
 
     private void EnterCorridorOutWork()
     {
+        _world.Npcs_Clear();
+
         _world.SetStreetActive(false);
         _world.LoadCorridor(_prefabs.CorridorPrefab);
         _world.CenterCorridorOnCamera();
@@ -316,6 +325,8 @@ public class GameLoopState : IState
 
     private void DoorPOVEnterApartmentOutWork()
     {
+        _world.Npcs_Clear();
+
         // Preserve current behavior: do NOT exit POV here.
         float t = _enterBuildingStreetTSet ? _enterBuildingStreetT : 0.5f;
         _world.LoadApartment(_prefabs.ApartmentPrefab, t);
@@ -354,11 +365,16 @@ public class GameLoopState : IState
 
     private void EnterApartmentWindowInDone()
     {
+        _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
+        _mode = LoopMode.ApartmentWindow;
+
         _mode = LoopMode.ApartmentWindow;
     }
 
     private void ExitApartmentWindowOutWork()
     {
+        _world.Npcs_Clear();
+
         // Move camera to apartment full view anchor
         Transform viewFull = _world.Apartment != null
             ? _world.Apartment.transform.Find("Anchors/View_Full")
@@ -397,6 +413,8 @@ public class GameLoopState : IState
         // Restore player + camera where they were before entering corridor
         _world.PlayerTransform.position = _returnStreetPlayerPos;
         _game.CameraTransform.position = _returnStreetCameraPos;
+
+        _world.Npcs_SpawnStreet(DefaultNpcCount);
 
         // Reset navigation state cleanly
         _navigation.Enter();
