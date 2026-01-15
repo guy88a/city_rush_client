@@ -645,16 +645,22 @@ public class GameLoopState : IState
         if (_isTransitioning)
             return;
 
-        // Allow interactions in street + apartment window (as you said street objects appear there too).
         if (_mode != LoopMode.Street && _mode != LoopMode.ApartmentWindow)
             return;
 
         if (worldObject == null)
             return;
 
-        // Next step: route to interaction components (Destroyable, Lockpickable, Readable, etc.)
-        _logger?.Info($"[WorldObject] Interact: {worldObject.EntryKey} guid={worldObject.InstanceGuid}");
+        Destroyable destroyable = worldObject.GetComponent<Destroyable>();
+        if (destroyable != null)
+        {
+            destroyable.TryInteract();
+            return;
+        }
+
+        _logger?.Info($"[WorldObject] Interact (no handler): {worldObject.EntryKey} guid={worldObject.InstanceGuid}");
     }
+
 
 
     // ----------------------------

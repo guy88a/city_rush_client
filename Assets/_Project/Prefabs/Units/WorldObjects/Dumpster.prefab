@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 3135981535883031885}
   - component: {fileID: 8546529363720833471}
   - component: {fileID: 1335506301933183893}
-  m_Layer: 0
+  - component: {fileID: 126838378262608232}
+  m_Layer: 7
   m_Name: Dumpster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +217,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 2.0625}
+  m_Offset: {x: 0, y: 1.937636}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -226,7 +227,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 8.19, y: 4.125}
+  m_Size: {x: 9.17, y: 3.679927}
   m_EdgeRadius: 0
 --- !u!114 &1335506301933183893
 MonoBehaviour:
@@ -244,3 +245,22 @@ MonoBehaviour:
   entryId: 0
   instanceGuid: 
   displayName: 
+--- !u!114 &126838378262608232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696297697400611820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f82ccca8d27008438ad5f85895a3d9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Destroyable
+  hp: 1
+  interactDestroys: 1
+  intactRoot: {fileID: 0}
+  destroyedRoot: {fileID: 0}
+  collidersToDisable: []
+  rbToDisable: {fileID: 0}
+  startDestroyed: 0
