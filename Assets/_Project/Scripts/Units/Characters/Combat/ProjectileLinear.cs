@@ -96,11 +96,25 @@ namespace CityRush.Units.Characters.Combat
                 }
             }
 
+            Destroyable destroyable = other.GetComponentInParent<Destroyable>();
+            if (destroyable != null)
+            {
+                if (destroyable.TryHit(_baseDamage))
+                {
+                    Despawn();
+                    return;
+                }
+
+                return;
+            }
+
             // Damage is applied by the attacker via DamageResolver.
             if (_ownerDamage != null)
+            {
                 _ownerDamage.TryApplyDamage(other, _baseDamage);
+                Despawn();
+            }
 
-            Despawn();
         }
 
         private void Despawn()
