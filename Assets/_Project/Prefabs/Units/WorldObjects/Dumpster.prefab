@@ -199,12 +199,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f82ccca8d27008438ad5f85895a3d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Destroyable
-  hp: 20
+  hp: 100
   interactDestroys: 1
   intactRoot: {fileID: 0}
   destroyedRoot: {fileID: 0}
-  collidersToDisable: []
-  rbToDisable: {fileID: 0}
+  collidersToDisable:
+  - {fileID: 3135981535883031885}
+  - {fileID: 8546529363720833471}
+  rbToDisable: {fileID: 4553872194742529333}
   startDestroyed: 0
 --- !u!1 &5604770152067270342
 GameObject:
