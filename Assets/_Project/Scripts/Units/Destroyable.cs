@@ -52,7 +52,7 @@ namespace CityRush.Units
 
             hp -= damage;
             if (hp > 0) return true;
-
+            Debug.Log("Destroyed");
             SetDestroyed(true);
             return true;
         }

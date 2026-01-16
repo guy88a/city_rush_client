@@ -651,6 +651,12 @@ public class GameLoopState : IState
         if (worldObject == null)
             return;
 
+        Lockpickable lockpickable = worldObject.GetComponent<Lockpickable>();
+        if (lockpickable != null && lockpickable.TryInteract())
+            return;
+
+        // (Optional) Readable goes here later, same pattern.
+
         Destroyable destroyable = worldObject.GetComponent<Destroyable>();
         if (destroyable != null)
         {
