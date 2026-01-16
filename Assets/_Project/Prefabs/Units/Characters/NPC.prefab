@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6602541041314397640}
   - component: {fileID: -4434741104940079437}
   - component: {fileID: 7778092973846962177}
+  - component: {fileID: 4628489156332068291}
   - component: {fileID: 3605924977295424972}
   - component: {fileID: 5809041375406666379}
   - component: {fileID: 4526217930563338770}
@@ -160,6 +161,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.Health
   maxHp: 100
   currentHp: 100
+--- !u!114 &4628489156332068291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470628288414811201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca95412bdc0ce954b946a6d7e1363a87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.CharacterDeath
+  isAliveParam: isAlive
 --- !u!114 &3605924977295424972
 MonoBehaviour:
   m_ObjectHideFlags: 0
