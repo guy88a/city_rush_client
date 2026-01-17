@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using CityRush.Units.Characters;
+using CityRush.Units.Characters.Movement;
 
 namespace CityRush.Units.Characters.Controllers
 {
@@ -91,6 +92,8 @@ namespace CityRush.Units.Characters.Controllers
             bool fight = roll < chance;
 
             Debug.Log($"[NPC] Aggression={aggression} Chance={chance}% Roll={roll} => {(fight ? "fight" : "flee")}");
+
+            MaxSpeed = UnityEngine.Random.Range(CharacterSpeedSettings.MinRunSpeed, CharacterSpeedSettings.MaxRunSpeed);
         }
 
         private bool DecideFight()
