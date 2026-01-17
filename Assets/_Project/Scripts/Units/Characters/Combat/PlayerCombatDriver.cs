@@ -48,7 +48,7 @@ namespace CityRush.Units.Characters.Combat
         private Transform _graphic;
         private SpriteRenderer _graphicSprite;
 
-        private WeaponRuntime _weaponRuntime;
+        private CharacterWeaponSet _weapons;
 
         private InputAction _primaryAction;
         private InputAction _altAction;
@@ -65,7 +65,7 @@ namespace CityRush.Units.Characters.Combat
         private void Awake()
         {
             _controller = GetComponent<PlayerPlatformerController>();
-            _weaponRuntime = GetComponent<WeaponRuntime>();
+            _weapons = GetComponent<CharacterWeaponSet>();
 
             _graphic = transform.Find("Graphic");
             if (_graphic != null)
@@ -188,7 +188,11 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextAltTime = now + _weaponRuntime.EquippedWeapon.FireInterval;
+                    float interval = 0.6f;
+                    if (_weapons != null && _weapons.ShotgunWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
+
+                    _nextAltTime = now + interval;
                     return;
                 }
 
@@ -198,21 +202,12 @@ namespace CityRush.Units.Characters.Combat
                     // Try to shoot (this also auto-starts reload if mag is empty and reserve exists).
                     FireUzi();
 
-                    bool uziAnim =
-                        _weaponRuntime != null &&
-                        _weaponRuntime.EquippedWeapon != null &&
-                        _weaponRuntime.EquippedWeapon.Type == WeaponType.Uzi &&
-                        !_weaponRuntime.IsReloading &&
-                        (
-                            _weaponRuntime.EquippedWeapon.MagazineSize <= 0 || // no-mag weapon (not Uzi, but safe)
-                            _weaponRuntime.Magazine > 0                         // has bullets loaded
-                        );
-
+                    bool uziAnim = _weapons != null && _weapons.IsUziAnimActive();
                     SetUziFiring(uziAnim);
 
                     float interval = 0.1f;
-                    if (_weaponRuntime != null && _weaponRuntime.EquippedWeapon != null)
-                        interval = Mathf.Max(0.01f, _weaponRuntime.EquippedWeapon.FireInterval);
+                    if (_weapons != null && _weapons.UziWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.UziWeapon.FireInterval);
 
                     _nextPrimaryTime = now + interval;
                 }
@@ -222,7 +217,11 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextPrimaryTime = now + _weaponRuntime.EquippedWeapon.FireInterval;
+                    float interval = 0.6f;
+                    if (_weapons != null && _weapons.ShotgunWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
+
+                    _nextPrimaryTime = now + interval;
                 }
 
                 return;
@@ -252,12 +251,12 @@ namespace CityRush.Units.Characters.Combat
 
         private bool FireUzi()
         {
-            if (_weaponRuntime == null) return false;
+            if (_weapons == null) return false;
 
             Vector2 dir = GetFacingDirection();
             Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * dir.x, uziSpawnOffset.y);
 
-            return _weaponRuntime.TryFireUzi(origin, dir);
+            return _weapons.TryFireUzi(origin, dir);
         }
 
         private void SetUziFiring(bool isFiring)
@@ -272,12 +271,12 @@ namespace CityRush.Units.Characters.Combat
         {
             Trigger(trigShotgun);
 
-            if (_weaponRuntime != null)
+            if (_weapons != null)
             {
                 Vector2 dir = GetFacingDirection();
                 Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * dir.x, shotgunSpawnOffset.y);
 
-                _weaponRuntime.TryFireShotgun(origin, dir);
+                _weapons.TryFireShotgun(origin, dir);
             }
 
             if (lockMovement)
