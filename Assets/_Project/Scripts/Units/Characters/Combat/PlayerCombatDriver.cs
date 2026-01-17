@@ -23,7 +23,7 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
 
         [Header("Cooldowns (seconds)")]
-        [SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
+        //[SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
         [SerializeField] private float shotgunCooldown = 0.45f;
         [SerializeField] private float punchCooldown = 0.25f;
         [SerializeField] private float throwCooldown = 0.6f;
@@ -45,7 +45,7 @@ namespace CityRush.Units.Characters.Combat
         private Transform _graphic;
         private SpriteRenderer _graphicSprite;
 
-        private WeaponShooter _weaponShooter;
+        private WeaponRuntime _weaponRuntime;
 
         private InputAction _primaryAction;
         private InputAction _altAction;
@@ -62,7 +62,7 @@ namespace CityRush.Units.Characters.Combat
         private void Awake()
         {
             _controller = GetComponent<PlayerPlatformerController>();
-            _weaponShooter = GetComponent<WeaponShooter>();
+            _weaponRuntime = GetComponent<WeaponRuntime>();
 
             _graphic = transform.Find("Graphic");
             if (_graphic != null)
@@ -192,10 +192,25 @@ namespace CityRush.Units.Characters.Combat
                 // LMB
                 if (movingInput)
                 {
-                    SetUziFiring(true);
-
-                    float interval = 1f / Mathf.Max(1f, uziShotsPerSecond);
+                    // Try to shoot (this also auto-starts reload if mag is empty and reserve exists).
                     FireUzi();
+
+                    bool uziAnim =
+                        _weaponRuntime != null &&
+                        _weaponRuntime.EquippedWeapon != null &&
+                        _weaponRuntime.EquippedWeapon.Type == WeaponType.Uzi &&
+                        !_weaponRuntime.IsReloading &&
+                        (
+                            _weaponRuntime.EquippedWeapon.MagazineSize <= 0 || // no-mag weapon (not Uzi, but safe)
+                            _weaponRuntime.Magazine > 0                         // has bullets loaded
+                        );
+
+                    SetUziFiring(uziAnim);
+
+                    float interval = 0.1f;
+                    if (_weaponRuntime != null && _weaponRuntime.EquippedWeapon != null)
+                        interval = Mathf.Max(0.01f, _weaponRuntime.EquippedWeapon.FireInterval);
+
                     _nextPrimaryTime = now + interval;
                 }
                 else
@@ -232,14 +247,14 @@ namespace CityRush.Units.Characters.Combat
         }
 
 
-        private void FireUzi()
+        private bool FireUzi()
         {
-            if (_weaponShooter == null) return;
+            if (_weaponRuntime == null) return false;
 
             Vector2 dir = GetFacingDirection();
             Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * dir.x, uziSpawnOffset.y);
 
-            _weaponShooter.FireUzi(origin, dir);
+            return _weaponRuntime.TryFireUzi(origin, dir);
         }
 
         private void SetUziFiring(bool isFiring)

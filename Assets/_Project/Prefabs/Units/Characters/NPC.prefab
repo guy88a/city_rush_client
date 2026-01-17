@@ -148,6 +148,7 @@ MonoBehaviour:
   gravityModifier: 1
   maxSpeed: 6
   despawnMargin: 2
+  chaseStopDistance: 1
 --- !u!114 &7097565147277719160
 MonoBehaviour:
   m_ObjectHideFlags: 0

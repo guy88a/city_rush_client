@@ -5,29 +5,28 @@ namespace CityRush.Units.Characters.Combat
     [DisallowMultipleComponent]
     public sealed class WeaponShooter : MonoBehaviour
     {
-        [Header("Uzi Projectile")]
-        [SerializeField] private ProjectileLinear uziBulletPrefab;
-        [SerializeField] private int uziPoolSize = 40;
-        [SerializeField] private float uziBulletSpeed = 18f;
-        [SerializeField] private float uziBulletLifetime = 1.2f;
-        [SerializeField] private int uziBaseDamage = 4;
-
         private DamageResolver _damage;
         private Collider2D[] _ownerColliders;
 
         private ProjectilePool _uziPool;
+        private ProjectileLinear _uziPrefabCached;
 
         private void Awake()
         {
             _damage = GetComponent<DamageResolver>();
             _ownerColliders = GetComponentsInChildren<Collider2D>(includeInactive: true);
-
-            if (uziBulletPrefab != null)
-                _uziPool = new ProjectilePool(uziBulletPrefab, uziPoolSize, transform);
         }
 
-        public void FireUzi(Vector2 origin, Vector2 direction)
+        public void FireUzi(Vector2 origin, Vector2 direction, WeaponDefinition weapon)
         {
+            if (weapon == null) return;
+            if (weapon.Type != WeaponType.Uzi) return;
+
+            ProjectileLinear prefab = weapon.ProjectilePrefab;
+            if (prefab == null) return;
+
+            EnsureUziPool(prefab, weapon.ProjectilePoolSize);
+
             if (_uziPool == null) return;
 
             if (direction.sqrMagnitude < 0.0001f)
@@ -42,13 +41,23 @@ namespace CityRush.Units.Characters.Combat
 
             p.Launch(
                 direction,
-                uziBulletSpeed,
-                uziBulletLifetime,
-                uziBaseDamage,
+                weapon.ProjectileSpeed,
+                weapon.ProjectileLifetime,
+                weapon.BaseDamage,
                 _damage,
                 _ownerColliders,
                 _uziPool.Despawn
             );
+        }
+
+        private void EnsureUziPool(ProjectileLinear prefab, int poolSize)
+        {
+            // Rebuild pool if weapon prefab changed (future-proof for weapon swaps).
+            if (_uziPool != null && _uziPrefabCached == prefab)
+                return;
+
+            _uziPrefabCached = prefab;
+            _uziPool = new ProjectilePool(prefab, poolSize, transform);
         }
 
         private sealed class ProjectilePool
