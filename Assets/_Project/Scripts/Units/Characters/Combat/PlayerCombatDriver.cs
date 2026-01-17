@@ -22,6 +22,9 @@ namespace CityRush.Units.Characters.Combat
         [Header("Uzi")]
         [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
 
+        [Header("Shotgun")]
+        [SerializeField] private Vector2 shotgunSpawnOffset = new Vector2(0.8f, 0.15f);
+
         [Header("Cooldowns (seconds)")]
         //[SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
         [SerializeField] private float shotgunCooldown = 0.45f;
@@ -185,7 +188,7 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextAltTime = now + shotgunCooldown;
+                    _nextAltTime = now + _weaponRuntime.EquippedWeapon.FireInterval;
                     return;
                 }
 
@@ -219,7 +222,7 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextPrimaryTime = now + shotgunCooldown;
+                    _nextPrimaryTime = now + _weaponRuntime.EquippedWeapon.FireInterval;
                 }
 
                 return;
@@ -269,9 +272,18 @@ namespace CityRush.Units.Characters.Combat
         {
             Trigger(trigShotgun);
 
+            if (_weaponRuntime != null)
+            {
+                Vector2 dir = GetFacingDirection();
+                Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * dir.x, shotgunSpawnOffset.y);
+
+                _weaponRuntime.TryFireShotgun(origin, dir);
+            }
+
             if (lockMovement)
                 StartActionLock(lockDuration);
         }
+
 
         private void FirePunch(float lockDuration)
         {

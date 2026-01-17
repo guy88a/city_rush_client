@@ -106,6 +106,38 @@ namespace CityRush.Units.Characters.Combat
             return true;
         }
 
+        public bool TryFireShotgun(Vector2 origin, Vector2 direction)
+        {
+            if (equippedWeapon == null) return false;
+            if (equippedWeapon.Type != WeaponType.Shotgun) return false;
+
+            if (_shooter == null) return false;
+
+            if (isReloading) return false;
+
+            float now = Time.time;
+            if (now < _nextFireTime) return false;
+
+            if (equippedWeapon.MagazineSize > 0)
+            {
+                if (magazine <= 0)
+                {
+                    // Auto-reload gate.
+                    if (equippedWeapon.ReloadTime > 0f)
+                        StartCoroutine(ReloadRoutine());
+                    return false;
+                }
+
+                magazine--;
+            }
+
+            _nextFireTime = now + equippedWeapon.FireInterval;
+
+            _shooter.FireShotgun(origin, direction, equippedWeapon);
+            return true;
+        }
+
+
         public bool TryStartReload()
         {
             if (equippedWeapon == null) return false;

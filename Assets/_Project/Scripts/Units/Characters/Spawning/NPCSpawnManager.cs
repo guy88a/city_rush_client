@@ -148,6 +148,10 @@ namespace CityRush.Units.Characters.Spawning
         {
             if (ctrl == null) return;
 
+            PhysicsObject phys = ctrl.GetComponent<PhysicsObject>();
+            if (phys != null)
+                phys.ResetExternalImpulse();
+
             ctrl.gameObject.SetActive(false);
             _pool.Push(ctrl);
         }

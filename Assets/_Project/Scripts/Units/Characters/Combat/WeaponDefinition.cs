@@ -40,6 +40,12 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private float projectileSpeed = 18f;
         [SerializeField] private float projectileLifetime = 1.2f;
 
+        [Header("Shotgun Hit (OverlapBox)")]
+        [SerializeField] private Vector2 shotgunBoxSize = new Vector2(1.6f, 0.8f);
+        [SerializeField] private Vector2 shotgunBoxOffset = new Vector2(0.9f, 0.15f);
+        [SerializeField] private float shotgunKnockbackImpulse = 6f;
+        [SerializeField] private LayerMask shotgunHitMask;
+
         public WeaponType Type => type;
 
         public int BaseDamage => baseDamage;
@@ -54,6 +60,11 @@ namespace CityRush.Units.Characters.Combat
         public float ProjectileSpeed => projectileSpeed;
         public float ProjectileLifetime => projectileLifetime;
 
+        public Vector2 ShotgunBoxSize => shotgunBoxSize;
+        public Vector2 ShotgunBoxOffset => shotgunBoxOffset;
+        public float ShotgunKnockbackImpulse => shotgunKnockbackImpulse;
+        public LayerMask ShotgunHitMask => shotgunHitMask;
+
         private void OnValidate()
         {
             baseDamage = Mathf.Max(0, baseDamage);
@@ -66,6 +77,10 @@ namespace CityRush.Units.Characters.Combat
             projectilePoolSize = Mathf.Max(1, projectilePoolSize);
             projectileSpeed = Mathf.Max(0f, projectileSpeed);
             projectileLifetime = Mathf.Max(0.01f, projectileLifetime);
+
+            shotgunBoxSize.x = Mathf.Max(0.01f, shotgunBoxSize.x);
+            shotgunBoxSize.y = Mathf.Max(0.01f, shotgunBoxSize.y);
+            shotgunKnockbackImpulse = Mathf.Max(0f, shotgunKnockbackImpulse);
         }
     }
 }

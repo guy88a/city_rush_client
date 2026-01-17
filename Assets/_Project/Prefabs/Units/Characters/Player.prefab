@@ -356,7 +356,7 @@ MonoBehaviour:
   selectedMode: 0
   boolIsUziFiring: isUziFiring
   uziSpawnOffset: {x: 2.2, y: -0.4}
-  uziShotsPerSecond: 12
+  shotgunSpawnOffset: {x: 0.8, y: 0.15}
   shotgunCooldown: 0.45
   punchCooldown: 0.25
   throwCooldown: 0.6
@@ -378,11 +378,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed63c65afef32441ac8dbefceaabfa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponShooter
-  uziBulletPrefab: {fileID: 3096333484048804432, guid: 2be416c09adaf42469bb459568459d3f, type: 3}
-  uziPoolSize: 40
-  uziBulletSpeed: 18
-  uziBulletLifetime: 1.2
-  uziBaseDamage: 4
 --- !u!114 &5474528199724337688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,7 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc74ab0e9d5b474390ca5795e5c614a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponRuntime
-  equippedWeapon: {fileID: 11400000, guid: cad6d99f3463fae4aa7c7d0a150ee136, type: 2}
+  equippedWeapon: {fileID: 11400000, guid: 04c24dc091d34d149802468886f5d1b3, type: 2}
   magazine: 0
   ammoReserve: 0
   isReloading: 0
