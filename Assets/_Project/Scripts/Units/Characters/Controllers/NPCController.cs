@@ -26,6 +26,9 @@ namespace CityRush.Units.Characters.Controllers
 
         [Header("Combat Behavior")]
         private int aggression = 5;
+        [SerializeField] private float chaseStopDistance = 1f;
+
+        private bool _fightMode; // true = chase target, false = flee (later)
 
         private CharacterCombatState _combatState;
 
@@ -77,23 +80,39 @@ namespace CityRush.Units.Characters.Controllers
             _combatState = GetComponent<CharacterCombatState>();
             if (_combatState != null)
                 _combatState.OnCombatEntered += HandleCombatEntered;
+
+            if (_combatState != null)
+            {
+                _combatState.OnCombatEntered += HandleCombatEntered;
+                _combatState.OnCombatExited += HandleCombatExited;
+            }
         }
 
         private void OnDestroy()
         {
             if (_combatState != null)
                 _combatState.OnCombatEntered -= HandleCombatEntered;
+
+            if (_combatState != null)
+            {
+                _combatState.OnCombatEntered -= HandleCombatEntered;
+                _combatState.OnCombatExited -= HandleCombatExited;
+            }
         }
 
         private void HandleCombatEntered()
         {
             int chance = Mathf.Clamp(aggression, 0, 10) * 10;
             int roll = UnityEngine.Random.Range(0, 100);
-            bool fight = roll < chance;
-
-            Debug.Log($"[NPC] Aggression={aggression} Chance={chance}% Roll={roll} => {(fight ? "fight" : "flee")}");
+            _fightMode = roll < chance;
+            Debug.Log($"[NPC] Aggression={aggression} Chance={chance}% Roll={roll} => {(_fightMode ? "fight" : "flee")}");
 
             MaxSpeed = UnityEngine.Random.Range(CharacterSpeedSettings.MinRunSpeed, CharacterSpeedSettings.MaxRunSpeed);
+        }
+
+        private void HandleCombatExited()
+        {
+            _fightMode = false;
         }
 
         private bool DecideFight()
@@ -114,6 +133,43 @@ namespace CityRush.Units.Characters.Controllers
                     return;
                 }
             }
+
+            // Combat chase (fight mode)
+            if (_combatState != null && _combatState.IsInCombat && _fightMode && _combatState.HasTarget)
+            {
+                Vector2 myPos = rb != null ? rb.position : (Vector2)transform.position;
+                Vector2 targetPos = _combatState.Target.transform.position;
+
+                float dx = targetPos.x - myPos.x;
+
+                if (Mathf.Abs(dx) <= chaseStopDistance)
+                {
+                    targetVelocity = Vector2.zero;
+
+                    if (_animator != null)
+                        _animator.SetFloat("speed", 0f);
+
+                    return;
+                }
+
+                int dir = dx >= 0f ? 1 : -1;
+                Vector2 moveCombat = new Vector2(dir, 0f);
+
+                if (_spriteRenderer != null)
+                {
+                    bool flipSprite = (_spriteRenderer.flipX ? (moveCombat.x > 0f) : (moveCombat.x < 0f));
+                    if (flipSprite)
+                        _spriteRenderer.flipX = !_spriteRenderer.flipX;
+                }
+
+                targetVelocity = moveCombat * maxSpeed;
+
+                if (_animator != null)
+                    _animator.SetFloat("speed", Mathf.Abs(moveCombat.x * maxSpeed));
+
+                return;
+            }
+
 
             Vector2 move = Vector2.zero;
             move.x = MoveDir;

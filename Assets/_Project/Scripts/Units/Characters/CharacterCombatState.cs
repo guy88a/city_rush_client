@@ -16,6 +16,9 @@ namespace CityRush.Units.Characters
 
         private Health _health;
 
+        public CharacterUnit Target { get; private set; }
+        public bool HasTarget => Target != null;
+
         private void Awake()
         {
             _health = GetComponent<Health>();
@@ -54,6 +57,7 @@ namespace CityRush.Units.Characters
             if (!isInCombat) return;
             Debug.Log("Exiting Combat");
             isInCombat = false;
+            ClearTarget();
             OnCombatExited?.Invoke();
         }
 
@@ -62,6 +66,16 @@ namespace CityRush.Units.Characters
             Debug.Log("Set In Combat");
             if (value) EnterCombat();
             else ExitCombat();
+        }
+
+        public void SetTarget(CharacterUnit target)
+        {
+            Target = target;
+        }
+
+        public void ClearTarget()
+        {
+            Target = null;
         }
     }
 }

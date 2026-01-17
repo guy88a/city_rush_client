@@ -51,6 +51,10 @@ namespace CityRush.Units.Characters.Combat
             if (victimCombat != null)
                 victimCombat.EnterCombat();
 
+            var attackerUnit = GetComponent<CharacterUnit>();
+            if (victimCombat != null && attackerUnit != null)
+                victimCombat.SetTarget(attackerUnit);
+
             health.TakeDamage(finalDamage);
             return true;
         }
