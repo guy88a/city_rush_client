@@ -31,8 +31,14 @@ namespace CityRush.Units.Characters.Combat
 
         private void OnEnable()
         {
+            _handledDeath = false;
+
             if (_health != null)
                 _health.OnDied += HandleDied;
+
+            // If we respawned alive, allow control again.
+            if (_npcController != null && _health != null && _health.IsAlive)
+                _npcController.enabled = true;
 
             SyncAnimatorAlive();
         }

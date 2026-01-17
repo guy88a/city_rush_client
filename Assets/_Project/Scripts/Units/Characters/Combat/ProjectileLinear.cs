@@ -108,6 +108,11 @@ namespace CityRush.Units.Characters.Combat
                 return;
             }
 
+            // Ignore dead targets (keep their RB/colliders enabled; projectile should not despawn)
+            Health health = other.GetComponentInParent<Health>();
+            if (health != null && !health.IsAlive)
+                return;
+
             // Damage is applied by the attacker via DamageResolver.
             if (_ownerDamage != null)
             {

@@ -26,7 +26,17 @@ namespace CityRush.Units.Characters.Combat
             if (maxHp < 1) maxHp = 1;
             currentHp = Mathf.Clamp(currentHp, 0, maxHp);
         }
+        private void OnEnable()
+        {
+            // When spawned from pool, always start full.
+            currentHp = maxHp;
+        }
 
+        private void OnDisable()
+        {
+            // When returned to pool, reset so we don't carry damage across respawns.
+            currentHp = maxHp;
+        }
 
         public void SetMaxHp(int value, bool refill)
         {
