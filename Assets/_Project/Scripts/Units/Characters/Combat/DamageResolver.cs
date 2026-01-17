@@ -1,3 +1,4 @@
+using CityRush.Units.Characters;
 using UnityEngine;
 
 
@@ -35,13 +36,20 @@ namespace CityRush.Units.Characters.Combat
             if (target == null) return false;
 
 
-            Health health = target.GetComponent<Health>();
+            Health health = target.GetComponentInParent<Health>();
             if (health == null) return false;
 
 
             CombatStats targetStats = target.GetComponent<CombatStats>();
             int finalDamage = ResolveFinalDamage(baseDamage, targetStats);
 
+            var attackerCombat = GetComponent<CharacterCombatState>();
+            if (attackerCombat != null)
+                attackerCombat.EnterCombat();
+
+            var victimCombat = target.GetComponentInParent<CharacterCombatState>();
+            if (victimCombat != null)
+                victimCombat.EnterCombat();
 
             health.TakeDamage(finalDamage);
             return true;

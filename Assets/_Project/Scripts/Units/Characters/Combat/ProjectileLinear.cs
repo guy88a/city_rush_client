@@ -116,7 +116,11 @@ namespace CityRush.Units.Characters.Combat
             // Damage is applied by the attacker via DamageResolver.
             if (_ownerDamage != null)
             {
-                _ownerDamage.TryApplyDamage(other, _baseDamage);
+                Health targetHealth = other.GetComponentInParent<Health>();
+                if (targetHealth != null)
+                    _ownerDamage.TryApplyDamage(targetHealth.gameObject, _baseDamage);
+                else
+                    _ownerDamage.TryApplyDamage(other, _baseDamage);
                 Despawn();
             }
 

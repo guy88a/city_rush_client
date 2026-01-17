@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CityRush.Units.Characters;
 
 namespace CityRush.Units.Characters.Controllers
 {
@@ -21,6 +22,17 @@ namespace CityRush.Units.Characters.Controllers
         private Animator _animator;
 
         public Action<NPCController> OnDespawn;
+
+        [Header("Combat Behavior")]
+        private int aggression = 5;
+
+        private CharacterCombatState _combatState;
+
+        public int Aggression
+        {
+            get => aggression;
+            set => aggression = Mathf.Clamp(value, 0, 10);
+        }
 
         public float MaxSpeed
         {
@@ -50,9 +62,41 @@ namespace CityRush.Units.Characters.Controllers
 
         private void Awake()
         {
+            Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
+            aggression = Mathf.Clamp(aggression, 0, 10);
+            Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
+
             Transform graphic = transform.Find("Graphic");
-            _spriteRenderer = graphic.GetComponent<SpriteRenderer>();
-            _animator = graphic.GetComponent<Animator>();
+            if (graphic != null)
+            {
+                _spriteRenderer = graphic.GetComponent<SpriteRenderer>();
+                _animator = graphic.GetComponent<Animator>();
+            }
+
+            _combatState = GetComponent<CharacterCombatState>();
+            if (_combatState != null)
+                _combatState.OnCombatEntered += HandleCombatEntered;
+        }
+
+        private void OnDestroy()
+        {
+            if (_combatState != null)
+                _combatState.OnCombatEntered -= HandleCombatEntered;
+        }
+
+        private void HandleCombatEntered()
+        {
+            int chance = Mathf.Clamp(aggression, 0, 10) * 10;
+            int roll = UnityEngine.Random.Range(0, 100);
+            bool fight = roll < chance;
+
+            Debug.Log($"[NPC] Aggression={aggression} Chance={chance}% Roll={roll} => {(fight ? "fight" : "flee")}");
+        }
+
+        private bool DecideFight()
+        {
+            int chance = Mathf.Clamp(aggression, 0, 10) * 10; // 0..100
+            return UnityEngine.Random.Range(0, 100) < chance;
         }
 
         protected override void ComputeVelocity()
@@ -71,9 +115,12 @@ namespace CityRush.Units.Characters.Controllers
             Vector2 move = Vector2.zero;
             move.x = MoveDir;
 
-            bool flipSprite = (_spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
-            if (flipSprite)
-                _spriteRenderer.flipX = !_spriteRenderer.flipX;
+            if (_spriteRenderer != null)
+            {
+                bool flipSprite = (_spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
+                if (flipSprite)
+                    _spriteRenderer.flipX = !_spriteRenderer.flipX;
+            }
 
             targetVelocity = move * maxSpeed;
 
