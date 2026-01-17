@@ -35,6 +35,9 @@ namespace CityRush.Units.Characters.Combat
 
             _uzi.ResetFrom(uziWeapon);
             _shotgun.ResetFrom(shotgunWeapon);
+
+            if (uziWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing UziWeapon", this);
+            if (shotgunWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing ShotgunWeapon", this);
         }
 
         private WeaponDefinition GetWeapon(WeaponType type)
