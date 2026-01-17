@@ -15,6 +15,13 @@ namespace CityRush.Units.Characters.Combat
 
         private bool _handledDeath;
 
+        [Header("Despawn After Death")]
+        [SerializeField] private float despawnDelay = 3f;
+        [SerializeField] private float fadeOutDuration = 0.35f;
+
+        private SpriteRenderer _graphicSr;
+        private Coroutine _despawnRoutine;
+
         private void Awake()
         {
             _health = GetComponent<Health>();
@@ -23,7 +30,10 @@ namespace CityRush.Units.Characters.Combat
 
             Transform graphic = transform.Find("Graphic");
             if (graphic != null)
+            {
+                _graphicSr = graphic.GetComponent<SpriteRenderer>();
                 _animator = graphic.GetComponent<Animator>();
+            }
 
             if (_animator == null)
                 _animator = GetComponentInChildren<Animator>(true);
@@ -32,6 +42,14 @@ namespace CityRush.Units.Characters.Combat
         private void OnEnable()
         {
             _handledDeath = false;
+
+            if (_despawnRoutine != null)
+            {
+                StopCoroutine(_despawnRoutine);
+                _despawnRoutine = null;
+            }
+
+            ResetGraphicAlpha();
 
             if (_health != null)
                 _health.OnDied += HandleDied;
@@ -72,6 +90,50 @@ namespace CityRush.Units.Characters.Combat
 
             if (_npcController != null)
                 _npcController.enabled = false;
+
+            if (_despawnRoutine != null)
+                StopCoroutine(_despawnRoutine);
+
+            _despawnRoutine = StartCoroutine(DeathDespawnRoutine());
         }
+
+        private System.Collections.IEnumerator DeathDespawnRoutine()
+        {
+            yield return new WaitForSeconds(despawnDelay);
+
+            float t = 0f;
+            float dur = Mathf.Max(0.01f, fadeOutDuration);
+
+            while (t < dur)
+            {
+                t += Time.deltaTime;
+                float a = Mathf.Clamp01(1f - (t / dur));
+                SetGraphicAlpha(a);
+                yield return null;
+            }
+
+            SetGraphicAlpha(0f);
+
+            // Return to pool via the spawn manager path (active list removal + respawn schedule).
+            if (_npcController != null && _npcController.OnDespawn != null)
+                _npcController.OnDespawn.Invoke(_npcController);
+            else
+                gameObject.SetActive(false);
+        }
+
+        private void ResetGraphicAlpha()
+        {
+            SetGraphicAlpha(1f);
+        }
+
+        private void SetGraphicAlpha(float a)
+        {
+            if (_graphicSr == null) return;
+
+            Color c = _graphicSr.color;
+            c.a = a;
+            _graphicSr.color = c;
+        }
+
     }
 }
