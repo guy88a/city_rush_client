@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using CityRush.Units.Characters;
+using CityRush.Units.Characters.Combat;
 using CityRush.Units.Characters.Movement;
 
 namespace CityRush.Units.Characters.Controllers
@@ -31,6 +32,10 @@ namespace CityRush.Units.Characters.Controllers
         private bool _fightMode; // true = chase target, false = flee (later)
 
         private CharacterCombatState _combatState;
+        private CharacterWeaponSet _weapons;
+
+        [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
+        [SerializeField] private Vector2 shotgunSpawnOffset = new Vector2(0.8f, 0.15f);
 
         public int Aggression
         {
@@ -83,6 +88,8 @@ namespace CityRush.Units.Characters.Controllers
                 _combatState.OnCombatEntered += HandleCombatEntered;
                 _combatState.OnCombatExited += HandleCombatExited;
             }
+
+            _weapons = GetComponent<CharacterWeaponSet>();
         }
 
         private void OnDestroy()
@@ -135,25 +142,54 @@ namespace CityRush.Units.Characters.Controllers
                 Vector2 targetPos = _combatState.Target.transform.position;
 
                 float dx = targetPos.x - myPos.x;
+                float absDx = Mathf.Abs(dx);
 
-                if (Mathf.Abs(dx) <= chaseStopDistance)
+                WeaponDefinition uziW = _weapons != null ? _weapons.UziWeapon : null;
+                WeaponDefinition shotW = _weapons != null ? _weapons.ShotgunWeapon : null;
+
+                float uziRange = GetWeaponRange(uziW);
+                float shotRange = GetWeaponRange(shotW);
+
+                // 1) If in shotgun range => STOP + shotgun
+                if (shotW != null && shotRange > 0f && absDx <= shotRange)
                 {
                     targetVelocity = Vector2.zero;
 
+                    // Face target while firing.
+                    if (_spriteRenderer != null)
+                    {
+                        bool wantFlip = dx < 0f;
+                        if (_spriteRenderer.flipX != wantFlip)
+                            _spriteRenderer.flipX = wantFlip;
+                    }
+
                     if (_animator != null)
+                    {
                         _animator.SetFloat("speed", 0f);
+                        _animator.SetBool("isUziFiring", false);
+                    }
+
+                    Vector2 fireDir = GetFacingDirectionFromDx(dx);
+                    Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * fireDir.x, shotgunSpawnOffset.y);
+
+                    bool fired = _weapons != null && _combatState.Target != null
+                        && _weapons.TryFireShotgun(origin, fireDir, _combatState.Target);
+
+                    if (fired && _animator != null)
+                        _animator.SetTrigger("Shotgun");
 
                     return;
                 }
 
+                // 2) Otherwise => RUN toward target (always)
                 int dir = dx >= 0f ? 1 : -1;
                 Vector2 moveCombat = new Vector2(dir, 0f);
 
                 if (_spriteRenderer != null)
                 {
-                    bool flipSprite = (_spriteRenderer.flipX ? (moveCombat.x > 0f) : (moveCombat.x < 0f));
-                    if (flipSprite)
-                        _spriteRenderer.flipX = !_spriteRenderer.flipX;
+                    bool wantFlip = dir < 0;
+                    if (_spriteRenderer.flipX != wantFlip)
+                        _spriteRenderer.flipX = wantFlip;
                 }
 
                 targetVelocity = moveCombat * maxSpeed;
@@ -161,8 +197,33 @@ namespace CityRush.Units.Characters.Controllers
                 if (_animator != null)
                     _animator.SetFloat("speed", Mathf.Abs(moveCombat.x * maxSpeed));
 
+                // 3) If in uzi range while running => fire uzi (no stopping)
+                if (uziW != null && uziRange > 0f && absDx <= uziRange)
+                {
+                    Vector2 fireDir = GetFacingDirectionFromDx(dx);
+                    Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * fireDir.x, uziSpawnOffset.y);
+
+                    bool fired = _weapons != null && _combatState.Target != null
+                        && _weapons.TryFireUzi(origin, fireDir, _combatState.Target);
+
+                    if (_animator != null)
+                    {
+                        if (fired)
+                            _animator.SetTrigger("Uzi");
+
+                        // optional: if your graph also uses this bool
+                        _animator.SetBool("isUziFiring", _weapons.IsUziAnimActive());
+                    }
+                }
+                else
+                {
+                    if (_animator != null)
+                        _animator.SetBool("isUziFiring", false);
+                }
+
                 return;
             }
+
 
 
             Vector2 move = Vector2.zero;
@@ -179,6 +240,24 @@ namespace CityRush.Units.Characters.Controllers
 
             if (_animator != null)
                 _animator.SetFloat("speed", Math.Abs(move.x * maxSpeed));
+        }
+
+        private float GetWeaponRange(WeaponDefinition w)
+        {
+            if (w == null) return 0f;
+
+            if (w.Type == WeaponType.Uzi)
+                return Mathf.Max(0f, w.ProjectileSpeed * w.ProjectileLifetime);
+
+            if (w.Type == WeaponType.Shotgun)
+                return Mathf.Max(0f, Mathf.Abs(w.ShotgunBoxOffset.x) + (w.ShotgunBoxSize.x * 0.5f));
+
+            return 0f;
+        }
+
+        private Vector2 GetFacingDirectionFromDx(float dx)
+        {
+            return dx >= 0f ? Vector2.right : Vector2.left;
         }
     }
 }

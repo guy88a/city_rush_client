@@ -25,7 +25,7 @@ namespace CityRush.Units.Characters.Combat
             _ownerColliders = GetComponentsInChildren<Collider2D>(includeInactive: true);
         }
 
-        public void FireUzi(Vector2 origin, Vector2 direction, WeaponDefinition weapon)
+        public void FireUzi(Vector2 origin, Vector2 direction, WeaponDefinition weapon, CharacterUnit onlyTarget = null)
         {
             if (weapon == null) return;
             if (weapon.Type != WeaponType.Uzi) return;
@@ -54,11 +54,12 @@ namespace CityRush.Units.Characters.Combat
                 weapon.BaseDamage,
                 _damage,
                 _ownerColliders,
-                _uziPool.Despawn
+                _uziPool.Despawn,
+                onlyTarget
             );
         }
 
-        public void FireShotgun(Vector2 origin, Vector2 direction, WeaponDefinition weapon)
+        public void FireShotgun(Vector2 origin, Vector2 direction, WeaponDefinition weapon, CharacterUnit onlyTarget = null)
         {
             if (weapon == null) return;
             if (weapon.Type != WeaponType.Shotgun) return;
@@ -104,6 +105,13 @@ namespace CityRush.Units.Characters.Combat
             {
                 Collider2D hit = _shotgunHits[i];
                 if (hit == null) continue;
+
+                if (onlyTarget != null)
+                {
+                    var hitUnit = hit.GetComponentInParent<CharacterUnit>();
+                    if (hitUnit != onlyTarget)
+                        continue;
+                }
 
                 // Clear slot for next call (avoids stale refs).
                 _shotgunHits[i] = null;

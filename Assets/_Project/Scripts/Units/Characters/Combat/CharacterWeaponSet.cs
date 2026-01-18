@@ -165,5 +165,23 @@ namespace CityRush.Units.Characters.Combat
                 IsReloading = false;
             }
         }
+
+        public bool TryFireUzi(Vector2 origin, Vector2 direction, CharacterUnit onlyTarget)
+        {
+            WeaponDefinition w = uziWeapon;
+            if (w == null || w.Type != WeaponType.Uzi) return false;
+            if (_shooter == null) return false;
+
+            return _uzi.TryFire(w, () => _shooter.FireUzi(origin, direction, w, onlyTarget));
+        }
+
+        public bool TryFireShotgun(Vector2 origin, Vector2 direction, CharacterUnit onlyTarget)
+        {
+            WeaponDefinition w = shotgunWeapon;
+            if (w == null || w.Type != WeaponType.Shotgun) return false;
+            if (_shooter == null) return false;
+
+            return _shotgun.TryFire(w, () => _shooter.FireShotgun(origin, direction, w, onlyTarget));
+        }
     }
 }
