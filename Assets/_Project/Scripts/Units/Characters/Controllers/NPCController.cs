@@ -79,9 +79,6 @@ namespace CityRush.Units.Characters.Controllers
 
             _combatState = GetComponent<CharacterCombatState>();
             if (_combatState != null)
-                _combatState.OnCombatEntered += HandleCombatEntered;
-
-            if (_combatState != null)
             {
                 _combatState.OnCombatEntered += HandleCombatEntered;
                 _combatState.OnCombatExited += HandleCombatExited;
@@ -90,9 +87,6 @@ namespace CityRush.Units.Characters.Controllers
 
         private void OnDestroy()
         {
-            if (_combatState != null)
-                _combatState.OnCombatEntered -= HandleCombatEntered;
-
             if (_combatState != null)
             {
                 _combatState.OnCombatEntered -= HandleCombatEntered;
