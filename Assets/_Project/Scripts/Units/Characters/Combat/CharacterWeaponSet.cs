@@ -128,7 +128,8 @@ namespace CityRush.Units.Characters.Combat
                     if (Magazine <= 0)
                     {
                         if (w.ReloadTime > 0f && Reserve > 0)
-                            _host.StartCoroutine(ReloadRoutine(w));
+                            Debug.Log($"[{_type}] EMPTY -> reload? reloadTime={w.ReloadTime} reserve={Reserve} magSize={w.MagazineSize}");
+                        _host.StartCoroutine(ReloadRoutine(w));
                         return false;
                     }
 
@@ -143,6 +144,7 @@ namespace CityRush.Units.Characters.Combat
 
             private IEnumerator ReloadRoutine(WeaponDefinition w)
             {
+                Debug.Log($"[{_type}] Reload START t={w.ReloadTime}");
                 if (IsReloading) yield break;
                 if (w == null) yield break;
                 if (Reserve <= 0) yield break;
@@ -163,6 +165,7 @@ namespace CityRush.Units.Characters.Combat
                 Reserve = Mathf.Clamp(Reserve, 0, w.AmmoReserveMax);
 
                 IsReloading = false;
+                Debug.Log($"[{_type}] Reload END mag={Magazine} reserve={Reserve}");
             }
         }
 

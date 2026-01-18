@@ -15,9 +15,9 @@ MonoBehaviour:
   type: 1
   baseDamage: 10
   fireInterval: 0.6
-  magazineSize: 0
-  ammoReserveMax: 0
-  reloadTime: 0.6
+  magazineSize: 1
+  ammoReserveMax: 20
+  reloadTime: 5
   projectilePrefab: {fileID: 0}
   projectilePoolSize: 40
   projectileSpeed: 18

@@ -269,14 +269,14 @@ namespace CityRush.Units.Characters.Combat
 
         private void FireShotgun(bool lockMovement, float lockDuration)
         {
-            Trigger(trigShotgun);
-
             if (_weapons != null)
             {
                 Vector2 dir = GetFacingDirection();
                 Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * dir.x, shotgunSpawnOffset.y);
 
-                _weapons.TryFireShotgun(origin, dir);
+                bool fired = _weapons.TryFireShotgun(origin, dir);
+                if (fired)
+                    Trigger(trigShotgun);
             }
 
             if (lockMovement)
