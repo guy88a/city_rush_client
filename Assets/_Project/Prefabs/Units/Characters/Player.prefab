@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 6020026575177228638}
   - component: {fileID: 313232343323134633}
   - component: {fileID: 7819575289298165788}
-  - component: {fileID: 5474528199724337688}
   - component: {fileID: 8036282166246709222}
   m_Layer: 3
   m_Name: Player
@@ -382,22 +381,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponShooter
   debugDrawShotgunBox: 1
   debugShotgunColor: {r: 1, g: 0.6, b: 0.1, a: 0.9}
---- !u!114 &5474528199724337688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8471212319856264224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcc74ab0e9d5b474390ca5795e5c614a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponRuntime
-  equippedWeapon: {fileID: 11400000, guid: 04c24dc091d34d149802468886f5d1b3, type: 2}
-  magazine: 0
-  ammoReserve: 0
-  isReloading: 0
 --- !u!114 &8036282166246709222
 MonoBehaviour:
   m_ObjectHideFlags: 0
