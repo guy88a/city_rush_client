@@ -29,6 +29,10 @@ internal sealed class GameLoopWorld
     private bool _apartmentBgStreetPosCached;
     private const float ApartmentBackgroundRootX = -20f;
 
+    private Vector3 _streetPosBeforeADS;
+    private Vector3 _streetScaleBeforeADS;
+    private bool _streetADSCacheSet;
+
     private CityRush.Units.Characters.Spawning.NPCSpawnManager _npcs;
 
     public ScreenFadeController ScreenFade { get; private set; }
@@ -480,5 +484,57 @@ internal sealed class GameLoopWorld
         _npcs.ClearAll();
         _npcs.SpawnAgents(count);
     }
+
+    public void EnterWindowADS()
+    {
+        if (Street == null || Apartment == null)
+            return;
+
+        if (!_streetADSCacheSet)
+        {
+            _streetPosBeforeADS = Street.transform.position;
+            _streetScaleBeforeADS = Street.transform.localScale;
+            _streetADSCacheSet = true;
+        }
+
+        Apartment.gameObject.SetActive(false);
+
+        float prevScale = _streetScaleBeforeADS.x; // 0.5
+
+        _npcs?.CacheActiveLocalX();
+
+        Street.transform.localScale = Vector3.one;
+
+        float width = Mathf.Abs(StreetRightX - StreetLeftX);
+        float offsetX = width * (1f - prevScale) * 0.5f;
+
+        Vector3 p = Street.transform.position;
+        p.x -= offsetX;
+        Street.transform.position = p;
+
+        _npcs?.RestoreActiveFromCachedLocalX();
+        _npcs?.RefreshVisualScale();
+    }
+
+    public void ExitWindowADS()
+    {
+        if (Street == null || Apartment == null)
+            return;
+
+        // Restore apartment visuals
+        Apartment.gameObject.SetActive(true);
+
+        // Restore street transform back to window/apartment state
+        if (_streetADSCacheSet)
+        {
+            _npcs?.CacheActiveLocalX();
+            Street.transform.position = _streetPosBeforeADS;
+            Street.transform.localScale = _streetScaleBeforeADS;
+            _npcs?.RestoreActiveFromCachedLocalX();
+            _npcs?.RefreshVisualScale();
+            _streetADSCacheSet = false;
+        }
+    }
+
 
 }

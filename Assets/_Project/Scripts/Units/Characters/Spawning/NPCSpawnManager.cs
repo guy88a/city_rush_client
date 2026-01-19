@@ -29,6 +29,9 @@ namespace CityRush.Units.Characters.Spawning
         private readonly System.Collections.Generic.List<NPCController> _active = new();
         private readonly System.Collections.Generic.Stack<NPCController> _pool = new();
 
+        private readonly System.Collections.Generic.List<float> _cachedLocalX = new();
+        private bool _hasCachedLocalX;
+
         public void Enter(GameObject agentPrefab)
         {
             _agentPrefab = agentPrefab;
@@ -51,6 +54,7 @@ namespace CityRush.Units.Characters.Spawning
             _agentPrefab = null;
             _streetSpace = null;
         }
+
 
         public void SetStreetBounds(float leftX, float rightX)
         {
@@ -246,5 +250,70 @@ namespace CityRush.Units.Characters.Spawning
 
             ctrl.transform.localScale = new Vector3(s, s, 1f);
         }
+
+        public void RefreshVisualScale()
+        {
+            for (int i = 0; i < _active.Count; i++)
+                ApplyVisualScale(_active[i]);
+        }
+
+        public void CacheActiveLocalX()
+        {
+            _cachedLocalX.Clear();
+            _hasCachedLocalX = false;
+
+            if (_streetSpace == null)
+                return;
+
+            for (int i = 0; i < _active.Count; i++)
+            {
+                NPCController ctrl = _active[i];
+                if (ctrl == null)
+                {
+                    _cachedLocalX.Add(0f);
+                    continue;
+                }
+
+                float xLocal = _streetSpace.InverseTransformPoint(ctrl.transform.position).x;
+                _cachedLocalX.Add(xLocal);
+            }
+
+            _hasCachedLocalX = true;
+        }
+
+        public void RestoreActiveFromCachedLocalX()
+        {
+            if (!_hasCachedLocalX || _streetSpace == null)
+                return;
+
+            int n = Mathf.Min(_active.Count, _cachedLocalX.Count);
+
+            for (int i = 0; i < n; i++)
+            {
+                NPCController ctrl = _active[i];
+                if (ctrl == null) continue;
+
+                float xLocal = _cachedLocalX[i];
+
+                // Snap back to correct world position on the (possibly rescaled) street.
+                Vector3 pos = ToWorld(xLocal, _groundY);
+                ctrl.transform.position = pos;
+
+                // Optional safety: stop �fall impulse� if they had velocity (cheap + robust).
+                Rigidbody2D rb = ctrl.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    Vector2 v = rb.linearVelocity;
+                    if (v.y < 0f) v.y = 0f;
+                    rb.linearVelocity = v;
+                }
+
+                ApplyVisualScale(ctrl);
+            }
+
+            _hasCachedLocalX = false;
+            _cachedLocalX.Clear();
+        }
+
     }
 }

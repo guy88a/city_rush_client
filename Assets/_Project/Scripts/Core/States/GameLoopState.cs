@@ -379,7 +379,9 @@ public class GameLoopState : IState
         _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
         _mode = LoopMode.ApartmentWindow;
 
-        _mode = LoopMode.ApartmentWindow;
+        EnsurePlayerCombatBound();
+        if (_playerAim != null)
+            _playerAim.enabled = true;
     }
 
     private void ExitApartmentWindowOutWork()
@@ -406,6 +408,12 @@ public class GameLoopState : IState
     private void ExitApartmentWindowInDone()
     {
         _mode = LoopMode.ApartmentFull;
+
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
     }
 
     private void ExitCorridorToStreetOutWork()
@@ -742,8 +750,20 @@ public class GameLoopState : IState
             _playerCombat.enabled = true;
     }
 
-    private void HandleAimStarted() => _logger?.Info("[Combat] AimStarted");
-    private void HandleAimCanceled() => _logger?.Info("[Combat] AimCanceled");
-    private void HandleAimReleased() => _logger?.Info("[Combat] AimReleased");
+    private void HandleAimStarted()
+    {
+        _logger?.Info("[Combat] AimStarted");
+        _world?.EnterWindowADS();
+    }
+    private void HandleAimCanceled()
+    {
+        _logger?.Info("[Combat] AimCanceled");
+        _world?.ExitWindowADS();
+    }
+    private void HandleAimReleased()
+    {
+        _logger?.Info("[Combat] AimReleased");
+        _world?.ExitWindowADS();
+    }
 
 }
