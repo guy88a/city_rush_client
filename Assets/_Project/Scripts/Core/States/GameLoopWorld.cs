@@ -32,6 +32,7 @@ internal sealed class GameLoopWorld
     private Vector3 _streetPosBeforeADS;
     private Vector3 _streetScaleBeforeADS;
     private bool _streetADSCacheSet;
+    private float _streetCamLocalXBeforeADS;
 
     private CityRush.Units.Characters.Spawning.NPCSpawnManager _npcs;
 
@@ -57,6 +58,7 @@ internal sealed class GameLoopWorld
     public PlayerPOVController PlayerPOV { get; private set; }
     public CharacterUnit PlayerUnit { get; private set; }
     public SniperAimState PlayerAim { get; private set; }
+    public GameObject PlayerScopeUI { get; private set; }
 
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
@@ -111,6 +113,9 @@ internal sealed class GameLoopWorld
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
         PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
         PlayerAim = PlayerInstance.GetComponent<SniperAimState>();
+        PlayerScopeUI = PlayerInstance.transform.Find("UI_SniperScope")?.gameObject;
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(false);
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
@@ -155,6 +160,7 @@ internal sealed class GameLoopWorld
         PlayerPOV = null;
         PlayerUnit = null;
         PlayerAim = null;
+        PlayerScopeUI = null;
 
         _npcs?.SetStreetSpace(null);
         _npcs?.Exit();
@@ -497,6 +503,8 @@ internal sealed class GameLoopWorld
             _streetADSCacheSet = true;
         }
 
+        _streetCamLocalXBeforeADS = Street.transform.InverseTransformPoint(_game.CameraTransform.position).x;
+
         Apartment.gameObject.SetActive(false);
 
         float prevScale = _streetScaleBeforeADS.x; // 0.5
@@ -512,8 +520,18 @@ internal sealed class GameLoopWorld
         p.x -= offsetX;
         Street.transform.position = p;
 
+        float worldXAfter = Street.transform.TransformPoint(new Vector3(_streetCamLocalXBeforeADS, 0f, 0f)).x;
+        float dx = _game.CameraTransform.position.x - worldXAfter;
+
+        Vector3 p2 = Street.transform.position;
+        p2.x += dx;
+        Street.transform.position = p2;
+
         _npcs?.RestoreActiveFromCachedLocalX();
         _npcs?.RefreshVisualScale();
+
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(true);
     }
 
     public void ExitWindowADS()
@@ -534,6 +552,9 @@ internal sealed class GameLoopWorld
             _npcs?.RefreshVisualScale();
             _streetADSCacheSet = false;
         }
+
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(false);
     }
 
 
