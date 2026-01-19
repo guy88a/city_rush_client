@@ -1,3 +1,4 @@
+using CityRush.Units.Characters;
 using UnityEngine;
 
 namespace CityRush.Units.Characters.Combat
@@ -20,6 +21,8 @@ namespace CityRush.Units.Characters.Combat
 
         private System.Action<ProjectileLinear> _returnToPool;
 
+        private CharacterUnit _onlyTarget;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -39,7 +42,8 @@ namespace CityRush.Units.Characters.Combat
             int baseDamage,
             DamageResolver ownerDamage,
             Collider2D[] ownerColliders,
-            System.Action<ProjectileLinear> returnToPool
+            System.Action<ProjectileLinear> returnToPool,
+            CharacterUnit onlyTarget = null
         )
         {
             _velocity = direction.normalized * Mathf.Max(0f, speed);
@@ -57,6 +61,8 @@ namespace CityRush.Units.Characters.Combat
                 _rb.linearVelocity = Vector2.zero;
                 _rb.angularVelocity = 0f;
             }
+
+            _onlyTarget = onlyTarget;
         }
 
         private void FixedUpdate()
@@ -96,6 +102,13 @@ namespace CityRush.Units.Characters.Combat
                 }
             }
 
+            if (_onlyTarget != null)
+            {
+                var hitUnit = other.GetComponentInParent<CityRush.Units.Characters.CharacterUnit>();
+                if (hitUnit != _onlyTarget)
+                    return; // ignore everyone else (no damage, no despawn)
+            }
+
             Destroyable destroyable = other.GetComponentInParent<Destroyable>();
             if (destroyable != null)
             {
@@ -108,10 +121,19 @@ namespace CityRush.Units.Characters.Combat
                 return;
             }
 
+            // Ignore dead targets (keep their RB/colliders enabled; projectile should not despawn)
+            Health health = other.GetComponentInParent<Health>();
+            if (health != null && !health.IsAlive)
+                return;
+
             // Damage is applied by the attacker via DamageResolver.
             if (_ownerDamage != null)
             {
-                _ownerDamage.TryApplyDamage(other, _baseDamage);
+                Health targetHealth = other.GetComponentInParent<Health>();
+                if (targetHealth != null)
+                    _ownerDamage.TryApplyDamage(targetHealth.gameObject, _baseDamage);
+                else
+                    _ownerDamage.TryApplyDamage(other, _baseDamage);
                 Despawn();
             }
 
@@ -119,6 +141,8 @@ namespace CityRush.Units.Characters.Combat
 
         private void Despawn()
         {
+            _onlyTarget = null;
+
             if (_returnToPool != null)
                 _returnToPool(this);
             else

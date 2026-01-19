@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Units.Characters.Movement;
 using CityRush.Units.Characters.Controllers;
 
 namespace CityRush.Units.Characters.Spawning
@@ -9,8 +10,6 @@ namespace CityRush.Units.Characters.Spawning
         private int _spawnToken; // increments to invalidate pending respawns
 
         private float _spawnMarginX = 1f;
-        private float _minSpeed = 3f;
-        private float _maxSpeed = 7f;
         private float _respawnDelayMin = 2f;
         private float _respawnDelayMax = 3f;
 
@@ -106,7 +105,7 @@ namespace CityRush.Units.Characters.Spawning
 
                 ctrl.SetStreetBounds(leftWorld, rightWorld);
                 ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
-                ctrl.MaxSpeed = Random.Range(_minSpeed, _maxSpeed);
+                ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
 
                 ctrl.gameObject.SetActive(true);
                 _active.Add(ctrl);
@@ -148,6 +147,10 @@ namespace CityRush.Units.Characters.Spawning
         private void ReturnToPool(NPCController ctrl)
         {
             if (ctrl == null) return;
+
+            PhysicsObject phys = ctrl.GetComponent<PhysicsObject>();
+            if (phys != null)
+                phys.ResetExternalImpulse();
 
             ctrl.gameObject.SetActive(false);
             _pool.Push(ctrl);
@@ -196,7 +199,7 @@ namespace CityRush.Units.Characters.Spawning
 
             ctrl.SetStreetBounds(leftWorld, rightWorld);
             ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
-            ctrl.MaxSpeed = Random.Range(_minSpeed, _maxSpeed);
+            ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
 
             ctrl.gameObject.SetActive(true);
             _active.Add(ctrl);

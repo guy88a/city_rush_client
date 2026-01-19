@@ -7,6 +7,11 @@ public class PhysicsObject : MonoBehaviour
     public float minGroundNormalY = 0.65f;
     public float gravityModifier = 1f;
 
+    [Header("External Impulse")]
+    [SerializeField] private float impulseDamping = 18f;
+
+    private Vector2 _externalVelocity;
+
     protected Vector2 targetVelocity;
     protected bool grounded;
     protected Vector2 groundNormal;
@@ -29,6 +34,8 @@ public class PhysicsObject : MonoBehaviour
         contactFilter.useTriggers = false;
         contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
         contactFilter.useLayerMask = true;
+
+        _externalVelocity = Vector2.zero;
     }
 
     // Wrapper for now (until GameLoopState owns it)
@@ -55,6 +62,10 @@ public class PhysicsObject : MonoBehaviour
     {
         velocity += gravityModifier * Physics2D.gravity * dt;
         velocity.x = targetVelocity.x;
+
+        // Knockback / external impulse (added by combat hits)
+        velocity += _externalVelocity;
+        _externalVelocity = Vector2.Lerp(_externalVelocity, Vector2.zero, impulseDamping * dt);
 
         grounded = false;
 
@@ -105,5 +116,15 @@ public class PhysicsObject : MonoBehaviour
         }
 
         rb.position = rb.position + move.normalized * distance;
+    }
+
+    public void AddImpulse(Vector2 impulse)
+    {
+        _externalVelocity += impulse;
+    }
+
+    public void ResetExternalImpulse()
+    {
+        _externalVelocity = Vector2.zero;
     }
 }

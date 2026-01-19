@@ -22,8 +22,11 @@ namespace CityRush.Units.Characters.Combat
         [Header("Uzi")]
         [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
 
+        [Header("Shotgun")]
+        [SerializeField] private Vector2 shotgunSpawnOffset = new Vector2(0.8f, 0.15f);
+
         [Header("Cooldowns (seconds)")]
-        [SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
+        //[SerializeField] private float uziShotsPerSecond = 12f; // later: skills can scale this
         [SerializeField] private float shotgunCooldown = 0.45f;
         [SerializeField] private float punchCooldown = 0.25f;
         [SerializeField] private float throwCooldown = 0.6f;
@@ -45,7 +48,7 @@ namespace CityRush.Units.Characters.Combat
         private Transform _graphic;
         private SpriteRenderer _graphicSprite;
 
-        private WeaponShooter _weaponShooter;
+        private CharacterWeaponSet _weapons;
 
         private InputAction _primaryAction;
         private InputAction _altAction;
@@ -62,7 +65,7 @@ namespace CityRush.Units.Characters.Combat
         private void Awake()
         {
             _controller = GetComponent<PlayerPlatformerController>();
-            _weaponShooter = GetComponent<WeaponShooter>();
+            _weapons = GetComponent<CharacterWeaponSet>();
 
             _graphic = transform.Find("Graphic");
             if (_graphic != null)
@@ -185,17 +188,27 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextAltTime = now + shotgunCooldown;
+                    float interval = 0.6f;
+                    if (_weapons != null && _weapons.ShotgunWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
+
+                    _nextAltTime = now + interval;
                     return;
                 }
 
                 // LMB
                 if (movingInput)
                 {
-                    SetUziFiring(true);
-
-                    float interval = 1f / Mathf.Max(1f, uziShotsPerSecond);
+                    // Try to shoot (this also auto-starts reload if mag is empty and reserve exists).
                     FireUzi();
+
+                    bool uziAnim = _weapons != null && _weapons.IsUziAnimActive();
+                    SetUziFiring(uziAnim);
+
+                    float interval = 0.1f;
+                    if (_weapons != null && _weapons.UziWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.UziWeapon.FireInterval);
+
                     _nextPrimaryTime = now + interval;
                 }
                 else
@@ -204,7 +217,11 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    _nextPrimaryTime = now + shotgunCooldown;
+                    float interval = 0.6f;
+                    if (_weapons != null && _weapons.ShotgunWeapon != null)
+                        interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
+
+                    _nextPrimaryTime = now + interval;
                 }
 
                 return;
@@ -232,14 +249,14 @@ namespace CityRush.Units.Characters.Combat
         }
 
 
-        private void FireUzi()
+        private bool FireUzi()
         {
-            if (_weaponShooter == null) return;
+            if (_weapons == null) return false;
 
             Vector2 dir = GetFacingDirection();
             Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * dir.x, uziSpawnOffset.y);
 
-            _weaponShooter.FireUzi(origin, dir);
+            return _weapons.TryFireUzi(origin, dir);
         }
 
         private void SetUziFiring(bool isFiring)
@@ -252,11 +269,20 @@ namespace CityRush.Units.Characters.Combat
 
         private void FireShotgun(bool lockMovement, float lockDuration)
         {
-            Trigger(trigShotgun);
+            if (_weapons != null)
+            {
+                Vector2 dir = GetFacingDirection();
+                Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * dir.x, shotgunSpawnOffset.y);
+
+                bool fired = _weapons.TryFireShotgun(origin, dir);
+                if (fired)
+                    Trigger(trigShotgun);
+            }
 
             if (lockMovement)
                 StartActionLock(lockDuration);
         }
+
 
         private void FirePunch(float lockDuration)
         {

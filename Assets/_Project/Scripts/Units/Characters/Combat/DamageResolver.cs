@@ -1,3 +1,5 @@
+using CityRush.Units.Characters;
+using CityRush.Units;
 using UnityEngine;
 
 
@@ -35,16 +37,37 @@ namespace CityRush.Units.Characters.Combat
             if (target == null) return false;
 
 
-            Health health = target.GetComponent<Health>();
-            if (health == null) return false;
+            Health health = target.GetComponentInParent<Health>();
+            Destroyable destroyable = null;
 
+            if (health == null)
+            {
+                destroyable = target.GetComponentInParent<Destroyable>();
+                if (destroyable == null) return false;
+            }
 
             CombatStats targetStats = target.GetComponent<CombatStats>();
             int finalDamage = ResolveFinalDamage(baseDamage, targetStats);
 
+            var attackerCombat = GetComponent<CharacterCombatState>();
+            if (attackerCombat != null)
+                attackerCombat.EnterCombat();
 
-            health.TakeDamage(finalDamage);
-            return true;
+            var victimCombat = target.GetComponentInParent<CharacterCombatState>();
+            if (victimCombat != null)
+                victimCombat.EnterCombat();
+
+            var attackerUnit = GetComponent<CharacterUnit>();
+            if (victimCombat != null && attackerUnit != null)
+                victimCombat.SetTarget(attackerUnit);
+
+            if (health != null)
+            {
+                health.TakeDamage(finalDamage);
+                return true;
+            }
+
+            return destroyable != null && destroyable.TryHit(finalDamage);
         }
 
 
