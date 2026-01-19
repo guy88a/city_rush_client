@@ -52,7 +52,7 @@ internal sealed class GameLoopWorld
 
     public PlayerPOVController PlayerPOV { get; private set; }
     public CharacterUnit PlayerUnit { get; private set; }
-    public CombatSystem PlayerCombat { get; private set; }
+    public SniperAimState PlayerAim { get; private set; }
 
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
@@ -106,7 +106,7 @@ internal sealed class GameLoopWorld
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
         PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
-        PlayerCombat = PlayerInstance.GetComponent<CombatSystem>();
+        PlayerAim = PlayerInstance.GetComponent<SniperAimState>();
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
@@ -150,7 +150,7 @@ internal sealed class GameLoopWorld
         PlayerController = null;
         PlayerPOV = null;
         PlayerUnit = null;
-        PlayerCombat = null;
+        PlayerAim = null;
 
         _npcs?.SetStreetSpace(null);
         _npcs?.Exit();

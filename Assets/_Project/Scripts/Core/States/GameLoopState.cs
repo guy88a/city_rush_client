@@ -27,7 +27,7 @@ public class GameLoopState : IState
 
     private ILoggerService _logger;
 
-    private CombatSystem _playerCombat;
+    private SniperAimState _playerAim;
     private bool _combatHooksBound;
 
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
@@ -129,14 +129,14 @@ public class GameLoopState : IState
 
         _corridorExitTrigger = null;
 
-        if (_playerCombat != null && _combatHooksBound)
+        if (_playerAim != null && _combatHooksBound)
         {
-            _playerCombat.OnAimStarted -= HandleAimStarted;
-            _playerCombat.OnAimCanceled -= HandleAimCanceled;
-            _playerCombat.OnAimReleased -= HandleAimReleased;
+            _playerAim.OnAimStarted -= HandleAimStarted;
+            _playerAim.OnAimCanceled -= HandleAimCanceled;
+            _playerAim.OnAimReleased -= HandleAimReleased;
         }
 
-        _playerCombat = null;
+        _playerAim = null;
         _combatHooksBound = false;
 
         _world?.Exit();
@@ -532,13 +532,13 @@ public class GameLoopState : IState
         EnsurePlayerCombatBound();
 
         // ADS (example: RMB hold/release)
-        if (Mouse.current != null && _playerCombat != null)
+        if (Mouse.current != null && _playerAim != null)
         {
             if (Mouse.current.rightButton.wasPressedThisFrame)
-                _playerCombat.StartAim();
+                _playerAim.StartAim();
 
             if (Mouse.current.rightButton.wasReleasedThisFrame)
-                _playerCombat.ReleaseAim();
+                _playerAim.ReleaseAim();
         }
 
         // S => exit window view
@@ -546,7 +546,7 @@ public class GameLoopState : IState
             return;
 
         // Hard stop aim when leaving window mode
-        _playerCombat?.CancelAim();
+        _playerAim?.CancelAim();
 
         StartTransition(
             outWork: ExitApartmentWindowOutWork,
@@ -674,19 +674,19 @@ public class GameLoopState : IState
     // ----------------------------
     private void EnsurePlayerCombatBound()
     {
-        if (_playerCombat == null)
+        if (_playerAim == null)
         {
-            _playerCombat = _world != null ? _world.PlayerCombat : null;
+            _playerAim = _world != null ? _world.PlayerAim : null;
 
-            if (_playerCombat == null)
+            if (_playerAim == null)
                 _logger?.Info("[Combat] ERROR: PlayerCombat (CombatSystem) missing on Player prefab root.");
         }
 
-        if (_playerCombat == null || _combatHooksBound) return;
+        if (_playerAim == null || _combatHooksBound) return;
 
-        _playerCombat.OnAimStarted += HandleAimStarted;
-        _playerCombat.OnAimCanceled += HandleAimCanceled;
-        _playerCombat.OnAimReleased += HandleAimReleased;
+        _playerAim.OnAimStarted += HandleAimStarted;
+        _playerAim.OnAimCanceled += HandleAimCanceled;
+        _playerAim.OnAimReleased += HandleAimReleased;
 
         _combatHooksBound = true;
         _logger?.Info("[Combat] Bound player combat logs.");

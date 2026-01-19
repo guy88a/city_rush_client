@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CityRush.Units.Characters
 {
     [DisallowMultipleComponent]
-    public sealed class CombatSystem : MonoBehaviour
+    public sealed class SniperAimState : MonoBehaviour
     {
         public bool IsAiming { get; private set; }
 
