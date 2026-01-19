@@ -4,6 +4,7 @@ using CityRush.Core.Services;    // whatever namespace ILoggerService is in
 using CityRush.Core.States;
 using CityRush.Units;
 using CityRush.Units.Characters; // CombatSystem
+using CityRush.Units.Characters.Combat;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
@@ -28,7 +29,9 @@ public class GameLoopState : IState
     private ILoggerService _logger;
 
     private SniperAimState _playerAim;
-    private bool _combatHooksBound;
+    private bool _aimHooksBound;
+
+    private PlayerCombatDriver _playerCombat;
 
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
@@ -129,7 +132,7 @@ public class GameLoopState : IState
 
         _corridorExitTrigger = null;
 
-        if (_playerAim != null && _combatHooksBound)
+        if (_playerAim != null && _aimHooksBound)
         {
             _playerAim.OnAimStarted -= HandleAimStarted;
             _playerAim.OnAimCanceled -= HandleAimCanceled;
@@ -137,7 +140,7 @@ public class GameLoopState : IState
         }
 
         _playerAim = null;
-        _combatHooksBound = false;
+        _aimHooksBound = false;
 
         _world?.Exit();
 
@@ -354,6 +357,7 @@ public class GameLoopState : IState
     {
         _world.UnloadApartment();
 
+        ApplyPOVExitRules();
         // Preserve existing flow: exit POV when leaving apartment back to corridor.
         _world.ExitCorridorDoorPOV();
 
@@ -457,6 +461,7 @@ public class GameLoopState : IState
 
         if (Keyboard.current.sKey.wasPressedThisFrame)
         {
+            ApplyPOVExitRules();
             _world.ExitCorridorDoorPOV();
             _mode = LoopMode.Corridor;
 
@@ -620,6 +625,8 @@ public class GameLoopState : IState
 
         _world.EnterCorridorDoorPOV(focus);
         _mode = LoopMode.DoorPOV;
+
+        ApplyPOVEnterRules();
     }
 
     public void ExitCorridorDoorPOV()
@@ -627,6 +634,7 @@ public class GameLoopState : IState
         if (_isTransitioning || _mode != LoopMode.DoorPOV)
             return;
 
+        ApplyPOVExitRules();
         _world.ExitCorridorDoorPOV();
         _mode = LoopMode.Corridor;
     }
@@ -682,14 +690,56 @@ public class GameLoopState : IState
                 _logger?.Info("[Combat] ERROR: PlayerCombat (CombatSystem) missing on Player prefab root.");
         }
 
-        if (_playerAim == null || _combatHooksBound) return;
+        if (_playerAim == null || _aimHooksBound) return;
 
         _playerAim.OnAimStarted += HandleAimStarted;
         _playerAim.OnAimCanceled += HandleAimCanceled;
         _playerAim.OnAimReleased += HandleAimReleased;
 
-        _combatHooksBound = true;
+        _aimHooksBound = true;
         _logger?.Info("[Combat] Bound player combat logs.");
+    }
+
+    private void EnsurePlayerCombatDriverBound()
+    {
+        if (_playerCombat != null)
+            return;
+
+        // Assumption based on your project setup: PlayerCombatDriver is on the Player root.
+        // (Same place as PlayerController / SniperAimState)
+        _playerCombat = _world != null ? _world.PlayerTransform.GetComponent<PlayerCombatDriver>() : null;
+
+        if (_playerCombat == null)
+            _logger?.Error("[Combat] ERROR: PlayerCombatDriver missing on Player prefab root.");
+    }
+
+    private void ApplyPOVEnterRules()
+    {
+        EnsurePlayerCombatDriverBound();
+
+        if (_playerCombat != null)
+            _playerCombat.enabled = false;
+
+        // Sniper aim is NOT allowed by default in POV. Window mode enables it explicitly.
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
+    }
+
+    private void ApplyPOVExitRules()
+    {
+        EnsurePlayerCombatDriverBound();
+
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
+
+        if (_playerCombat != null)
+            _playerCombat.enabled = true;
     }
 
     private void HandleAimStarted() => _logger?.Info("[Combat] AimStarted");
