@@ -1,6 +1,7 @@
 using UnityEngine;
 using CityRush.Units.Characters.Movement;
 using CityRush.Units.Characters.Controllers;
+using CityRush.Units.Characters.Combat;
 
 namespace CityRush.Units.Characters.Spawning
 {
@@ -32,11 +33,15 @@ namespace CityRush.Units.Characters.Spawning
         private readonly System.Collections.Generic.List<float> _cachedLocalX = new();
         private bool _hasCachedLocalX;
 
+        private SniperDistanceStep _distanceStep;
+
         public void Enter(GameObject agentPrefab)
         {
             _agentPrefab = agentPrefab;
             _root = new GameObject("NPCsRoot").transform;
             _runner = _root.gameObject.AddComponent<NPCSpawnRunner>();
+            _distanceStep = _root.gameObject.AddComponent<SniperDistanceStep>();
+            _distanceStep.SetStep(2);
             _spawnToken++;
         }
 

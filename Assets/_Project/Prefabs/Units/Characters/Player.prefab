@@ -671,6 +671,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponShooter
   debugDrawShotgunBox: 1
   debugShotgunColor: {r: 1, g: 0.6, b: 0.1, a: 0.9}
+  debugDrawSniperPath: 1
+  debugSniperColor: {r: 0.6093478, g: 0, b: 1, a: 1}
 --- !u!114 &8036282166246709222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -685,6 +687,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.CharacterWeaponSet
   uziWeapon: {fileID: 11400000, guid: cad6d99f3463fae4aa7c7d0a150ee136, type: 2}
   shotgunWeapon: {fileID: 11400000, guid: 04c24dc091d34d149802468886f5d1b3, type: 2}
+  sniperWeapon: {fileID: 11400000, guid: b30e0aa4cc2a7284e94ae7db809c49c2, type: 2}
 --- !u!114 &3337504901878380243
 MonoBehaviour:
   m_ObjectHideFlags: 0
