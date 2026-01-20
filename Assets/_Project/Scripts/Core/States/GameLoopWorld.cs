@@ -637,6 +637,12 @@ internal sealed class GameLoopWorld
         if (cam == null)
             return;
 
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            var shooter = PlayerInstance != null ? PlayerInstance.GetComponent<CityRush.Units.Characters.Combat.WeaponShooter>() : null;
+            shooter?.DebugMarkSniperCrosshair(cam);
+        }
+
         Vector2 mouseNow = Mouse.current.position.ReadValue();
         Vector2 mousePrev = _adsPrevMouseScreen;
         _adsPrevMouseScreen = mouseNow;

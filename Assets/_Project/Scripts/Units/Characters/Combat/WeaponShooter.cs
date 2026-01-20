@@ -19,6 +19,13 @@ namespace CityRush.Units.Characters.Combat
 
         private readonly Collider2D[] _shotgunHits = new Collider2D[32];
 
+        [SerializeField] private bool debugDrawSniperPoint = true;
+        [SerializeField] private float debugSniperRadius = 0.15f;
+        [SerializeField] private Color debugSniperColor = new Color(0.2f, 1f, 0.8f, 0.9f);
+
+        private bool _sniperDebugHasPoint;
+        private Vector2 _sniperDebugPoint;
+
         private void Awake()
         {
             _damage = GetComponent<DamageResolver>();
@@ -135,6 +142,12 @@ namespace CityRush.Units.Characters.Combat
 
         private void OnDrawGizmosSelected()
         {
+            if (debugDrawSniperPoint && _sniperDebugHasPoint)
+            {
+                Gizmos.color = debugSniperColor;
+                Gizmos.DrawWireSphere(new Vector3(_sniperDebugPoint.x, _sniperDebugPoint.y, 0f), debugSniperRadius);
+            }
+
             if (!debugDrawShotgunBox) return;
             if (!_shotgunDebugHasBox) return;
 
@@ -145,6 +158,20 @@ namespace CityRush.Units.Characters.Combat
 
             Gizmos.DrawWireCube(c, s);
         }
+
+        public void DebugMarkSniperCrosshair(Camera cam)
+        {
+            if (cam == null) return;
+
+            float z = -cam.transform.position.z; // world plane z=0 (same as your ADS pan code)
+
+            Vector3 center = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, z);
+            Vector3 world = cam.ScreenToWorldPoint(center);
+
+            _sniperDebugPoint = new Vector2(world.x, world.y);
+            _sniperDebugHasPoint = true;
+        }
+
 
 
         private bool IsOwnerCollider(Collider2D c)

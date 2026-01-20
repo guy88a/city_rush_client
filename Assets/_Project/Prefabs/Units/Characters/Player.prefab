@@ -671,8 +671,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponShooter
   debugDrawShotgunBox: 1
   debugShotgunColor: {r: 1, g: 0.6, b: 0.1, a: 0.9}
-  debugDrawSniperPath: 1
-  debugSniperColor: {r: 0.6093478, g: 0, b: 1, a: 1}
+  debugDrawSniperPoint: 1
+  debugSniperRadius: 0.15
+  debugSniperColor: {r: 0.83133936, g: 0, b: 1, a: 0.9}
 --- !u!114 &8036282166246709222
 MonoBehaviour:
   m_ObjectHideFlags: 0
