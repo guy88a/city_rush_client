@@ -378,6 +378,7 @@ public class GameLoopState : IState
     {
         _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
         _mode = LoopMode.ApartmentWindow;
+        _world?.WindowPan_SetRootFromCamera();
 
         EnsurePlayerCombatBound();
         if (_playerAim != null)
@@ -408,6 +409,7 @@ public class GameLoopState : IState
     private void ExitApartmentWindowInDone()
     {
         _mode = LoopMode.ApartmentFull;
+        _world?.WindowPan_ClearRoot();
 
         if (_playerAim != null)
         {
@@ -553,6 +555,8 @@ public class GameLoopState : IState
             if (Mouse.current.rightButton.wasReleasedThisFrame)
                 _playerAim.ReleaseAim();
         }
+
+        _world?.TickWindowADS(Time.deltaTime);
 
         // S => exit window view
         if (Keyboard.current == null || !Keyboard.current.sKey.wasPressedThisFrame)
