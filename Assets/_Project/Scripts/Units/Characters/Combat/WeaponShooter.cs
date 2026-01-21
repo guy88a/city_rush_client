@@ -115,13 +115,13 @@ namespace CityRush.Units.Characters.Combat
                 _shotgunHits
             );
 
-            Debug.Log($"[Shotgun] hits={hitCount} center={center} size={weapon.ShotgunBoxSize}");
-            for (int i = 0; i < hitCount; i++)
-            {
-                var h = _shotgunHits[i];
-                if (h != null)
-                    Debug.Log($"[Shotgun] hit: {h.name} layer={LayerMask.LayerToName(h.gameObject.layer)} isTrigger={h.isTrigger}");
-            }
+            //Debug.Log($"[Shotgun] hits={hitCount} center={center} size={weapon.ShotgunBoxSize}");
+            //for (int i = 0; i < hitCount; i++)
+            //{
+            //    var h = _shotgunHits[i];
+            //    if (h != null)
+            //        Debug.Log($"[Shotgun] hit: {h.name} layer={LayerMask.LayerToName(h.gameObject.layer)} isTrigger={h.isTrigger}");
+            //}
 
             if (hitCount <= 0) return;
 
