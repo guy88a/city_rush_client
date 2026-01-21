@@ -28,6 +28,20 @@ namespace CityRush.Units.Characters.Combat
         // <Debug>
         private GameObject _sniperDebugMarkerInstance;
         // </Debug>
+        // --------------------
+        // Sniper bullet runtime (ADS)
+        // --------------------
+        private bool _sniperActive;
+        private Vector2 _sniperPos;
+        private int _sniperStep;
+        private float _sniperStepTimer;
+
+        private WeaponDefinition _sniperWeapon; // cached active weapon params
+        private readonly Collider2D[] _sniperHits = new Collider2D[32];
+
+        #if UNITY_EDITOR
+        private float _sniperDebugLogTimer;
+        #endif
 
         private void Awake()
         {
@@ -190,6 +204,150 @@ namespace CityRush.Units.Characters.Combat
 
             _sniperDebugMarkerInstance.transform.position = world;
         }
+
+        public void FireSniperADS(Camera cam, WeaponDefinition weapon)
+        {
+            if (cam == null) return;
+            if (weapon == null) return;
+            if (weapon.Type != WeaponType.Sniper) return;
+
+            float z = -cam.transform.position.z;
+            Vector3 center = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, z);
+            Vector3 world = cam.ScreenToWorldPoint(center);
+            world.z = 0f;
+
+            _sniperWeapon = weapon;
+            _sniperActive = true;
+            _sniperPos = new Vector2(world.x, world.y);
+            _sniperStep = 0;
+            _sniperStepTimer = 0f;
+
+            // optional: immediate hit check at step 0
+            TrySniperHitAtCurrentStep();
+        }
+
+        public void TickSniperBullet(float deltaTime)
+        {
+            if (!_sniperActive) return;
+            if (_sniperWeapon == null) { _sniperActive = false; return; }
+
+            float interval = Mathf.Max(0.001f, _sniperWeapon.SniperStepInterval);
+            int maxSteps = Mathf.Max(1, _sniperWeapon.SniperMaxSteps);
+
+            _sniperStepTimer += Mathf.Max(0f, deltaTime);
+
+            while (_sniperStepTimer >= interval)
+            {
+                _sniperStepTimer -= interval;
+
+                _sniperStep++;
+                _sniperPos.y -= _sniperWeapon.SniperDropPerStep;
+
+                // debug gizmo point (you already draw this)
+                _sniperDebugPoint = _sniperPos;
+                _sniperDebugHasPoint = true;
+
+                if (TrySniperHitAtCurrentStep())
+                {
+                    _sniperActive = false;
+                    _sniperWeapon = null;
+                    return;
+                }
+
+                if (_sniperStep >= maxSteps)
+                {
+                    _sniperActive = false;
+                    _sniperWeapon = null;
+                    return;
+                }
+            }
+        }
+
+        public void CancelSniperBullet()
+        {
+            _sniperActive = false;
+            _sniperWeapon = null;
+            _sniperDebugHasPoint = false;
+        }
+
+        private void TrySniperHit()
+        {
+            if (_sniperWeapon == null) return;
+
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = _sniperWeapon.SniperHitMask,
+                useTriggers = true
+            };
+
+            int hitCount = Physics2D.OverlapCircle(_sniperPos, _sniperWeapon.SniperHitRadius, filter, _sniperHits);
+            if (hitCount <= 0) return;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider2D hit = _sniperHits[i];
+                _sniperHits[i] = null; // clear slot for next call
+
+                if (hit == null) continue;
+                if (IsOwnerCollider(hit)) continue;
+
+                // Distance-step match rule (target step is on NPCsRoot for now)
+                SniperDistanceStep step = hit.GetComponentInParent<SniperDistanceStep>();
+                int targetStep = step != null ? step.Step : -1;
+
+                if (targetStep != _sniperStep)
+                    continue;
+
+                // HIT
+                _damage.TryApplyDamage(hit, _sniperWeapon.BaseDamage);
+
+                CancelSniperBullet();
+                return;
+            }
+        }
+
+        private bool TrySniperHitAtCurrentStep()
+        {
+            if (_sniperWeapon == null) return false;
+
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = _sniperWeapon.SniperHitMask,
+                useTriggers = true
+            };
+
+            int count = Physics2D.OverlapCircle(
+                _sniperPos,
+                _sniperWeapon.SniperHitRadius,
+                filter,
+                _sniperHits
+            );
+
+            if (count <= 0) return false;
+
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D hit = _sniperHits[i];
+                _sniperHits[i] = null;
+                if (hit == null) continue;
+
+                if (IsOwnerCollider(hit)) continue;
+
+                var stepComp = hit.GetComponentInParent<SniperDistanceStep>();
+                if (stepComp == null) continue;
+
+                if (stepComp.Step != _sniperStep)
+                    continue;
+
+                _damage.TryApplyDamage(hit, _sniperWeapon.BaseDamage);
+                return true;
+            }
+
+            return false;
+        }
+
 
         private bool IsOwnerCollider(Collider2D c)
         {

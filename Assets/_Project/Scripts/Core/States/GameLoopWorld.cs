@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
 using UnityEngine.InputSystem;
+using CityRush.Units.Characters.Combat;
 
 internal sealed class GameLoopWorld
 {
@@ -69,6 +70,8 @@ internal sealed class GameLoopWorld
     public Transform PlayerTransform { get; private set; }
     public BoxCollider2D PlayerCollider { get; private set; }
     public PlayerPlatformerController PlayerController { get; private set; }
+    public WeaponShooter PlayerShooter { get; private set; }
+    public CharacterWeaponSet PlayerWeapons { get; private set; }
 
     public float CameraHalfWidth { get; private set; }
     public float StreetLeftX { get; private set; }
@@ -134,6 +137,8 @@ internal sealed class GameLoopWorld
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
         PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
+        PlayerWeapons = PlayerInstance.GetComponent<CharacterWeaponSet>();
+        PlayerShooter = PlayerInstance.GetComponent<WeaponShooter>();
         PlayerAim = PlayerInstance.GetComponent<SniperAimState>();
         PlayerScopeUI = PlayerInstance.transform.Find("UI_SniperScope")?.gameObject;
         if (PlayerScopeUI != null)
@@ -181,6 +186,8 @@ internal sealed class GameLoopWorld
         PlayerController = null;
         PlayerPOV = null;
         PlayerUnit = null;
+        PlayerWeapons = null;
+        PlayerShooter = null;
         PlayerAim = null;
         PlayerScopeUI = null;
 
@@ -354,6 +361,8 @@ internal sealed class GameLoopWorld
 
     public void UnloadApartment()
     {
+        PlayerShooter?.CancelSniperBullet();
+
         if (Apartment != null)
             Object.Destroy(Apartment.gameObject);
 
@@ -627,6 +636,10 @@ internal sealed class GameLoopWorld
 
     public void TickWindowADS(float deltaTime)
     {
+        // Bullet keeps running as long as we are in apartment mode (this tick is being called).
+        PlayerShooter?.TickSniperBullet(deltaTime);
+
+        // ADS pan + shooting only when ADS is active
         if (!_adsPanActive)
             return;
 
@@ -637,15 +650,21 @@ internal sealed class GameLoopWorld
         if (cam == null)
             return;
 
+#if UNITY_EDITOR
+        // Debug block stays here if you want it later (no GetComponent here)
+        // if (Mouse.current.leftButton.wasPressedThisFrame)
+        // {
+        //     var prefab = PlayerWeapons != null && PlayerWeapons.SniperWeapon != null
+        //         ? PlayerWeapons.SniperWeapon.SniperDebugMarkerPrefab
+        //         : null;
+        //     PlayerShooter?.DebugSpawnSniperMarker(cam, prefab);
+        // }
+#endif
+
         if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            var shooter = PlayerInstance != null ? PlayerInstance.GetComponent<CityRush.Units.Characters.Combat.WeaponShooter>() : null;
-            var weaponSet = PlayerInstance != null ? PlayerInstance.GetComponent<CityRush.Units.Characters.Combat.CharacterWeaponSet>() : null;
+            PlayerWeapons?.TryFireSniperADS(cam);
 
-            var prefab = weaponSet != null && weaponSet.SniperWeapon != null ? weaponSet.SniperWeapon.SniperDebugMarkerPrefab : null;
-            shooter?.DebugSpawnSniperMarker(cam, prefab);
-        }
-
+        // ---- your existing pan code continues here unchanged ----
         Vector2 mouseNow = Mouse.current.position.ReadValue();
         Vector2 mousePrev = _adsPrevMouseScreen;
         _adsPrevMouseScreen = mouseNow;
@@ -653,7 +672,7 @@ internal sealed class GameLoopWorld
         if (mouseNow == mousePrev)
             return;
 
-        float z = -cam.transform.position.z; // assumes world plane is z=0
+        float z = -cam.transform.position.z;
 
         Vector3 wPrev3 = cam.ScreenToWorldPoint(new Vector3(mousePrev.x, mousePrev.y, z));
         Vector3 wNow3 = cam.ScreenToWorldPoint(new Vector3(mouseNow.x, mouseNow.y, z));
@@ -667,11 +686,9 @@ internal sealed class GameLoopWorld
         camPos.x += deltaWorld.x;
         camPos.y += deltaWorld.y;
 
-        // Clamp A: max pan distance around ADS origin
         camPos.x = Mathf.Clamp(camPos.x, _adsPanRoot.x - AdsMaxPanX, _adsPanRoot.x + AdsMaxPanX);
         camPos.y = Mathf.Clamp(camPos.y, _adsPanRoot.y - AdsMaxPanY, _adsPanRoot.y + AdsMaxPanY);
 
-        // Clamp B: street bounds (prevent empty render)
         float halfH = cam.orthographicSize;
         float halfW = halfH * cam.aspect;
 

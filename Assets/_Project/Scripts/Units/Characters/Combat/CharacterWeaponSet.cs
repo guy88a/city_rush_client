@@ -84,19 +84,17 @@ namespace CityRush.Units.Characters.Combat
                 () => _shooter.FireShotgun(origin, direction, w)
             );
         }
+        public bool TryFireSniperADS(Camera cam)
+        {
+            WeaponDefinition w = sniperWeapon;
+            if (w == null || w.Type != WeaponType.Sniper) return false;
+            if (_shooter == null) return false;
 
-        //public bool TryFireSniper(Vector2 origin, Vector2 direction)
-        //{
-        //    WeaponDefinition w = sniperWeapon;
-        //    if (w == null || w.Type != WeaponType.Sniper) return false;
-        //    if (_shooter == null) return false;
-
-        //    return _sniper.TryFire(
-        //        w,
-        //        () => _shooter.FireSniper(origin, direction, w)
-        //    );
-        //}
-
+            return _sniper.TryFire(
+                w,
+                () => _shooter.FireSniperADS(cam, w)
+            );
+        }
 
         public bool IsUziAnimActive()
         {
