@@ -640,7 +640,10 @@ internal sealed class GameLoopWorld
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             var shooter = PlayerInstance != null ? PlayerInstance.GetComponent<CityRush.Units.Characters.Combat.WeaponShooter>() : null;
-            shooter?.DebugMarkSniperCrosshair(cam);
+            var weaponSet = PlayerInstance != null ? PlayerInstance.GetComponent<CityRush.Units.Characters.Combat.CharacterWeaponSet>() : null;
+
+            var prefab = weaponSet != null && weaponSet.SniperWeapon != null ? weaponSet.SniperWeapon.SniperDebugMarkerPrefab : null;
+            shooter?.DebugSpawnSniperMarker(cam, prefab);
         }
 
         Vector2 mouseNow = Mouse.current.position.ReadValue();

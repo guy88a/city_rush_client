@@ -53,6 +53,10 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private float sniperDropPerStep = 0.05f;  // aim-space Y drop each step
         [SerializeField] private float sniperHitRadius = 0.12f;    // aim-space hit radius
         [SerializeField] private LayerMask sniperHitMask;
+        // <Debug>
+        [SerializeField] private GameObject sniperDebugMarkerPrefab;
+        public GameObject SniperDebugMarkerPrefab => sniperDebugMarkerPrefab;
+        // </Debug>
 
         public WeaponType Type => type;
 

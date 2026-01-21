@@ -25,6 +25,9 @@ namespace CityRush.Units.Characters.Combat
 
         private bool _sniperDebugHasPoint;
         private Vector2 _sniperDebugPoint;
+        // <Debug>
+        private GameObject _sniperDebugMarkerInstance;
+        // </Debug>
 
         private void Awake()
         {
@@ -172,7 +175,21 @@ namespace CityRush.Units.Characters.Combat
             _sniperDebugHasPoint = true;
         }
 
+        public void DebugSpawnSniperMarker(Camera cam, GameObject markerPrefab)
+        {
+            if (cam == null) return;
+            if (markerPrefab == null) return;
 
+            float z = -cam.transform.position.z;
+            Vector3 center = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, z);
+            Vector3 world = cam.ScreenToWorldPoint(center);
+            world.z = 0f;
+
+            if (_sniperDebugMarkerInstance == null)
+                _sniperDebugMarkerInstance = Object.Instantiate(markerPrefab);
+
+            _sniperDebugMarkerInstance.transform.position = world;
+        }
 
         private bool IsOwnerCollider(Collider2D c)
         {

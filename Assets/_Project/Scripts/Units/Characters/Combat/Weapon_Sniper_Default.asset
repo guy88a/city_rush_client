@@ -36,3 +36,4 @@ MonoBehaviour:
   sniperHitMask:
     serializedVersion: 2
     m_Bits: 192
+  sniperDebugMarkerPrefab: {fileID: 593911390558691360, guid: d0174dc6837699348a9a2ceaa3cb54af, type: 3}
