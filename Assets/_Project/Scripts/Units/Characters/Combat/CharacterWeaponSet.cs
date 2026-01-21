@@ -9,14 +9,17 @@ namespace CityRush.Units.Characters.Combat
         [Header("Weapons")]
         [SerializeField] private WeaponDefinition uziWeapon;
         [SerializeField] private WeaponDefinition shotgunWeapon;
+        [SerializeField] private WeaponDefinition sniperWeapon;
 
         private WeaponShooter _shooter;
 
         private WeaponSlotRuntime _uzi;
         private WeaponSlotRuntime _shotgun;
+        private WeaponSlotRuntime _sniper;
 
         public WeaponDefinition UziWeapon => uziWeapon;
         public WeaponDefinition ShotgunWeapon => shotgunWeapon;
+        public WeaponDefinition SniperWeapon => sniperWeapon;
 
         public int UziMagazine => _uzi.Magazine;
         public int UziReserve => _uzi.Reserve;
@@ -26,23 +29,36 @@ namespace CityRush.Units.Characters.Combat
         public int ShotgunReserve => _shotgun.Reserve;
         public bool IsShotgunReloading => _shotgun.IsReloading;
 
+        public int SniperMagazine => _sniper.Magazine;
+        public int SniperReserve => _sniper.Reserve;
+        public bool IsSniperReloading => _sniper.IsReloading;
+
         private void Awake()
         {
             _shooter = GetComponent<WeaponShooter>();
 
             _uzi = new WeaponSlotRuntime(this, WeaponType.Uzi);
             _shotgun = new WeaponSlotRuntime(this, WeaponType.Shotgun);
+            _sniper = new WeaponSlotRuntime(this, WeaponType.Sniper);
 
             _uzi.ResetFrom(uziWeapon);
             _shotgun.ResetFrom(shotgunWeapon);
+            _sniper.ResetFrom(sniperWeapon);
 
             if (uziWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing UziWeapon", this);
             if (shotgunWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing ShotgunWeapon", this);
+            if (sniperWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing SniperWeapon", this);
         }
 
         private WeaponDefinition GetWeapon(WeaponType type)
         {
-            return type == WeaponType.Uzi ? uziWeapon : shotgunWeapon;
+            return type switch
+            {
+                WeaponType.Uzi => uziWeapon,
+                WeaponType.Shotgun => shotgunWeapon,
+                WeaponType.Sniper => sniperWeapon,
+                _ => null
+            };
         }
 
         public bool TryFireUzi(Vector2 origin, Vector2 direction)
@@ -66,6 +82,17 @@ namespace CityRush.Units.Characters.Combat
             return _shotgun.TryFire(
                 w,
                 () => _shooter.FireShotgun(origin, direction, w)
+            );
+        }
+        public bool TryFireSniperADS(Camera cam)
+        {
+            WeaponDefinition w = sniperWeapon;
+            if (w == null || w.Type != WeaponType.Sniper) return false;
+            if (_shooter == null) return false;
+
+            return _sniper.TryFire(
+                w,
+                () => _shooter.FireSniperADS(cam, w)
             );
         }
 
@@ -186,5 +213,14 @@ namespace CityRush.Units.Characters.Combat
 
             return _shotgun.TryFire(w, () => _shooter.FireShotgun(origin, direction, w, onlyTarget));
         }
+
+        //public bool TryFireSniper(Vector2 origin, Vector2 direction, CharacterUnit onlyTarget)
+        //{
+        //    WeaponDefinition w = sniperWeapon;
+        //    if (w == null || w.Type != WeaponType.Sniper) return false;
+        //    if (_shooter == null) return false;
+
+        //    return _sniper.TryFire(w, () => _shooter.FireSniper(origin, direction, w, onlyTarget));
+        //}
     }
 }

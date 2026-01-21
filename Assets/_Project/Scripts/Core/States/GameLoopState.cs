@@ -4,6 +4,7 @@ using CityRush.Core.Services;    // whatever namespace ILoggerService is in
 using CityRush.Core.States;
 using CityRush.Units;
 using CityRush.Units.Characters; // CombatSystem
+using CityRush.Units.Characters.Combat;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
@@ -27,8 +28,10 @@ public class GameLoopState : IState
 
     private ILoggerService _logger;
 
-    private CombatSystem _playerCombat;
-    private bool _combatHooksBound;
+    private SniperAimState _playerAim;
+    private bool _aimHooksBound;
+
+    private PlayerCombatDriver _playerCombat;
 
     // Keep same effective behavior as before (0.2f was hardcoded in LoadNextStreet).
     private const float NavSpawnGapModifier = 0.2f;
@@ -129,15 +132,15 @@ public class GameLoopState : IState
 
         _corridorExitTrigger = null;
 
-        if (_playerCombat != null && _combatHooksBound)
+        if (_playerAim != null && _aimHooksBound)
         {
-            _playerCombat.OnAimStarted -= HandleAimStarted;
-            _playerCombat.OnAimCanceled -= HandleAimCanceled;
-            _playerCombat.OnAimReleased -= HandleAimReleased;
+            _playerAim.OnAimStarted -= HandleAimStarted;
+            _playerAim.OnAimCanceled -= HandleAimCanceled;
+            _playerAim.OnAimReleased -= HandleAimReleased;
         }
 
-        _playerCombat = null;
-        _combatHooksBound = false;
+        _playerAim = null;
+        _aimHooksBound = false;
 
         _world?.Exit();
 
@@ -354,6 +357,7 @@ public class GameLoopState : IState
     {
         _world.UnloadApartment();
 
+        ApplyPOVExitRules();
         // Preserve existing flow: exit POV when leaving apartment back to corridor.
         _world.ExitCorridorDoorPOV();
 
@@ -374,8 +378,11 @@ public class GameLoopState : IState
     {
         _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
         _mode = LoopMode.ApartmentWindow;
+        _world?.WindowPan_SetRootFromCamera();
 
-        _mode = LoopMode.ApartmentWindow;
+        EnsurePlayerCombatBound();
+        if (_playerAim != null)
+            _playerAim.enabled = true;
     }
 
     private void ExitApartmentWindowOutWork()
@@ -402,6 +409,13 @@ public class GameLoopState : IState
     private void ExitApartmentWindowInDone()
     {
         _mode = LoopMode.ApartmentFull;
+        _world?.WindowPan_ClearRoot();
+
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
     }
 
     private void ExitCorridorToStreetOutWork()
@@ -457,6 +471,7 @@ public class GameLoopState : IState
 
         if (Keyboard.current.sKey.wasPressedThisFrame)
         {
+            ApplyPOVExitRules();
             _world.ExitCorridorDoorPOV();
             _mode = LoopMode.Corridor;
 
@@ -532,21 +547,23 @@ public class GameLoopState : IState
         EnsurePlayerCombatBound();
 
         // ADS (example: RMB hold/release)
-        if (Mouse.current != null && _playerCombat != null)
+        if (Mouse.current != null && _playerAim != null)
         {
             if (Mouse.current.rightButton.wasPressedThisFrame)
-                _playerCombat.StartAim();
+                _playerAim.StartAim();
 
             if (Mouse.current.rightButton.wasReleasedThisFrame)
-                _playerCombat.ReleaseAim();
+                _playerAim.ReleaseAim();
         }
+
+        _world?.TickWindowADS(Time.deltaTime);
 
         // S => exit window view
         if (Keyboard.current == null || !Keyboard.current.sKey.wasPressedThisFrame)
             return;
 
         // Hard stop aim when leaving window mode
-        _playerCombat?.CancelAim();
+        _playerAim?.CancelAim();
 
         StartTransition(
             outWork: ExitApartmentWindowOutWork,
@@ -620,6 +637,8 @@ public class GameLoopState : IState
 
         _world.EnterCorridorDoorPOV(focus);
         _mode = LoopMode.DoorPOV;
+
+        ApplyPOVEnterRules();
     }
 
     public void ExitCorridorDoorPOV()
@@ -627,6 +646,7 @@ public class GameLoopState : IState
         if (_isTransitioning || _mode != LoopMode.DoorPOV)
             return;
 
+        ApplyPOVExitRules();
         _world.ExitCorridorDoorPOV();
         _mode = LoopMode.Corridor;
     }
@@ -674,26 +694,80 @@ public class GameLoopState : IState
     // ----------------------------
     private void EnsurePlayerCombatBound()
     {
-        if (_playerCombat == null)
+        if (_playerAim == null)
         {
-            _playerCombat = _world != null ? _world.PlayerCombat : null;
+            _playerAim = _world != null ? _world.PlayerAim : null;
 
-            if (_playerCombat == null)
+            if (_playerAim == null)
                 _logger?.Info("[Combat] ERROR: PlayerCombat (CombatSystem) missing on Player prefab root.");
         }
 
-        if (_playerCombat == null || _combatHooksBound) return;
+        if (_playerAim == null || _aimHooksBound) return;
 
-        _playerCombat.OnAimStarted += HandleAimStarted;
-        _playerCombat.OnAimCanceled += HandleAimCanceled;
-        _playerCombat.OnAimReleased += HandleAimReleased;
+        _playerAim.OnAimStarted += HandleAimStarted;
+        _playerAim.OnAimCanceled += HandleAimCanceled;
+        _playerAim.OnAimReleased += HandleAimReleased;
 
-        _combatHooksBound = true;
+        _aimHooksBound = true;
         _logger?.Info("[Combat] Bound player combat logs.");
     }
 
-    private void HandleAimStarted() => _logger?.Info("[Combat] AimStarted");
-    private void HandleAimCanceled() => _logger?.Info("[Combat] AimCanceled");
-    private void HandleAimReleased() => _logger?.Info("[Combat] AimReleased");
+    private void EnsurePlayerCombatDriverBound()
+    {
+        if (_playerCombat != null)
+            return;
+
+        // Assumption based on your project setup: PlayerCombatDriver is on the Player root.
+        // (Same place as PlayerController / SniperAimState)
+        _playerCombat = _world != null ? _world.PlayerTransform.GetComponent<PlayerCombatDriver>() : null;
+
+        if (_playerCombat == null)
+            _logger?.Error("[Combat] ERROR: PlayerCombatDriver missing on Player prefab root.");
+    }
+
+    private void ApplyPOVEnterRules()
+    {
+        EnsurePlayerCombatDriverBound();
+
+        if (_playerCombat != null)
+            _playerCombat.enabled = false;
+
+        // Sniper aim is NOT allowed by default in POV. Window mode enables it explicitly.
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
+    }
+
+    private void ApplyPOVExitRules()
+    {
+        EnsurePlayerCombatDriverBound();
+
+        if (_playerAim != null)
+        {
+            _playerAim.CancelAim();
+            _playerAim.enabled = false;
+        }
+
+        if (_playerCombat != null)
+            _playerCombat.enabled = true;
+    }
+
+    private void HandleAimStarted()
+    {
+        _logger?.Info("[Combat] AimStarted");
+        _world?.EnterWindowADS();
+    }
+    private void HandleAimCanceled()
+    {
+        _logger?.Info("[Combat] AimCanceled");
+        _world?.ExitWindowADS();
+    }
+    private void HandleAimReleased()
+    {
+        _logger?.Info("[Combat] AimReleased");
+        _world?.ExitWindowADS();
+    }
 
 }

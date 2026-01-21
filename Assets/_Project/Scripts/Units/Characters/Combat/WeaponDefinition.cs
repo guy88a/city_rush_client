@@ -46,6 +46,18 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private float shotgunKnockbackImpulse = 6f;
         [SerializeField] private LayerMask shotgunHitMask;
 
+        [Header("Sniper Shot (ADS)")]
+        [SerializeField] private int sniperStepMeters = 100;     // target/bullet quantization step (ex: 100m)
+        [SerializeField] private int sniperMaxSteps = 30;        // max distance steps before despawn
+        [SerializeField] private float sniperStepInterval = 0.03f; // seconds per step advance
+        [SerializeField] private float sniperDropPerStep = 0.05f;  // aim-space Y drop each step
+        [SerializeField] private float sniperHitRadius = 0.12f;    // aim-space hit radius
+        [SerializeField] private LayerMask sniperHitMask;
+        // <Debug>
+        [SerializeField] private GameObject sniperDebugMarkerPrefab;
+        public GameObject SniperDebugMarkerPrefab => sniperDebugMarkerPrefab;
+        // </Debug>
+
         public WeaponType Type => type;
 
         public int BaseDamage => baseDamage;
@@ -65,6 +77,13 @@ namespace CityRush.Units.Characters.Combat
         public float ShotgunKnockbackImpulse => shotgunKnockbackImpulse;
         public LayerMask ShotgunHitMask => shotgunHitMask;
 
+        public int SniperStepMeters => sniperStepMeters;
+        public int SniperMaxSteps => sniperMaxSteps;
+        public float SniperStepInterval => sniperStepInterval;
+        public float SniperDropPerStep => sniperDropPerStep;
+        public float SniperHitRadius => sniperHitRadius;
+        public LayerMask SniperHitMask => sniperHitMask;
+
         private void OnValidate()
         {
             baseDamage = Mathf.Max(0, baseDamage);
@@ -81,6 +100,12 @@ namespace CityRush.Units.Characters.Combat
             shotgunBoxSize.x = Mathf.Max(0.01f, shotgunBoxSize.x);
             shotgunBoxSize.y = Mathf.Max(0.01f, shotgunBoxSize.y);
             shotgunKnockbackImpulse = Mathf.Max(0f, shotgunKnockbackImpulse);
+
+            sniperStepMeters = Mathf.Max(1, sniperStepMeters);
+            sniperMaxSteps = Mathf.Max(1, sniperMaxSteps);
+            sniperStepInterval = Mathf.Max(0.001f, sniperStepInterval);
+            sniperDropPerStep = Mathf.Max(0f, sniperDropPerStep);
+            sniperHitRadius = Mathf.Max(0.001f, sniperHitRadius);
         }
     }
 }

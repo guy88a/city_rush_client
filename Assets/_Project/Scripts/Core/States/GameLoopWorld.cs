@@ -12,6 +12,8 @@ using CityRush.World.Street;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
+using UnityEngine.InputSystem;
+using CityRush.Units.Characters.Combat;
 
 internal sealed class GameLoopWorld
 {
@@ -29,6 +31,29 @@ internal sealed class GameLoopWorld
     private bool _apartmentBgStreetPosCached;
     private const float ApartmentBackgroundRootX = -20f;
 
+    private Vector3 _streetPosBeforeADS;
+    private Vector3 _streetScaleBeforeADS;
+    private bool _streetADSCacheSet;
+    private float _streetCamLocalXBeforeADS;
+
+    private bool _adsPanActive;
+    private Vector3 _adsCamOrigin;
+    private Vector2 _adsPrevMouseScreen;
+
+    private const float AdsMaxPanX = 12f;
+    private const float AdsMaxPanY = 12f;
+
+    private Vector3 _adsPanRoot;
+    private bool _adsPanRootSet;
+
+    private Vector3 _adsCamPos;
+    private bool _adsCamPosSet;
+
+    public float AdsMouseSensitivity { get; set; } = 1f;
+
+    public float StreetBottomY { get; private set; }
+    public float StreetTopY { get; private set; }
+
     private CityRush.Units.Characters.Spawning.NPCSpawnManager _npcs;
 
     public ScreenFadeController ScreenFade { get; private set; }
@@ -45,6 +70,8 @@ internal sealed class GameLoopWorld
     public Transform PlayerTransform { get; private set; }
     public BoxCollider2D PlayerCollider { get; private set; }
     public PlayerPlatformerController PlayerController { get; private set; }
+    public WeaponShooter PlayerShooter { get; private set; }
+    public CharacterWeaponSet PlayerWeapons { get; private set; }
 
     public float CameraHalfWidth { get; private set; }
     public float StreetLeftX { get; private set; }
@@ -52,7 +79,8 @@ internal sealed class GameLoopWorld
 
     public PlayerPOVController PlayerPOV { get; private set; }
     public CharacterUnit PlayerUnit { get; private set; }
-    public CombatSystem PlayerCombat { get; private set; }
+    public SniperAimState PlayerAim { get; private set; }
+    public GameObject PlayerScopeUI { get; private set; }
 
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
@@ -94,6 +122,9 @@ internal sealed class GameLoopWorld
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
 
+        StreetBottomY = 0f;
+        StreetTopY = 10f;
+
         _npcs = new CityRush.Units.Characters.Spawning.NPCSpawnManager();
         _npcs.Enter(prefabs.NPCPrefab);
         _npcs.SetStreetBounds(StreetLeftX, StreetRightX);
@@ -106,7 +137,12 @@ internal sealed class GameLoopWorld
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
         PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
-        PlayerCombat = PlayerInstance.GetComponent<CombatSystem>();
+        PlayerWeapons = PlayerInstance.GetComponent<CharacterWeaponSet>();
+        PlayerShooter = PlayerInstance.GetComponent<WeaponShooter>();
+        PlayerAim = PlayerInstance.GetComponent<SniperAimState>();
+        PlayerScopeUI = PlayerInstance.transform.Find("UI_SniperScope")?.gameObject;
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(false);
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
@@ -150,7 +186,10 @@ internal sealed class GameLoopWorld
         PlayerController = null;
         PlayerPOV = null;
         PlayerUnit = null;
-        PlayerCombat = null;
+        PlayerWeapons = null;
+        PlayerShooter = null;
+        PlayerAim = null;
+        PlayerScopeUI = null;
 
         _npcs?.SetStreetSpace(null);
         _npcs?.Exit();
@@ -170,6 +209,8 @@ internal sealed class GameLoopWorld
         Street = null;
         StreetLeftX = 0f;
         StreetRightX = 0f;
+        StreetBottomY = 0f;
+        StreetTopY = 0f;
     }
 
     public void SetStreetActive(bool active)
@@ -231,6 +272,9 @@ internal sealed class GameLoopWorld
 
         StreetLeftX = Street.LeftBoundX;
         StreetRightX = Street.RightBoundX;
+
+        StreetBottomY = 0f;
+        StreetTopY = 10f;
 
         _npcs?.SetStreetSpace(null);
         _npcs?.SetStreetBounds(StreetLeftX, StreetRightX);
@@ -317,6 +361,8 @@ internal sealed class GameLoopWorld
 
     public void UnloadApartment()
     {
+        PlayerShooter?.CancelSniperBullet();
+
         if (Apartment != null)
             Object.Destroy(Apartment.gameObject);
 
@@ -479,6 +525,211 @@ internal sealed class GameLoopWorld
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
         _npcs.SpawnAgents(count);
+    }
+
+    public void EnterWindowADS()
+    {
+        if (Street == null || Apartment == null)
+            return;
+
+        if (!_streetADSCacheSet)
+        {
+            _streetPosBeforeADS = Street.transform.position;
+            _streetScaleBeforeADS = Street.transform.localScale;
+            _streetADSCacheSet = true;
+        }
+
+        _streetCamLocalXBeforeADS = Street.transform.InverseTransformPoint(_game.CameraTransform.position).x;
+
+        Apartment.gameObject.SetActive(false);
+
+        float prevScale = _streetScaleBeforeADS.x; // 0.5
+
+        _npcs?.CacheActiveLocalX();
+
+        Street.transform.localScale = Vector3.one;
+
+        float width = Mathf.Abs(StreetRightX - StreetLeftX);
+        float offsetX = width * (1f - prevScale) * 0.5f;
+
+        Vector3 p = Street.transform.position;
+        p.x -= offsetX;
+        Street.transform.position = p;
+
+        float worldXAfter = Street.transform.TransformPoint(new Vector3(_streetCamLocalXBeforeADS, 0f, 0f)).x;
+        float dx = _game.CameraTransform.position.x - worldXAfter;
+
+        Vector3 p2 = Street.transform.position;
+        p2.x += dx;
+        Street.transform.position = p2;
+
+        _npcs?.RestoreActiveFromCachedLocalX();
+        _npcs?.RefreshVisualScale();
+
+        _adsPanActive = true;
+
+        if (!_adsPanRootSet)
+        {
+            // Fallback safety: if caller forgot to set root on window entry
+            _adsPanRoot = _game.CameraTransform.position;
+            _adsPanRootSet = true;
+        }
+
+        // Restore last ADS camera position (does NOT change root)
+        if (_adsCamPosSet)
+        {
+            Vector3 camPos = _game.CameraTransform.position;
+            camPos.x = _adsCamPos.x;
+            camPos.y = _adsCamPos.y;
+            _game.CameraTransform.position = camPos;
+        }
+
+        if (Mouse.current != null)
+            _adsPrevMouseScreen = Mouse.current.position.ReadValue();
+
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(true);
+    }
+
+    public void ExitWindowADS()
+    {
+        if (Street == null || Apartment == null)
+            return;
+
+        // Cache last ADS camera position (so next ADS restores it)
+        _adsCamPos = _game.CameraTransform.position;
+        _adsCamPosSet = true;
+
+        // Restore apartment visuals
+        Apartment.gameObject.SetActive(true);
+
+        // Restore street transform back to window/apartment state
+        if (_streetADSCacheSet)
+        {
+            _npcs?.CacheActiveLocalX();
+
+            Street.transform.position = _streetPosBeforeADS;
+            Street.transform.localScale = _streetScaleBeforeADS;
+
+            _npcs?.RestoreActiveFromCachedLocalX();
+            _npcs?.RefreshVisualScale();
+
+            _streetADSCacheSet = false;
+        }
+
+        // Restore non-ADS (window) camera position (X/Y) after exiting ADS
+        Vector3 camPos = _game.CameraTransform.position;
+        camPos.x = _adsPanRoot.x;
+        camPos.y = _adsPanRoot.y;
+        _game.CameraTransform.position = camPos;
+
+        // Prevent first-frame jump next ADS due to stale prev mouse
+        if (Mouse.current != null)
+            _adsPrevMouseScreen = Mouse.current.position.ReadValue();
+
+        if (PlayerScopeUI != null)
+            PlayerScopeUI.SetActive(false);
+
+        _adsPanActive = false;
+    }
+
+
+    public void TickWindowADS(float deltaTime)
+    {
+        // Bullet keeps running as long as we are in apartment mode (this tick is being called).
+        PlayerShooter?.TickSniperBullet(deltaTime);
+
+        // ADS pan + shooting only when ADS is active
+        if (!_adsPanActive)
+            return;
+
+        if (Mouse.current == null)
+            return;
+
+        Camera cam = _game.GlobalCamera;
+        if (cam == null)
+            return;
+
+#if UNITY_EDITOR
+        // Debug block stays here if you want it later (no GetComponent here)
+        // if (Mouse.current.leftButton.wasPressedThisFrame)
+        // {
+        //     var prefab = PlayerWeapons != null && PlayerWeapons.SniperWeapon != null
+        //         ? PlayerWeapons.SniperWeapon.SniperDebugMarkerPrefab
+        //         : null;
+        //     PlayerShooter?.DebugSpawnSniperMarker(cam, prefab);
+        // }
+#endif
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+            PlayerWeapons?.TryFireSniperADS(cam);
+
+        // ---- your existing pan code continues here unchanged ----
+        Vector2 mouseNow = Mouse.current.position.ReadValue();
+        Vector2 mousePrev = _adsPrevMouseScreen;
+        _adsPrevMouseScreen = mouseNow;
+
+        if (mouseNow == mousePrev)
+            return;
+
+        float z = -cam.transform.position.z;
+
+        Vector3 wPrev3 = cam.ScreenToWorldPoint(new Vector3(mousePrev.x, mousePrev.y, z));
+        Vector3 wNow3 = cam.ScreenToWorldPoint(new Vector3(mouseNow.x, mouseNow.y, z));
+
+        Vector2 deltaWorld = new Vector2(wNow3.x - wPrev3.x, wNow3.y - wPrev3.y);
+
+        float sens = Mathf.Max(0f, AdsMouseSensitivity);
+        deltaWorld *= sens;
+
+        Vector3 camPos = _game.CameraTransform.position;
+        camPos.x += deltaWorld.x;
+        camPos.y += deltaWorld.y;
+
+        camPos.x = Mathf.Clamp(camPos.x, _adsPanRoot.x - AdsMaxPanX, _adsPanRoot.x + AdsMaxPanX);
+        camPos.y = Mathf.Clamp(camPos.y, _adsPanRoot.y - AdsMaxPanY, _adsPanRoot.y + AdsMaxPanY);
+
+        float halfH = cam.orthographicSize;
+        float halfW = halfH * cam.aspect;
+
+        float left = Mathf.Min(StreetLeftX, StreetRightX);
+        float right = Mathf.Max(StreetLeftX, StreetRightX);
+
+        float minX = left + halfW;
+        float maxX = right - halfW;
+
+        float bottom = Mathf.Min(StreetBottomY, StreetTopY);
+        float top = Mathf.Max(StreetBottomY, StreetTopY);
+
+        float minY = bottom + halfH;
+        float maxY = top - halfH;
+
+        if (minX <= maxX)
+            camPos.x = Mathf.Clamp(camPos.x, minX, maxX);
+
+        if (minY <= maxY)
+            camPos.y = Mathf.Clamp(camPos.y, minY, maxY);
+
+        _game.CameraTransform.position = camPos;
+    }
+
+    public void WindowPan_SetRootFromCamera()
+    {
+        _adsPanRoot = _game.CameraTransform.position;
+        _adsPanRootSet = true;
+
+        // New window session => ADS starts from the window root.
+        _adsCamPos = _adsPanRoot;
+        _adsCamPosSet = true;
+    }
+
+    public void WindowPan_ClearRoot()
+    {
+        _adsPanRootSet = false;
+
+        // Leaving window mode => reset ADS position to current (Apartment Full) camera.
+        _adsCamPos = _game.CameraTransform.position;
+        _adsCamPosSet = true;
     }
 
 }
