@@ -40,8 +40,8 @@ internal sealed class GameLoopWorld
     private Vector3 _adsCamOrigin;
     private Vector2 _adsPrevMouseScreen;
 
-    private const float AdsMaxPanX = 10f;
-    private const float AdsMaxPanY = 10f;
+    private const float AdsMaxPanX = 12f;
+    private const float AdsMaxPanY = 12f;
 
     private Vector3 _adsPanRoot;
     private bool _adsPanRootSet;
