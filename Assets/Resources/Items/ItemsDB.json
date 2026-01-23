@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "itemId": 1,
+      "name": "Coins",
+      "category": "Token",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Tokens/coins",
+      "maxStack": 2147483647
+    },
+    {
+      "itemId": 1001,
+      "name": "Basic Sniper",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/sniper_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Weapons/Sniper_Basic"
+      }
+    },
+    {
+      "itemId": 1002,
+      "name": "Basic Shotgun",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/shotgun_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Weapons/Shotgun_Basic"
+      }
+    },
+    {
+      "itemId": 1003,
+      "name": "Basic Uzi",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/uzi_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Weapons/Uzi_Basic"
+      }
+    }
+  ]
+}
