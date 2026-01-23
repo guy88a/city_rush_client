@@ -31,7 +31,7 @@ MonoBehaviour:
   sniperStepMeters: 10
   sniperMaxSteps: 200
   sniperStepInterval: 0.01
-  sniperDropPerStep: 0
+  sniperDropPerStep: 0.01
   sniperHitRadius: 0.12
   sniperHitMask:
     serializedVersion: 2
