@@ -8,19 +8,17 @@ namespace CityRush.Items
         public ItemsDb ItemsDb { get; private set; }
         public bool HasItemsDb => ItemsDb != null;
 
-        public Wallet Wallet { get; private set; }
-        public InventoryGrid Inventory { get; private set; }
+        [Header("Runtime Refs (optional)")]
+        [SerializeField] private Wallet wallet;
+        [SerializeField] private InventoryGrid inventory;
+
+        public Wallet Wallet => wallet;
+        public InventoryGrid Inventory => inventory;
 
         private void Awake()
         {
-            // Player root owns the runtime containers (Option 1).
-            Wallet = GetComponent<Wallet>();
-            if (Wallet == null)
-                Wallet = gameObject.AddComponent<Wallet>();
-
-            Inventory = GetComponent<InventoryGrid>();
-            if (Inventory == null)
-                Inventory = gameObject.AddComponent<InventoryGrid>();
+            if (wallet == null) wallet = GetComponent<Wallet>();
+            if (inventory == null) inventory = GetComponent<InventoryGrid>();
         }
 
         public void Init(ItemsDb db)
@@ -28,18 +26,22 @@ namespace CityRush.Items
             ItemsDb = db;
         }
 
-        // Convenience wrapper (returns remainder).
-        public int TryAddToInventory(int itemId, int amount)
+        public bool AddToken(string tokenKey, int amount)
         {
-            if (Inventory == null || ItemsDb == null)
-                return amount;
+            if (wallet == null) return false;
+            if (amount <= 0) return false;
 
-            return Inventory.TryAdd(itemId, amount, ItemsDb);
+            wallet.Add(tokenKey, amount);
+            return true;
         }
 
-        public void AddToWallet(string tokenKey, int amount)
+        // Returns remainder (0 = fully added).
+        public int TryAddToInventory(int itemId, int amount)
         {
-            Wallet?.Add(tokenKey, amount);
+            if (inventory == null) return amount;
+            if (ItemsDb == null) return amount;
+
+            return inventory.TryAdd(itemId, amount, ItemsDb);
         }
     }
 }
