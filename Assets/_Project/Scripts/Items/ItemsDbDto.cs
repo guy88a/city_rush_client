@@ -19,6 +19,7 @@ namespace CityRush.Items
         public string category;
         public string rarity;
         public string iconKey;
+        public string pickupPrefabKey;
         public int maxStack;
 
 

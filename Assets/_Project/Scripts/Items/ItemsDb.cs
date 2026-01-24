@@ -101,6 +101,7 @@ public sealed class ItemsDb
                 it.category,
                 it.rarity,
                 it.iconKey,
+                it.pickupPrefabKey,
                 maxStack,
                 weapon,
                 consumable

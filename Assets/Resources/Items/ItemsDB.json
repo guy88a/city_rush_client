@@ -6,7 +6,8 @@
       "name": "Coins",
       "category": "Token",
       "rarity": "Common",
-      "iconKey": "Items/Icons/Tokens/coins",
+      "iconKey": "Items/Icons/Tokens/Coins/Item_Coin_Copper_00",
+      "pickupPrefabKey": "Items/Prefabs/CoinsPickup",
       "maxStack": 2147483647
     },
     {

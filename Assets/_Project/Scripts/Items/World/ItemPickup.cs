@@ -25,9 +25,15 @@ namespace CityRush.Items.World
         public int ItemId => itemId;
         public int Amount => amount;
 
+        [SerializeField] private Transform visualRoot;
+        private GameObject _visualInstance;
+
         private void Awake()
         {
             CacheVisualRefsIfNeeded();
+
+            if (visualRoot == null)
+                visualRoot = transform;
         }
 
         private void CacheVisualRefsIfNeeded()
@@ -65,15 +71,51 @@ namespace CityRush.Items.World
                 return;
             }
 
-            // Icon
-            if (iconRenderer != null)
+            if (_visualInstance != null)
             {
-                Sprite s = Resources.Load<Sprite>(def.IconKey);
-                iconRenderer.sprite = s;
+                Destroy(_visualInstance);
+                _visualInstance = null;
             }
 
-            // Rarity background tint
+            // Pickup visual prefab (optional)
+            if (!string.IsNullOrWhiteSpace(def.PickupPrefabKey))
+            {
+                GameObject prefab = Resources.Load<GameObject>(def.PickupPrefabKey);
+
+                if (prefab != null)
+                {
+                    _visualInstance = Instantiate(prefab, transform);
+                    _visualInstance.transform.localPosition = Vector3.zero;
+                    _visualInstance.transform.localRotation = Quaternion.identity;
+                    _visualInstance.transform.localScale = Vector3.one;
+                }
+                else
+                {
+                    Debug.LogWarning($"[ItemPickup] pickupPrefabKey not found: {def.PickupPrefabKey}", this);
+                }
+            }
+
+            bool hasPrefab = _visualInstance != null;
+
             if (backgroundRenderer != null)
+                backgroundRenderer.gameObject.SetActive(!hasPrefab);
+
+            // Icon (fallback when no prefab visual)
+            if (iconRenderer != null)
+            {
+                if (_visualInstance == null)
+                {
+                    Sprite s = Resources.Load<Sprite>(def.IconKey);
+                    iconRenderer.sprite = s;
+                }
+                else
+                {
+                    iconRenderer.sprite = null; // hide icon when prefab drives visuals
+                }
+            }
+
+            // Rarity background tint (only when using Background)
+            if (backgroundRenderer != null && !hasPrefab)
             {
                 backgroundRenderer.color = ResolveRarityColor(def.Rarity);
             }
@@ -95,6 +137,7 @@ namespace CityRush.Items.World
                 Debug.LogWarning($"[ItemPickup] ItemId not found in ItemsDb: {itemId}", this);
                 return false;
             }
+
 
             // Tokens (v1: Coins only)
             if (def.Category.Trim().Equals("Token", System.StringComparison.OrdinalIgnoreCase))

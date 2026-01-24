@@ -7,6 +7,8 @@ namespace CityRush.Items
         public string Category { get; }
         public string Rarity { get; }
         public string IconKey { get; }
+        public string PickupPrefabKey { get; }
+        public bool HasPickupPrefab => !string.IsNullOrWhiteSpace(PickupPrefabKey);
         public int MaxStack { get; }
 
 
@@ -23,6 +25,7 @@ namespace CityRush.Items
         string category,
         string rarity,
         string iconKey,
+        string pickupPrefabKey,
         int maxStack,
         WeaponData weapon,
         ConsumableData consumable
@@ -33,6 +36,7 @@ namespace CityRush.Items
             Category = category ?? string.Empty;
             Rarity = rarity ?? string.Empty;
             IconKey = iconKey ?? string.Empty;
+            PickupPrefabKey = pickupPrefabKey;
             MaxStack = maxStack;
             Weapon = weapon;
             Consumable = consumable;
