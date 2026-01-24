@@ -689,7 +689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.CharacterWeaponSet
   uziWeapon: {fileID: 0}
   shotgunWeapon: {fileID: 0}
-  sniperWeapon: {fileID: 0}
+  sniperWeapon: {fileID: 11400000, guid: b074def6a37ff8e48ab8f4d2630d1f13, type: 2}
 --- !u!114 &3337504901878380243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -714,3 +714,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2546ded49ffe13946a00e168a00642d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.PlayerItemsRuntime
+  wallet: {fileID: 0}
+  inventory: {fileID: 0}

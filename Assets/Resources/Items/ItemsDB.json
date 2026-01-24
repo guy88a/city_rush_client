@@ -13,7 +13,7 @@
       "itemId": 1001,
       "name": "Basic Sniper",
       "category": "Weapon",
-      "rarity": "Common",
+      "rarity": "Epic",
       "iconKey": "Items/Icons/Weapons/sniper_basic",
       "maxStack": 1,
       "weapon": {
@@ -40,6 +40,17 @@
       "maxStack": 1,
       "weapon": {
         "weaponDefinitionId": "Items/Assets/Weapons/Uzi_Basic"
+      }
+    },
+    {
+      "itemId": 1004,
+      "name": "Basic Sniper B",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/sniper_basic_b",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Items/Assets/Weapons/Sniper_Basic_B"
       }
     }
   ]

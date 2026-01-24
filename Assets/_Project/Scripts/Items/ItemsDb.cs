@@ -9,6 +9,10 @@ public sealed class ItemsDb
     public int Version { get; }
     public int Count => _byId.Count;
 
+    public IEnumerable<KeyValuePair<int, ItemDefinition>> EnumerateAll()
+    {
+        return _byId;
+    }
 
     private ItemsDb(int version, Dictionary<int, ItemDefinition> byId)
     {

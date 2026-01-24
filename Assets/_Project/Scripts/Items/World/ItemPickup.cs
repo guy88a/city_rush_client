@@ -19,7 +19,7 @@ namespace CityRush.Items.World
         [SerializeField] private Color common = Color.white;
         [SerializeField] private Color uncommon = Color.green;
         [SerializeField] private Color rare = Color.cyan;
-        [SerializeField] private Color epic = new Color(0.6f, 0.2f, 1f, 1f);
+        [SerializeField] private Color epic = new Color(0.784f, 0.274f, 0.925f, 1f);
         [SerializeField] private Color legendary = new Color(1f, 0.6f, 0.1f, 1f);
 
         public int ItemId => itemId;
@@ -61,32 +61,22 @@ namespace CityRush.Items.World
 
             if (!db.TryGet(itemId, out var def))
             {
-                Debug.LogWarning($"[ItemPickup] ItemId not found in ItemsDb: {itemId}", this);
+                Debug.LogWarning($"[ItemPickup] SetItem failed: itemId not in ItemsDb: {itemId}", this);
                 return;
             }
 
             // Icon
             if (iconRenderer != null)
             {
-                if (!string.IsNullOrWhiteSpace(def.IconKey))
-                {
-                    Sprite icon = Resources.Load<Sprite>(def.IconKey);
-                    if (icon != null) iconRenderer.sprite = icon;
-                    else Debug.LogWarning($"[ItemPickup] Sprite not found at IconKey='{def.IconKey}' (ItemId={itemId})", this);
-                }
-                else
-                {
-                    Debug.LogWarning($"[ItemPickup] IconKey is empty for ItemId={itemId}", this);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[ItemPickup] Missing Icon SpriteRenderer (expected child: Icon).", this);
+                Sprite s = Resources.Load<Sprite>(def.IconKey);
+                iconRenderer.sprite = s;
             }
 
             // Rarity background tint
             if (backgroundRenderer != null)
+            {
                 backgroundRenderer.color = ResolveRarityColor(def.Rarity);
+            }
         }
 
         public bool TryLoot(PlayerItemsRuntime playerItems)
@@ -127,7 +117,52 @@ namespace CityRush.Items.World
                     return false;
                 }
 
-                bool equipped = weaponSet.TryEquipWeaponByDefinitionId(def.Weapon.WeaponDefinitionId);
+                string newWeaponDefinitionId = def.Weapon.WeaponDefinitionId;
+                if (string.IsNullOrWhiteSpace(newWeaponDefinitionId))
+                {
+                    Debug.LogWarning($"[ItemPickup] Weapon loot failed: missing WeaponDefinitionId for ItemId={itemId}.", this);
+                    return false;
+                }
+
+                WeaponDefinition newWeapon = Resources.Load<WeaponDefinition>(newWeaponDefinitionId);
+                if (newWeapon == null)
+                {
+                    Debug.LogWarning($"[ItemPickup] Weapon loot failed: WeaponDefinition not found at '{newWeaponDefinitionId}'.", this);
+                    return false;
+                }
+
+                // Replace-on-loot: if slot already has a weapon of the same type, drop the currently equipped weapon.
+                WeaponDefinition oldWeapon = null;
+                switch (newWeapon.Type)
+                {
+                    case WeaponType.Uzi: oldWeapon = weaponSet.UziWeapon; break;
+                    case WeaponType.Shotgun: oldWeapon = weaponSet.ShotgunWeapon; break;
+                    case WeaponType.Sniper: oldWeapon = weaponSet.SniperWeapon; break;
+                }
+
+                if (oldWeapon != null && playerItems.TryGetWeaponItemId(oldWeapon, out int oldItemId))
+                {
+                    GameObject prefab = Resources.Load<GameObject>("Items/Prefabs/ItemPickup");
+                    if (prefab == null)
+                    {
+                        Debug.LogWarning("[Items] Missing pickup prefab at Resources/Items/Prefabs/ItemPickup");
+                    }
+                    else
+                    {
+                        Transform parent = transform.parent != null ? transform.parent : null;
+
+                        GameObject go = Instantiate(prefab, parent);
+                        go.transform.position = transform.position;
+
+                        ItemPickup dropped = go.GetComponent<ItemPickup>();
+                        if (dropped != null)
+                            dropped.SetItem(db, oldItemId, 1);
+                        else
+                            Debug.LogWarning("[Items] Dropped ItemPickup prefab has no ItemPickup component.");
+                    }
+                }
+
+                bool equipped = weaponSet.TryEquipWeapon(newWeapon);
                 if (!equipped) return false;
 
                 Destroy(gameObject);

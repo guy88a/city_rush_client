@@ -229,9 +229,11 @@ namespace CityRush.Units.Characters.Combat
                     return;
                 }
 
-                // Clamp existing ammo to new weapon bounds.
+                // Clamp reserve to new weapon bounds (reserve persists).
                 Reserve = Mathf.Clamp(Reserve, 0, w.AmmoReserveMax);
-                Magazine = Mathf.Clamp(Magazine, 0, w.MagazineSize);
+
+                // Locked rule: magazine does NOT persist on equip.
+                Magazine = 0;
 
                 // Top-off magazine from reserve.
                 if (w.MagazineSize > 0)
