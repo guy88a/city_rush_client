@@ -89,6 +89,10 @@ namespace CityRush.Units.Characters.Combat
 
             _altAction.started += OnAltStarted;
             _altAction.canceled += OnAltCanceled;
+
+            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Uzi_Basic");
+            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Shotgun_Basic");
+            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Sniper_Basic");
         }
 
         private void OnDisable()

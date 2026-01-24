@@ -17,7 +17,7 @@
       "iconKey": "Items/Icons/Weapons/sniper_basic",
       "maxStack": 1,
       "weapon": {
-        "weaponDefinitionId": "Weapons/Sniper_Basic"
+        "weaponDefinitionId": "Items/Assets/Weapons/Sniper_Basic"
       }
     },
     {
@@ -28,7 +28,7 @@
       "iconKey": "Items/Icons/Weapons/shotgun_basic",
       "maxStack": 1,
       "weapon": {
-        "weaponDefinitionId": "Weapons/Shotgun_Basic"
+        "weaponDefinitionId": "Items/Assets/Weapons/Shotgun_Basic"
       }
     },
     {
@@ -39,7 +39,7 @@
       "iconKey": "Items/Icons/Weapons/uzi_basic",
       "maxStack": 1,
       "weapon": {
-        "weaponDefinitionId": "Weapons/Uzi_Basic"
+        "weaponDefinitionId": "Items/Assets/Weapons/Uzi_Basic"
       }
     }
   ]
