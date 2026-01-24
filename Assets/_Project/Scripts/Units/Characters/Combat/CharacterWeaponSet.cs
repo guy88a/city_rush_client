@@ -58,9 +58,9 @@ namespace CityRush.Units.Characters.Combat
             _shotgun.InitializeFromDefaults(shotgunWeapon);
             _sniper.InitializeFromDefaults(sniperWeapon);
 
-            if (uziWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing UziWeapon", this);
-            if (shotgunWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing ShotgunWeapon", this);
-            if (sniperWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing SniperWeapon", this);
+            //if (uziWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing UziWeapon", this);
+            //if (shotgunWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing ShotgunWeapon", this);
+            //if (sniperWeapon == null) Debug.LogWarning("[CharacterWeaponSet] Missing SniperWeapon", this);
         }
 
         // Equip rule (locked): reserve persists; equip cancels reload and tops off magazine from reserve.

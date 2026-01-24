@@ -71,7 +71,6 @@ namespace CityRush.Units.Characters.Controllers
 
         private void Awake()
         {
-            Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
             aggression = Mathf.Clamp(aggression, 0, 10);
             Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
 

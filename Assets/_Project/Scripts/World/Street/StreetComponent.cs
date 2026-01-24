@@ -30,6 +30,9 @@ namespace CityRush.World.Street
         public float RightBoundX { get; private set; }
         private const int BLEED_TILES = 2;
 
+        private Transform itemsRoot;
+        public Transform ItemsRoot => itemsRoot;
+
         private void Start()
         {
             
@@ -73,6 +76,7 @@ namespace CityRush.World.Street
         {
             roadsRoot = GetOrCreateChild("Roads");
             pavementsRoot = GetOrCreateChild("Pavements");
+            itemsRoot = GetOrCreateChild("ItemsRoot");
         }
 
         private Transform GetOrCreateChild(string name)
