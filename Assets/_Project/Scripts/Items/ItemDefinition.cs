@@ -13,6 +13,9 @@ namespace CityRush.Items
         public WeaponData Weapon { get; }
         public bool IsWeapon => Weapon != null;
 
+        public ConsumableData Consumable { get; }
+        public bool IsConsumable => Consumable != null;
+
 
         public ItemDefinition(
         int itemId,
@@ -21,7 +24,8 @@ namespace CityRush.Items
         string rarity,
         string iconKey,
         int maxStack,
-        WeaponData weapon
+        WeaponData weapon,
+        ConsumableData consumable
         )
         {
             ItemId = itemId;
@@ -31,6 +35,7 @@ namespace CityRush.Items
             IconKey = iconKey ?? string.Empty;
             MaxStack = maxStack;
             Weapon = weapon;
+            Consumable = consumable;
         }
 
 
@@ -42,6 +47,18 @@ namespace CityRush.Items
             public WeaponData(string weaponDefinitionId)
             {
                 WeaponDefinitionId = weaponDefinitionId ?? string.Empty;
+            }
+        }
+
+        public sealed class ConsumableData
+        {
+            public string EffectType { get; }
+            public int Amount { get; }
+
+            public ConsumableData(string effectType, int amount)
+            {
+                EffectType = effectType ?? string.Empty;
+                Amount = amount;
             }
         }
     }

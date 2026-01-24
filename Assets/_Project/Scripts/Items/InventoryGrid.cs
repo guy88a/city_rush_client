@@ -94,5 +94,34 @@ namespace CityRush.Items
 
             return amount; // remainder
         }
+
+        // Returns remainder (0 means fully removed).
+        public int TryRemove(int itemId, int amount)
+        {
+            if (amount <= 0)
+                return 0;
+
+            if (itemId <= 0)
+                return amount;
+
+            EnsureSlots();
+
+            for (int i = 0; i < slots.Length && amount > 0; i++)
+            {
+                ref ItemStack s = ref slots[i];
+                if (s.IsEmpty) continue;
+                if (s.ItemId != itemId) continue;
+
+                int take = s.Count < amount ? s.Count : amount;
+                s.Count -= take;
+                amount -= take;
+
+                if (s.Count <= 0)
+                    s.Clear();
+            }
+
+            return amount; // remainder
+        }
+
     }
 }

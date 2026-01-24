@@ -87,8 +87,14 @@ namespace CityRush.Units.Characters.Controllers
 
             if (_currentItemPickup != null && Keyboard.current != null && Keyboard.current.zKey.wasPressedThisFrame)
             {
-                if (_itemsRuntime != null && _currentItemPickup.TryLoot(_itemsRuntime))
-                    _currentItemPickup = null; // pickup may be destroyed
+                if (_itemsRuntime != null)
+                {
+                    bool ok = _currentItemPickup.TryLoot(_itemsRuntime);
+                    //Debug.Log($"[Loot] Z pressed -> TryLoot ok={ok} pickupItemId={_currentItemPickup.ItemId} amount={_currentItemPickup.Amount}", this);
+
+                    if (ok)
+                        _currentItemPickup = null; // pickup may be destroyed
+                }
             }
 
             Vector2 move = Vector2.zero;
@@ -183,7 +189,7 @@ namespace CityRush.Units.Characters.Controllers
                 if (_itemsRuntime != null &&
                     _itemsRuntime.ItemsDb != null &&
                     _itemsRuntime.ItemsDb.TryGet(pickup.ItemId, out var def) &&
-                    def.Category.Equals("Token", System.StringComparison.OrdinalIgnoreCase))
+                    def.Category.Trim().Equals("Token", System.StringComparison.OrdinalIgnoreCase))
                 {
                     pickup.TryLoot(_itemsRuntime);
                     _currentItemPickup = null;

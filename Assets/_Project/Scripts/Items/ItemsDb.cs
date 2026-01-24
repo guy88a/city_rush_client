@@ -83,17 +83,27 @@ public sealed class ItemsDb
                     weapon = new ItemDefinition.WeaponData(weaponDefId);
             }
 
+            ItemDefinition.ConsumableData consumable = null;
+            if (it.consumable != null)
+            {
+                string effectType = it.consumable.effectType;
+                int amount = it.consumable.amount;
+
+                if (!string.IsNullOrWhiteSpace(effectType) && amount > 0)
+                    consumable = new ItemDefinition.ConsumableData(effectType, amount);
+            }
 
             dict.Add(
             it.itemId,
             new ItemDefinition(
-            it.itemId,
-            it.name,
-            it.category,
-            it.rarity,
-            it.iconKey,
-            maxStack,
-            weapon
+                it.itemId,
+                it.name,
+                it.category,
+                it.rarity,
+                it.iconKey,
+                maxStack,
+                weapon,
+                consumable
             )
             );
         }

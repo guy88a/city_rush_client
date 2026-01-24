@@ -173,8 +173,20 @@ namespace CityRush.Items.World
             int remainder = playerItems.TryAddToInventory(itemId, amount);
 
             int taken = amount - remainder;
+
+            Debug.Log(
+                $"[Loot] INV itemId={itemId} name='{def.Name}' cat='{def.Category}' amount={amount} taken={taken} remainder={remainder}",
+                this
+            );
+
             if (taken <= 0)
+            {
+                Debug.LogWarning(
+                    $"[Loot] INV FAILED (took 0). Inventory likely full / cannot stack. itemId={itemId} amount={amount}",
+                    this
+                );
                 return false;
+            }
 
             if (remainder <= 0)
             {

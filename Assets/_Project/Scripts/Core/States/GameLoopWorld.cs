@@ -161,7 +161,9 @@ internal sealed class GameLoopWorld
         if (PlayerTransform != null)
         {
             Vector3 p = PlayerTransform.position;
-            SpawnItemPickup(itemId: 1001, amount: 1, worldPos: p + new Vector3(3.5f, -3f, 0f));
+            SpawnItemPickup(itemId: 1001, amount: 1, worldPos: p + new Vector3(3.5f, -1f, 0f));
+            SpawnItemPickup(itemId: 1002, amount: 1, worldPos: p + new Vector3(2.5f, -1f, 0f));
+            SpawnItemPickup(itemId: 3001, amount: 1, worldPos: p + new Vector3(6.5f, -1f, 0f));
         }
     }
 

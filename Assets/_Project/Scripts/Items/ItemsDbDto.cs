@@ -23,6 +23,7 @@ namespace CityRush.Items
 
 
         public WeaponDto weapon;
+        public ConsumableDto consumable;
     }
 
 
@@ -30,5 +31,11 @@ namespace CityRush.Items
     public sealed class WeaponDto
     {
         public string weaponDefinitionId;
+    }
+
+    public sealed class ConsumableDto
+    {
+        public string effectType; // "Heal"
+        public int amount;        // 10
     }
 }

@@ -52,6 +52,25 @@
       "weapon": {
         "weaponDefinitionId": "Items/Assets/Weapons/Sniper_Basic_B"
       }
+    },
+
+    {
+      "itemId": 3001,
+      "name": "Old Rusty Key",
+      "category": "Key",
+      "stackable": "false",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Keys/old_copper",
+      "maxStack": 1
+    },
+    {
+      "itemId": 3002,
+      "name": "Healing Potion",
+      "category": "Consumable",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/healing_potion",
+      "maxStack": 10,
+      "consumable": { "effectType": "Heal", "amount": 10 }
     }
   ]
 }
