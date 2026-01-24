@@ -65,10 +65,10 @@
     },
     {
       "itemId": 3002,
-      "name": "Healing Potion",
+      "name": "Lesser Healing Potion",
       "category": "Consumable",
       "rarity": "Common",
-      "iconKey": "Items/Icons/healing_potion",
+      "iconKey": "Items/Icons/Potions/potion_heal_lesser",
       "maxStack": 10,
       "consumable": { "effectType": "Heal", "amount": 10 }
     }

@@ -16,6 +16,8 @@ namespace CityRush.Items
         [SerializeField] private Wallet wallet;
         [SerializeField] private InventoryGrid inventory;
 
+        [SerializeField] private CityRush.Units.Characters.Combat.Health health;
+
 
         public Wallet Wallet => wallet;
         public InventoryGrid Inventory => inventory;
@@ -28,6 +30,7 @@ namespace CityRush.Items
         {
             if (wallet == null) wallet = GetComponent<Wallet>();
             if (inventory == null) inventory = GetComponent<InventoryGrid>();
+            if (health == null) health = GetComponent<CityRush.Units.Characters.Combat.Health>();
         }
 
 
@@ -98,5 +101,81 @@ namespace CityRush.Items
 
             return inventory.TryAdd(itemId, amount, ItemsDb);
         }
+
+        public bool TryUseHealingPotion(int healingPotionItemId)
+        {
+            if (ItemsDb == null) return false;
+            if (inventory == null) return false;
+            if (health == null) return false;
+
+            if (!ItemsDb.TryGet(healingPotionItemId, out var def))
+                return false;
+
+            // v1 rule: identify by ItemId + category (no consumable schema yet).
+            if (!def.Category.Trim().Equals("Consumable", System.StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (!TryConsumeFromInventory(healingPotionItemId, 1))
+                return false;
+
+            health.Heal(10);
+            Debug.Log($"[Consumable] Used '{def.Name}' (+10 HP).", this);
+            return true;
+        }
+
+        private bool TryConsumeFromInventory(int itemId, int count)
+        {
+            if (count <= 0) return true;
+            ItemStack[] slots = inventory.Slots;
+            if (slots == null) return false;
+
+            for (int i = 0; i < slots.Length && count > 0; i++)
+            {
+                ItemStack s = slots[i];
+                if (s.IsEmpty) continue;
+                if (s.ItemId != itemId) continue;
+
+                int take = (s.Count < count) ? s.Count : count;
+                s.Count -= take;
+                count -= take;
+
+                if (s.Count <= 0)
+                    s.Clear();
+
+                slots[i] = s; // IMPORTANT: struct write-back
+            }
+
+            return count == 0;
+        }
+
+
+        public void DebugPrintInventory()
+        {
+            if (inventory == null)
+            {
+                Debug.Log("[Inventory] inventory ref is null.", this);
+                return;
+            }
+
+            ItemStack[] slots = inventory.Slots;
+            if (slots == null)
+            {
+                Debug.Log("[Inventory] slots is null.", this);
+                return;
+            }
+
+            Debug.Log($"[Inventory] capacity={slots.Length}", this);
+
+            for (int i = 0; i < slots.Length; i++)
+            {
+                ItemStack s = slots[i];
+                if (s.IsEmpty) continue;
+
+                string name = ItemsDb != null && ItemsDb.TryGet(s.ItemId, out var def) ? def.Name : "<?>";
+
+                Debug.Log($"[Inventory] slot[{i}] itemId={s.ItemId} name={name} count={s.Count}", this);
+            }
+        }
+
     }
 }

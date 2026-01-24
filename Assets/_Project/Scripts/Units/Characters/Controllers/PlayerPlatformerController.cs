@@ -85,6 +85,13 @@ namespace CityRush.Units.Characters.Controllers
                 OnWorldObjectInteract?.Invoke(_currentWorldObject);
             }
 
+            if (_itemsRuntime != null && Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
+            {
+                _itemsRuntime.DebugPrintInventory();
+                _itemsRuntime.TryUseHealingPotion(3002);
+                _itemsRuntime.DebugPrintInventory();
+            }
+
             if (_currentItemPickup != null && Keyboard.current != null && Keyboard.current.zKey.wasPressedThisFrame)
             {
                 if (_itemsRuntime != null)
