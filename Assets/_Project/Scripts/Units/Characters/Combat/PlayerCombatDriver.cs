@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using CityRush.Units.Characters.Controllers;
+using CityRush.Items;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -50,6 +51,9 @@ namespace CityRush.Units.Characters.Combat
 
         private CharacterWeaponSet _weapons;
 
+        // Temporary: equip via ItemsDB (itemId -> weaponDefinitionId)
+        private ItemsDb _itemsDb;
+
         private InputAction _primaryAction;
         private InputAction _altAction;
 
@@ -90,9 +94,10 @@ namespace CityRush.Units.Characters.Combat
             _altAction.started += OnAltStarted;
             _altAction.canceled += OnAltCanceled;
 
-            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Uzi_Basic");
-            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Shotgun_Basic");
-            _weapons.TryEquipWeaponByDefinitionId("Items/Assets/Weapons/Sniper_Basic");
+            // Startup equip (temporary): itemId driven.
+            TryEquipWeaponByItemId(1003); // Uzi
+            TryEquipWeaponByItemId(1002); // Shotgun
+            TryEquipWeaponByItemId(1001); // Sniper
         }
 
         private void OnDisable()
@@ -108,6 +113,58 @@ namespace CityRush.Units.Characters.Combat
 
             StopAllCombatLoops();
             ForceUnlockMovement();
+        }
+
+        private bool TryGetItemsDb(out ItemsDb db)
+        {
+            if (_itemsDb != null)
+            {
+                db = _itemsDb;
+                return true;
+            }
+
+            TextAsset json = Resources.Load<TextAsset>("Items/ItemsDB");
+            if (json == null)
+            {
+                Debug.LogError("[PlayerCombatDriver] Missing ItemsDB at Resources/Items/ItemsDB.json", this);
+                db = null;
+                return false;
+            }
+
+            ItemsDbDto dto = JsonUtility.FromJson<ItemsDbDto>(json.text);
+            if (!ItemsDb.TryCreateFromDto(dto, out ItemsDb parsed, out string err))
+            {
+                Debug.LogError($"[PlayerCombatDriver] ItemsDB parse failed: {err}", this);
+                db = null;
+                return false;
+            }
+
+            _itemsDb = parsed;
+            db = _itemsDb;
+            return true;
+        }
+
+        private bool TryEquipWeaponByItemId(int itemId)
+        {
+            if (_weapons == null)
+                return false;
+
+            if (!TryGetItemsDb(out ItemsDb db))
+                return false;
+
+            if (!db.TryGet(itemId, out ItemDefinition def))
+            {
+                Debug.LogWarning($"[PlayerCombatDriver] Missing itemId={itemId} in ItemsDB", this);
+                return false;
+            }
+
+            if (!def.IsWeapon)
+            {
+                Debug.LogWarning($"[PlayerCombatDriver] itemId={itemId} is not a weapon (cat='{def.Category}')", this);
+                return false;
+            }
+
+            return _weapons.TryEquipWeaponByDefinitionId(def.Weapon.WeaponDefinitionId);
         }
 
         public void SetWeaponMode(WeaponMode mode) => selectedMode = mode;
@@ -192,7 +249,8 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    float interval = 0.6f;
+
+                    float interval = shotgunCooldown;
                     if (_weapons != null && _weapons.ShotgunWeapon != null)
                         interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
 
@@ -221,7 +279,8 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    float interval = 0.6f;
+
+                    float interval = shotgunCooldown;
                     if (_weapons != null && _weapons.ShotgunWeapon != null)
                         interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
 
@@ -251,7 +310,6 @@ namespace CityRush.Units.Characters.Combat
 
             return Vector2.right;
         }
-
 
         private bool FireUzi()
         {
@@ -286,7 +344,6 @@ namespace CityRush.Units.Characters.Combat
             if (lockMovement)
                 StartActionLock(lockDuration);
         }
-
 
         private void FirePunch(float lockDuration)
         {
