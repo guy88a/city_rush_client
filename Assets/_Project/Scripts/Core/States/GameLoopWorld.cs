@@ -1,19 +1,20 @@
 using CityRush.Core;
 using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
+using CityRush.Items;
+using CityRush.Units.Characters;
+using CityRush.Units.Characters.Combat;
 using CityRush.Units.Characters.Controllers;
 using CityRush.Units.Characters.View;
-using CityRush.Units.Characters;
 using CityRush.World.Background;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
-using UnityEngine.InputSystem;
-using CityRush.Units.Characters.Combat;
 
 internal sealed class GameLoopWorld
 {
@@ -88,7 +89,7 @@ internal sealed class GameLoopWorld
         _navSpawnGapModifier = navSpawnGapModifier;
     }
 
-    public void Enter(CorePrefabsRegistry prefabs, MapManager mapManager)
+    public void Enter(CorePrefabsRegistry prefabs, MapManager mapManager, ItemsDb itemsDb)
     {
         // Fade Screen
         GameObject fadeGO = Object.Instantiate(prefabs.ScreenFadeCanvasPrefab);
@@ -133,6 +134,11 @@ internal sealed class GameLoopWorld
         // Player (after Street build)
         PlayerInstance = Object.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
+
+        PlayerInstance
+        .GetComponent<PlayerItemsRuntime>()
+        .Init(itemsDb);
+
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();

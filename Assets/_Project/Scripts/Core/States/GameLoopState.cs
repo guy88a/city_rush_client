@@ -92,9 +92,10 @@ public class GameLoopState : IState
 
         _prefabs = _context.GetData<CorePrefabsRegistry>();
         _mapManager = _context.GetData<MapManager>();
+        var itemsDb = _context.GetData<ItemsDb>();
 
         _world = new GameLoopWorld(_game, NavSpawnGapModifier);
-        _world.Enter(_prefabs, _mapManager);
+        _world.Enter(_prefabs, _mapManager, itemsDb);
 
         _navigation = new GameLoopNavigation(_game, _world, _prefabs, _mapManager);
         _navigation.Enter();

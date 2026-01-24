@@ -421,6 +421,7 @@ GameObject:
   - component: {fileID: 7819575289298165788}
   - component: {fileID: 8036282166246709222}
   - component: {fileID: 3337504901878380243}
+  - component: {fileID: 6965104707356049689}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -701,3 +702,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c5804d47ad69d448ba6517acd50096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.SniperAimState
+--- !u!114 &6965104707356049689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2546ded49ffe13946a00e168a00642d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.PlayerItemsRuntime
