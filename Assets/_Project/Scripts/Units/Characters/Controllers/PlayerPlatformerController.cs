@@ -87,8 +87,10 @@ namespace CityRush.Units.Characters.Controllers
 
             if (_itemsRuntime != null && Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
             {
-                _itemsRuntime.DebugPrintInventory();
-                _itemsRuntime.TryUseHealingPotion(3002);
+                const int HealingPotionItemId = 3002; // your potion id
+                bool ok = _itemsRuntime.TryUseConsumable(HealingPotionItemId);
+
+                Debug.Log($"[Consumable] H pressed -> use ok={ok}", this);
                 _itemsRuntime.DebugPrintInventory();
             }
 

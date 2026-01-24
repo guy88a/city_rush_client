@@ -102,25 +102,36 @@ namespace CityRush.Items
             return inventory.TryAdd(itemId, amount, ItemsDb);
         }
 
-        public bool TryUseHealingPotion(int healingPotionItemId)
+        public bool TryUseConsumable(int itemId)
         {
             if (ItemsDb == null) return false;
             if (inventory == null) return false;
             if (health == null) return false;
 
-            if (!ItemsDb.TryGet(healingPotionItemId, out var def))
+            if (!ItemsDb.TryGet(itemId, out var def))
                 return false;
 
-            // v1 rule: identify by ItemId + category (no consumable schema yet).
-            if (!def.Category.Trim().Equals("Consumable", System.StringComparison.OrdinalIgnoreCase))
+            if (!def.IsConsumable || def.Consumable == null)
                 return false;
 
-            if (!TryConsumeFromInventory(healingPotionItemId, 1))
+            // consume 1
+            int remainder = inventory.TryRemove(itemId, 1);
+            if (remainder != 0)
                 return false;
 
-            health.Heal(10);
-            Debug.Log($"[Consumable] Used '{def.Name}' (+10 HP).", this);
-            return true;
+            // apply effect
+            string effect = def.Consumable.EffectType?.Trim();
+            int amount = def.Consumable.Amount;
+
+            if (effect.Equals("Heal", System.StringComparison.OrdinalIgnoreCase))
+            {
+                health.Heal(amount);
+                Debug.Log($"[Consumable] Used '{def.Name}' (+{amount} HP).", this);
+                return true;
+            }
+
+            Debug.LogWarning($"[Consumable] Unsupported effectType='{effect}' for itemId={itemId} name='{def.Name}'", this);
+            return false;
         }
 
         private bool TryConsumeFromInventory(int itemId, int count)
