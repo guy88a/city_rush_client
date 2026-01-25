@@ -117,7 +117,7 @@ namespace CityRush.Items.World
             // Rarity background tint (only when using Background)
             if (backgroundRenderer != null && !hasPrefab)
             {
-                backgroundRenderer.color = ResolveRarityColor(def.Rarity);
+                backgroundRenderer.color = ItemRarityColors.Resolve(def.Rarity);
             }
         }
 
