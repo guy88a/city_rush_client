@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "itemId": 1,
+      "name": "Coins",
+      "category": "Token",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Tokens/Coins/Item_Coin_Copper_00",
+      "pickupPrefabKey": "Items/Prefabs/CoinsPickup",
+      "maxStack": 2147483647
+    },
+    {
+      "itemId": 1001,
+      "name": "Basic Sniper",
+      "category": "Weapon",
+      "rarity": "Epic",
+      "iconKey": "Items/Icons/Weapons/sniper_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Items/Assets/Weapons/Sniper_Basic"
+      }
+    },
+    {
+      "itemId": 1002,
+      "name": "Basic Shotgun",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/shotgun_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Items/Assets/Weapons/Shotgun_Basic"
+      }
+    },
+    {
+      "itemId": 1003,
+      "name": "Basic Uzi",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/uzi_basic",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Items/Assets/Weapons/Uzi_Basic"
+      }
+    },
+    {
+      "itemId": 1004,
+      "name": "Basic Sniper B",
+      "category": "Weapon",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Weapons/sniper_basic_b",
+      "maxStack": 1,
+      "weapon": {
+        "weaponDefinitionId": "Items/Assets/Weapons/Sniper_Basic_B"
+      }
+    },
+
+    {
+      "itemId": 3001,
+      "name": "Old Rusty Key",
+      "category": "Key",
+      "stackable": "false",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Keys/old_copper",
+      "maxStack": 1
+    },
+    {
+      "itemId": 3002,
+      "name": "Lesser Healing Potion",
+      "category": "Consumable",
+      "rarity": "Common",
+      "iconKey": "Items/Icons/Potions/potion_heal_lesser",
+      "maxStack": 10,
+      "consumable": { "effectType": "Heal", "amount": 10 }
+    }
+  ]
+}

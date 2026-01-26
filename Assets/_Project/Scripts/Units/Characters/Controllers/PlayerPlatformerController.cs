@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using CityRush.World.Interior;
 using UnityEngine.InputSystem;
+using CityRush.Items;
+using CityRush.Items.World;
 
 namespace CityRush.Units.Characters.Controllers
 {
@@ -34,6 +36,9 @@ namespace CityRush.Units.Characters.Controllers
 
         public event Action<WorldObjectUnit> OnWorldObjectInteract;
 
+        private PlayerItemsRuntime _itemsRuntime;
+        private ItemPickup _currentItemPickup;
+
         public bool IsMovementEnabled { get; private set; } = true;
 
         // Raw horizontal input from the Move action (A/D). Updated every ComputeVelocity().
@@ -49,6 +54,7 @@ namespace CityRush.Units.Characters.Controllers
             Transform graphic = transform.Find("Graphic");
             spriteRenderer = graphic.GetComponent<SpriteRenderer>();
             animator = graphic.GetComponent<Animator>();
+            _itemsRuntime = GetComponent<PlayerItemsRuntime>();
         }
 
         void Start()
@@ -77,6 +83,27 @@ namespace CityRush.Units.Characters.Controllers
             if (_currentWorldObject != null && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
             {
                 OnWorldObjectInteract?.Invoke(_currentWorldObject);
+            }
+
+            if (_itemsRuntime != null && Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame)
+            {
+                const int HealingPotionItemId = 3002; // your potion id
+                bool ok = _itemsRuntime.TryUseConsumable(HealingPotionItemId);
+
+                Debug.Log($"[Consumable] H pressed -> use ok={ok}", this);
+                _itemsRuntime.DebugPrintInventory();
+            }
+
+            if (_currentItemPickup != null && Keyboard.current != null && Keyboard.current.zKey.wasPressedThisFrame)
+            {
+                if (_itemsRuntime != null)
+                {
+                    bool ok = _currentItemPickup.TryLoot(_itemsRuntime);
+                    //Debug.Log($"[Loot] Z pressed -> TryLoot ok={ok} pickupItemId={_currentItemPickup.ItemId} amount={_currentItemPickup.Amount}", this);
+
+                    if (ok)
+                        _currentItemPickup = null; // pickup may be destroyed
+                }
             }
 
             Vector2 move = Vector2.zero;
@@ -162,6 +189,24 @@ namespace CityRush.Units.Characters.Controllers
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            ItemPickup pickup = other.GetComponentInParent<ItemPickup>();
+            if (pickup != null)
+            {
+                _currentItemPickup = pickup;
+
+                // Auto-loot ONLY tokens
+                if (_itemsRuntime != null &&
+                    _itemsRuntime.ItemsDb != null &&
+                    _itemsRuntime.ItemsDb.TryGet(pickup.ItemId, out var def) &&
+                    def.Category.Trim().Equals("Token", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    pickup.TryLoot(_itemsRuntime);
+                    _currentItemPickup = null;
+                }
+
+                return;
+            }
+
             BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
             if (buildingDoor != null) { _currentBuildingDoor = buildingDoor; return; }
 
@@ -174,6 +219,10 @@ namespace CityRush.Units.Characters.Controllers
 
         private void OnTriggerExit2D(Collider2D other)
         {
+            ItemPickup pickup = other.GetComponentInParent<ItemPickup>();
+            if (pickup != null && pickup == _currentItemPickup)
+                _currentItemPickup = null;
+
             BuildingDoor buildingDoor = other.GetComponentInParent<BuildingDoor>();
             if (buildingDoor != null && buildingDoor == _currentBuildingDoor) _currentBuildingDoor = null;
 

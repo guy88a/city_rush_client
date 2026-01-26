@@ -188,7 +188,8 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    float interval = 0.6f;
+
+                    float interval = shotgunCooldown;
                     if (_weapons != null && _weapons.ShotgunWeapon != null)
                         interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
 
@@ -217,7 +218,8 @@ namespace CityRush.Units.Characters.Combat
 
                     SetUziFiring(false);
                     FireShotgun(lockMovement: true, lockDuration: shotgunLockDuration);
-                    float interval = 0.6f;
+
+                    float interval = shotgunCooldown;
                     if (_weapons != null && _weapons.ShotgunWeapon != null)
                         interval = Mathf.Max(0.01f, _weapons.ShotgunWeapon.FireInterval);
 
@@ -247,7 +249,6 @@ namespace CityRush.Units.Characters.Combat
 
             return Vector2.right;
         }
-
 
         private bool FireUzi()
         {
@@ -282,7 +283,6 @@ namespace CityRush.Units.Characters.Combat
             if (lockMovement)
                 StartActionLock(lockDuration);
         }
-
 
         private void FirePunch(float lockDuration)
         {

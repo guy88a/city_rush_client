@@ -1,19 +1,21 @@
 using CityRush.Core;
 using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
+using CityRush.Items;
+using CityRush.Items.World;
+using CityRush.Units.Characters;
+using CityRush.Units.Characters.Combat;
 using CityRush.Units.Characters.Controllers;
 using CityRush.Units.Characters.View;
-using CityRush.Units.Characters;
 using CityRush.World.Background;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
-using UnityEngine.InputSystem;
-using CityRush.Units.Characters.Combat;
 
 internal sealed class GameLoopWorld
 {
@@ -82,13 +84,15 @@ internal sealed class GameLoopWorld
     public SniperAimState PlayerAim { get; private set; }
     public GameObject PlayerScopeUI { get; private set; }
 
+    private ItemsDb _itemsDb;
+
     public GameLoopWorld(Game game, float navSpawnGapModifier = 0.2f)
     {
         _game = game;
         _navSpawnGapModifier = navSpawnGapModifier;
     }
 
-    public void Enter(CorePrefabsRegistry prefabs, MapManager mapManager)
+    public void Enter(CorePrefabsRegistry prefabs, MapManager mapManager, ItemsDb itemsDb)
     {
         // Fade Screen
         GameObject fadeGO = Object.Instantiate(prefabs.ScreenFadeCanvasPrefab);
@@ -133,6 +137,13 @@ internal sealed class GameLoopWorld
         // Player (after Street build)
         PlayerInstance = Object.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
+
+        PlayerInstance
+        .GetComponent<PlayerItemsRuntime>()
+        .Init(itemsDb);
+
+        _itemsDb = itemsDb;
+
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
@@ -146,6 +157,16 @@ internal sealed class GameLoopWorld
 
         float spawnX = Street.SpawnX;
         PlayerTransform.position = new Vector3(spawnX, 0f, 0f);
+
+        if (PlayerTransform != null)
+        {
+            Vector3 p = PlayerTransform.position;
+            SpawnItemPickup(itemId: 1001, amount: 1, worldPos: p + new Vector3(3.5f, -1f, 0f));
+            SpawnItemPickup(itemId: 1002, amount: 1, worldPos: p + new Vector3(2.5f, -1f, 0f));
+            SpawnItemPickup(itemId: 3001, amount: 1, worldPos: p + new Vector3(6.5f, -1f, 0f));
+            SpawnItemPickup(itemId: 3002, amount: 1, worldPos: p + new Vector3(10f, -1f, 0f));
+            SpawnItemPickup(itemId: 1, amount: 1, worldPos: p + new Vector3(13f, -1f, 0f));
+        }
     }
 
     public void Exit()
@@ -731,5 +752,34 @@ internal sealed class GameLoopWorld
         _adsCamPos = _game.CameraTransform.position;
         _adsCamPosSet = true;
     }
+
+    private GameObject SpawnItemPickup(int itemId, int amount, Vector3 worldPos)
+    {
+        if (Street == null || _itemsDb == null)
+            return null;
+
+        GameObject prefab = Resources.Load<GameObject>("Items/Prefabs/ItemPickup");
+        if (prefab == null)
+        {
+            Debug.LogWarning("[Items] Missing pickup prefab at Resources/Items/Prefabs/ItemPickup");
+            return null;
+        }
+
+        Transform parent = Street.ItemsRoot != null ? Street.ItemsRoot : Street.transform;
+
+        GameObject go = Object.Instantiate(prefab, parent);
+        go.transform.position = worldPos;
+
+        ItemPickup pickup = go.GetComponent<ItemPickup>();
+        if (pickup == null)
+        {
+            Debug.LogWarning("[Items] Spawned ItemPickup prefab has no ItemPickup component.");
+            return go;
+        }
+
+        pickup.SetItem(_itemsDb, itemId, amount); // use YOUR actual API name (see note below)
+        return go;
+    }
+
 
 }

@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 4376358975332805431}
   - component: {fileID: -3936171824208857221}
   - component: {fileID: 2703299279716658985}
+  - component: {fileID: 583319802776762888}
   - component: {fileID: 1994779479807403598}
   - component: {fileID: -4016052276002922149}
   - component: {fileID: 4247318690697999041}
@@ -421,6 +422,9 @@ GameObject:
   - component: {fileID: 7819575289298165788}
   - component: {fileID: 8036282166246709222}
   - component: {fileID: 3337504901878380243}
+  - component: {fileID: 6965104707356049689}
+  - component: {fileID: 4316484797704518456}
+  - component: {fileID: 6532442321208561531}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -534,6 +538,20 @@ MonoBehaviour:
   entryId: 1
   instanceGuid: 
   displayName: Bob
+--- !u!114 &583319802776762888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d32288f3fded2a4aa8220624b37c11f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.UI.PlayerUIController
+  inventoryGuiResourcePath: UI/Prefabs/GUIs/InventoryGUI
+  uiRoot: {fileID: 0}
 --- !u!114 &1994779479807403598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,9 +704,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e74d0c2d65ffa4c4b839ce366ba0a072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.CharacterWeaponSet
-  uziWeapon: {fileID: 11400000, guid: cad6d99f3463fae4aa7c7d0a150ee136, type: 2}
-  shotgunWeapon: {fileID: 11400000, guid: 04c24dc091d34d149802468886f5d1b3, type: 2}
-  sniperWeapon: {fileID: 11400000, guid: b30e0aa4cc2a7284e94ae7db809c49c2, type: 2}
+  uziWeapon: {fileID: 0}
+  shotgunWeapon: {fileID: 0}
+  sniperWeapon: {fileID: 11400000, guid: b074def6a37ff8e48ab8f4d2630d1f13, type: 2}
 --- !u!114 &3337504901878380243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,3 +719,84 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c5804d47ad69d448ba6517acd50096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.SniperAimState
+--- !u!114 &6965104707356049689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2546ded49ffe13946a00e168a00642d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.PlayerItemsRuntime
+  wallet: {fileID: 0}
+  inventory: {fileID: 0}
+  health: {fileID: 0}
+--- !u!114 &4316484797704518456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49b2e16d2cce4f241bfd47d53b2561e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.Wallet
+--- !u!114 &6532442321208561531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abaf436892a5e784990e8d22fe8e027e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.InventoryGrid
+  capacity: 20
+  slots:
+  - ItemId: 3001
+    Count: 1
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0
+  - ItemId: 0
+    Count: 0

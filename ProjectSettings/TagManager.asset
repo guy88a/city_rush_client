@@ -13,8 +13,8 @@ TagManager:
   - UI
   - Characters
   - WorldShootable
-  - 
-  - 
+  - WorldItem
+  - WorldItemPhysics
   - 
   - 
   - 
