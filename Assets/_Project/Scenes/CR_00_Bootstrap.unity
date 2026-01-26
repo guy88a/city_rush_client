@@ -233,6 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Core.GameBootstrapper
   corePrefabs: {fileID: 11400000, guid: 27b7c8fa9b2537c4b8faf44ad0153418, type: 2}
+  questDB: {fileID: 11400000, guid: 878df886f68417c42ade961352aec694, type: 2}
 --- !u!4 &2062821623
 Transform:
   m_ObjectHideFlags: 0
