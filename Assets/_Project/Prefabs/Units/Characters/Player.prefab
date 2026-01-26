@@ -758,20 +758,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abaf436892a5e784990e8d22fe8e027e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.InventoryGrid
-  capacity: 25
+  capacity: 20
   slots:
-  - ItemId: 0
-    Count: 0
-  - ItemId: 0
-    Count: 0
-  - ItemId: 0
-    Count: 0
-  - ItemId: 0
-    Count: 0
-  - ItemId: 0
-    Count: 0
-  - ItemId: 0
-    Count: 0
+  - ItemId: 3001
+    Count: 1
   - ItemId: 0
     Count: 0
   - ItemId: 0

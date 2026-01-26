@@ -230,6 +230,9 @@ namespace CityRush.Items.World
                 );
                 return false;
             }
+            Debug.Log("asdasdasd");
+            var ui = playerItems.GetComponent<CityRush.UI.PlayerUIController>();
+            if (ui != null && ui.IsInventoryOpen) ui.SetInventoryOpen(true); // refresh while open
 
             if (remainder <= 0)
             {

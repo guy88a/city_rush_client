@@ -104,9 +104,11 @@ namespace CityRush.Items
 
         public bool TryUseConsumable(int itemId)
         {
+            Debug.Log("TryUseConsumable");
             if (ItemsDb == null) return false;
             if (inventory == null) return false;
             if (health == null) return false;
+            Debug.Log("TryUseConsumable2");
 
             if (!ItemsDb.TryGet(itemId, out var def))
                 return false;

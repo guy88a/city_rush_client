@@ -111,23 +111,53 @@ namespace CityRush.Items.UI
                 // Icon
                 if (ui.Icon != null)
                 {
-                    ui.Icon.sprite = string.IsNullOrWhiteSpace(def.IconKey)
+                    var icon = string.IsNullOrWhiteSpace(def.IconKey)
                         ? null
                         : Resources.Load<Sprite>(def.IconKey);
 
-                    ui.Icon.enabled = ui.Icon.sprite != null;
+                    Debug.Log($"[InventoryGuiBinder] slot={i} itemId={s.ItemId} iconKey='{def.IconKey}' => sprite={(icon != null ? icon.name : "NULL")}");
+
+                    ui.Icon.sprite = icon;
+                    ui.Icon.enabled = (icon != null);
+                    ui.Icon.gameObject.SetActive(icon != null);
                 }
 
-                // BG rarity tint
+                // BG (only for weapons)
                 if (ui.Bg != null)
-                    ui.Bg.color = CityRush.Items.ItemRarityColors.Resolve(def.Rarity);
+                {
+                    bool showBg = def.IsWeapon;
+
+                    ui.Bg.gameObject.SetActive(showBg);
+                    if (showBg)
+                        ui.Bg.color = CityRush.Items.ItemRarityColors.Resolve(def.Rarity);
+                }
             }
         }
 
         private static Image FindImage(Transform root, string childName)
         {
+            // Direct child (most common)
             Transform t = root.Find(childName);
-            return t != null ? t.GetComponent<Image>() : null;
+
+            // If prefab has an extra wrapper named "GridSlot"
+            if (t == null)
+                t = root.Find("GridSlot/" + childName);
+
+            // Last resort: search by name anywhere under the slot
+            if (t == null)
+            {
+                var imgs = root.GetComponentsInChildren<Image>(true);
+                for (int i = 0; i < imgs.Length; i++)
+                {
+                    if (imgs[i].name == childName)
+                        return imgs[i];
+                }
+
+                return null;
+            }
+
+            return t.GetComponent<Image>();
         }
+
     }
 }
