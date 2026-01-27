@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Quests.QuestDB
   quests:
   - questId: 1
-    startNpcId: 1
-    endNpcId: 1
+    startNpcId: 2
+    endNpcId: 2
     title: I want my money back!
     descAvailable: available desc
     descInProgress: in progress desc
