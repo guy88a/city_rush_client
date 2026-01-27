@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using CityRush.Items;
 using CityRush.Items.UI;
 
@@ -10,6 +11,7 @@ namespace CityRush.UI
     {
         [Header("Resources")]
         [SerializeField] private string inventoryGuiResourcePath = "UI/Prefabs/GUIs/InventoryGUI";
+        [SerializeField] private string dialogGuiResourcePath = "UI/Prefabs/GUIs/DialogGUI";
 
         [Header("Optional")]
         [Tooltip("Parent UI under an existing Canvas root (recommended: InGameUI). If null, controller will try to auto-find a Canvas.")]
@@ -20,7 +22,13 @@ namespace CityRush.UI
         private GameObject _inventoryGuiInstance;
         private InventoryGuiBinder _inventoryBinder;
 
+        private GameObject _dialogGuiInstance;
+        private Button _dialogCloseButton;
+
+        private int _questNpcOverlapCount;
+
         public bool IsInventoryOpen => _inventoryGuiInstance != null && _inventoryGuiInstance.activeSelf;
+        public bool IsDialogOpen => _dialogGuiInstance != null && _dialogGuiInstance.activeSelf;
 
         private void Awake()
         {
@@ -28,6 +36,9 @@ namespace CityRush.UI
 
             EnsureInventoryGuiSpawned();
             SetInventoryOpen(false);
+
+            EnsureDialogGuiSpawned();
+            SetDialogOpen(false);
         }
 
         private void Update()
@@ -37,6 +48,12 @@ namespace CityRush.UI
 
             if (Keyboard.current.iKey.wasPressedThisFrame)
                 ToggleInventory();
+
+            if (Keyboard.current.eKey.wasPressedThisFrame && _questNpcOverlapCount > 0)
+                SetDialogOpen(true);
+
+            if (Keyboard.current.escapeKey.wasPressedThisFrame && IsDialogOpen)
+                SetDialogOpen(false);
         }
 
         public void ToggleInventory()
@@ -55,6 +72,16 @@ namespace CityRush.UI
 
             if (open)
                 _inventoryBinder?.Refresh();
+        }
+
+        public void SetDialogOpen(bool open)
+        {
+            EnsureDialogGuiSpawned();
+
+            if (_dialogGuiInstance == null)
+                return;
+
+            _dialogGuiInstance.SetActive(open);
         }
 
         private void EnsureInventoryGuiSpawned()
@@ -106,6 +133,62 @@ namespace CityRush.UI
             }
 
             _inventoryBinder.SetPlayer(_playerItems);
+        }
+
+        private void EnsureDialogGuiSpawned()
+        {
+            if (_dialogGuiInstance != null)
+                return;
+
+            string path = SanitizeResourcesPath(dialogGuiResourcePath);
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+                Debug.LogError($"[PlayerUIController] DialogGUI prefab not found at Resources/{path}");
+                return;
+            }
+
+            Transform parent = uiRoot != null ? uiRoot : TryFindUiRoot();
+
+            _dialogGuiInstance = Instantiate(prefab);
+
+            if (parent != null)
+                _dialogGuiInstance.transform.SetParent(parent, false);
+
+            // Wire close button once.
+            var closeTf = _dialogGuiInstance.transform.Find("Header/Button_Close");
+            if (closeTf == null)
+            {
+                Debug.LogError("[PlayerUIController] Dialog close button not found at path: Header/Button_Close");
+                return;
+            }
+
+            _dialogCloseButton = closeTf.GetComponent<Button>();
+            if (_dialogCloseButton == null)
+            {
+                Debug.LogError("[PlayerUIController] Dialog close button is missing Button component.");
+                return;
+            }
+
+            _dialogCloseButton.onClick.AddListener(HandleDialogCloseClicked);
+        }
+
+        private void HandleDialogCloseClicked()
+        {
+            SetDialogOpen(false);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other != null && other.CompareTag("QuestNPC"))
+                _questNpcOverlapCount++;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other != null && other.CompareTag("QuestNPC"))
+                _questNpcOverlapCount = Mathf.Max(0, _questNpcOverlapCount - 1);
         }
 
         private static string SanitizeResourcesPath(string path)
