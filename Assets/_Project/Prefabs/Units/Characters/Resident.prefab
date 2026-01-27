@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 1400324003508877898}
   - component: {fileID: 1029451010479163912}
   - component: {fileID: 8477157425209339775}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: Resident
   m_TagString: QuestNPC
   m_Icon: {fileID: 0}
@@ -415,7 +415,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 20
-  m_Sprite: {fileID: 21300000, guid: d8bf3096e29cc804598c13b695d2f877, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 279bd0acb9562604492541571b08601c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -436,7 +436,7 @@ Animator:
   m_GameObject: {fileID: 8536519969742702636}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ce9a15eed91159143be7ebbdbe3bea5d, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9f047df4b8c990849b24d1a4f94bf8f6, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
