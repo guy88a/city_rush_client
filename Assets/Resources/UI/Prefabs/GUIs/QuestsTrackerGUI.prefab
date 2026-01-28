@@ -71,7 +71,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -56}
+  m_AnchoredPosition: {x: 150, y: -68}
   m_SizeDelta: {x: 300, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1845030765384148845
@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 4241200038766744956}
   - component: {fileID: 2923194108166626115}
   - component: {fileID: 6796429472989581659}
+  - component: {fileID: 3239892595394904551}
   m_Layer: 5
   m_Name: QuestsTrackerGUI
   m_TagString: Untagged
@@ -284,11 +285,11 @@ RectTransform:
   - {fileID: 6136555231923213994}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -20, y: 160}
   m_SizeDelta: {x: 300, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &2923194108166626115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +330,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &3239892595394904551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8666774452388145565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf7983b6b935ce4e8dfacacb84da9cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Quests.UI.QuestsTrackerGUI
 --- !u!1001 &2798370251441342064
 PrefabInstance:
   m_ObjectHideFlags: 0

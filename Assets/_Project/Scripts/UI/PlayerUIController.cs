@@ -16,6 +16,7 @@ namespace CityRush.UI
         [Header("Resources")]
         [SerializeField] private string inventoryGuiResourcePath = "UI/Prefabs/GUIs/InventoryGUI";
         [SerializeField] private string dialogGuiResourcePath = "UI/Prefabs/GUIs/DialogGUI";
+        [SerializeField] private string questsTrackerGuiResourcePath = "UI/Prefabs/GUIs/QuestsTrackerGUI";
 
         [Header("Optional")]
         [Tooltip("Parent UI under an existing Canvas root (recommended: InGameUI). If null, controller will try to auto-find a Canvas.")]
@@ -32,6 +33,9 @@ namespace CityRush.UI
         private readonly List<NpcIdentity> _npcsInRange = new();
         private NpcDialogRuntime _npcDialogRuntime;
         private QuestDialogGUI _questGui;
+
+        private GameObject _questsTrackerGuiInstance;
+        private QuestsTrackerGUI _questsTrackerGui;
 
         [Header("Quest NPC Overlap")]
         [SerializeField] private int _questNpcOverlapCount;
@@ -51,6 +55,9 @@ namespace CityRush.UI
 
             EnsureDialogGuiSpawned();
             SetDialogOpen(false);
+
+            EnsureQuestsTrackerGuiSpawned();
+            if (_questsTrackerGuiInstance != null) _questsTrackerGuiInstance.SetActive(false);
         }
 
         private void Update()
@@ -233,6 +240,45 @@ namespace CityRush.UI
                 _npcDialogRuntime = _dialogGuiInstance.AddComponent<NpcDialogRuntime>();
 
         }
+
+        private void EnsureQuestsTrackerGuiSpawned()
+        {
+            if (_questsTrackerGuiInstance != null)
+                return;
+
+            string path = SanitizeResourcesPath(questsTrackerGuiResourcePath);
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+                Debug.LogError($"[PlayerUIController] QuestsTrackerGUI prefab not found at Resources/{path}");
+                return;
+            }
+
+            Transform parent = uiRoot != null ? uiRoot : TryFindUiRoot();
+
+            _questsTrackerGuiInstance = Instantiate(prefab);
+
+            if (parent != null)
+                _questsTrackerGuiInstance.transform.SetParent(parent, false);
+
+            _questsTrackerGui = _questsTrackerGuiInstance.GetComponent<QuestsTrackerGUI>();
+            if (_questsTrackerGui == null)
+                _questsTrackerGui = _questsTrackerGuiInstance.GetComponentInChildren<QuestsTrackerGUI>(true);
+
+            if (_questsTrackerGui == null)
+            {
+                Debug.LogError("[PlayerUIController] QuestsTrackerGUI script not found on QuestsTrackerGUI instance.");
+                return;
+            }
+
+            var host = Object.FindFirstObjectByType<QuestServiceHost>(FindObjectsInactive.Include);
+            if (host != null && host.Service != null)
+                _questsTrackerGui.Bind(host.Service);
+            else
+                Debug.LogError("[UI] QuestServiceHost not found or Service not ready (QuestsTrackerGUI.Bind).");
+        }
+
 
         private void HandleDialogCloseClicked()
         {
