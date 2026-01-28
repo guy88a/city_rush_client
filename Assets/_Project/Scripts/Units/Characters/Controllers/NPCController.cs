@@ -69,6 +69,15 @@ namespace CityRush.Units.Characters.Controllers
             MaxSpeed = speed;
         }
 
+        public void ForceExitCombat()
+        {
+            _fightMode = false;
+
+            if (_animator != null)
+                _animator.SetBool("isUziFiring", false);
+        }
+
+
         private void Awake()
         {
             aggression = Mathf.Clamp(aggression, 0, 10);
@@ -132,6 +141,16 @@ namespace CityRush.Units.Characters.Controllers
                     gameObject.SetActive(false);
                     return;
                 }
+            }
+
+            // If our target is dead, disengage and resume patrol.
+            if (_combatState != null && _combatState.IsInCombat && _combatState.HasTarget && _combatState.Target != null)
+            {
+                var targetTr = _combatState.Target.transform;
+                var targetHealth = targetTr != null ? targetTr.GetComponentInParent<Health>() : null;
+
+                if (targetHealth != null && !targetHealth.IsAlive)
+                    ForceExitCombat();
             }
 
             // Combat chase (fight mode)

@@ -123,13 +123,31 @@ namespace CityRush.Units.Characters.Combat
                 _npcController.enabled = false;
 
             if (_despawnRoutine != null)
+            {
                 StopCoroutine(_despawnRoutine);
+                _despawnRoutine = null;
+            }
 
             // PLAYER: freeze + disable combat, but do NOT despawn/fade.
             if (_playerController != null)
             {
                 _playerController.EnterDeadLock();
                 _playerCombat?.EnterDeadLock();
+
+                // Force the killer NPC to exit combat so it won't keep firing / get stuck.
+                if (_health != null)
+                {
+                    GameObject attackerRoot = _health.LastAttackerRoot;
+                    if (attackerRoot != null)
+                    {
+                        var attackerNpc = attackerRoot.GetComponent<NPCController>();
+                        if (attackerNpc == null)
+                            attackerNpc = attackerRoot.GetComponentInChildren<NPCController>();
+
+                        attackerNpc?.ForceExitCombat();
+                    }
+                }
+
                 return;
             }
 
