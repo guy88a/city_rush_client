@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6215017324912984861}
   - component: {fileID: 3033932203173121564}
+  - component: {fileID: 8948927765091997034}
   m_Layer: 5
   m_Name: WalletGUI
   m_TagString: Untagged
@@ -67,6 +68,21 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &8948927765091997034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973899172853420268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c56638317d72a4c99b5f3ee4b08e3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Items.UI.WalletGuiBinder
+  amountText: {fileID: 0}
+  playerItems: {fileID: 0}
+  coinsTokenKey: Coins
 --- !u!1 &3717140427521115378
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +177,7 @@ MonoBehaviour:
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: 57.9
+  m_FlexibleWidth: 60
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!1 &6559756907805836068
