@@ -1,5 +1,8 @@
-using UnityEngine;
+using CityRush.Quests;
+using CityRush.Quests.Data;
+using CityRush.Units;
 using CityRush.Units.Characters.Controllers;
+using UnityEngine;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -22,6 +25,9 @@ namespace CityRush.Units.Characters.Combat
         private SpriteRenderer _graphicSr;
         private Coroutine _despawnRoutine;
 
+        private NpcIdentity _npcIdentity;
+        private IQuestService _questService;
+
         private void Awake()
         {
             _health = GetComponent<Health>();
@@ -37,6 +43,11 @@ namespace CityRush.Units.Characters.Combat
 
             if (_animator == null)
                 _animator = GetComponentInChildren<Animator>(true);
+
+            _npcIdentity = GetComponent<NpcIdentity>();
+
+            var host = Object.FindFirstObjectByType<QuestServiceHost>();
+            _questService = host != null ? host.Service : null;
         }
 
         private void OnEnable()
@@ -77,6 +88,20 @@ namespace CityRush.Units.Characters.Combat
         {
             if (_handledDeath) return;
             _handledDeath = true;
+
+            // Quest kill credit (player-only)
+            if (_questService != null && _health != null && _npcIdentity != null)
+            {
+                GameObject attackerRoot = _health.LastAttackerRoot;
+                if (attackerRoot != null)
+                {
+                    var attackerUnit = attackerRoot.GetComponent<GameUnit>();
+                    if (attackerUnit != null && attackerUnit.EntryType == GameUnitType.Player)
+                    {
+                        _questService.SubmitEvent(new QuestEvent(QuestActionType.Kill, _npcIdentity.Id, 1));
+                    }
+                }
+            }
 
             if (_animator != null)
                 _animator.SetBool(isAliveParam, false);

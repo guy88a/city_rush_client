@@ -20,6 +20,7 @@ namespace CityRush.Units.Characters.Combat
         public event Action<int, int> OnHealed; // (newHp, amount)
         public event Action OnDied;
 
+        private GameObject _lastAttackerRoot;
 
         private void Awake()
         {
@@ -30,12 +31,14 @@ namespace CityRush.Units.Characters.Combat
         {
             // When spawned from pool, always start full.
             currentHp = maxHp;
+            ClearLastAttackerRoot();
         }
 
         private void OnDisable()
         {
             // When returned to pool, reset so we don't carry damage across respawns.
             currentHp = maxHp;
+            ClearLastAttackerRoot();
         }
 
         public void SetMaxHp(int value, bool refill)
@@ -80,7 +83,22 @@ namespace CityRush.Units.Characters.Combat
 
 
             if (currentHp == 0)
+            {
                 OnDied?.Invoke();
+                ClearLastAttackerRoot();
+            }
+        }
+
+        public GameObject LastAttackerRoot => _lastAttackerRoot;
+
+        public void SetLastAttackerRoot(GameObject attackerRoot)
+        {
+            _lastAttackerRoot = attackerRoot;
+        }
+
+        public void ClearLastAttackerRoot()
+        {
+            _lastAttackerRoot = null;
         }
     }
 }
