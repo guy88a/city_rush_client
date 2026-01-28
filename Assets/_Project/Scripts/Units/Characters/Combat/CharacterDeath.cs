@@ -3,6 +3,7 @@ using CityRush.Quests.Data;
 using CityRush.Units;
 using CityRush.Units.Characters.Controllers;
 using UnityEngine;
+using CityRush.UI;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -31,6 +32,8 @@ namespace CityRush.Units.Characters.Combat
         private PlayerPlatformerController _playerController;
         private PlayerCombatDriver _playerCombat;
 
+        private PlayerUIController _playerUi;
+
         private void Awake()
         {
             _health = GetComponent<Health>();
@@ -54,6 +57,8 @@ namespace CityRush.Units.Characters.Combat
 
             _playerController = GetComponent<PlayerPlatformerController>();
             _playerCombat = GetComponent<PlayerCombatDriver>();
+
+            _playerUi = GetComponent<PlayerUIController>();
         }
 
         private void OnEnable()
@@ -147,6 +152,8 @@ namespace CityRush.Units.Characters.Combat
                         attackerNpc?.ForceExitCombat();
                     }
                 }
+
+                _playerUi?.ShowRespawnDialog();
 
                 return;
             }

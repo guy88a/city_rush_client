@@ -17,6 +17,7 @@ namespace CityRush.UI
         [SerializeField] private string inventoryGuiResourcePath = "UI/Prefabs/GUIs/InventoryGUI";
         [SerializeField] private string dialogGuiResourcePath = "UI/Prefabs/GUIs/DialogGUI";
         [SerializeField] private string questsTrackerGuiResourcePath = "UI/Prefabs/GUIs/QuestsTrackerGUI";
+        [SerializeField] private string respawnGuiResourcePath = "UI/Prefabs/GUIs/RespawnGUI";
 
         [Header("Optional")]
         [Tooltip("Parent UI under an existing Canvas root (recommended: InGameUI). If null, controller will try to auto-find a Canvas.")]
@@ -36,6 +37,12 @@ namespace CityRush.UI
 
         private GameObject _questsTrackerGuiInstance;
         private QuestsTrackerGUI _questsTrackerGui;
+
+        private GameObject _respawnGuiInstance;
+        private RespawnGUI _respawnGui;
+
+        public bool IsRespawnOpen => _respawnGuiInstance != null && _respawnGuiInstance.activeSelf;
+
 
         [Header("Quest NPC Overlap")]
         [SerializeField] private int _questNpcOverlapCount;
@@ -58,6 +65,9 @@ namespace CityRush.UI
 
             EnsureQuestsTrackerGuiSpawned();
             if (_questsTrackerGuiInstance != null) _questsTrackerGuiInstance.SetActive(false);
+
+            EnsureRespawnGuiSpawned();
+            if (_respawnGuiInstance != null) _respawnGuiInstance.SetActive(false);
         }
 
         private void Update()
@@ -133,6 +143,19 @@ namespace CityRush.UI
 
             _dialogGuiInstance.SetActive(open);
         }
+
+        public void ShowRespawnDialog()
+        {
+            EnsureRespawnGuiSpawned();
+            _respawnGui?.Open();
+        }
+
+        public void HideRespawnDialog()
+        {
+            EnsureRespawnGuiSpawned();
+            _respawnGui?.Close();
+        }
+
 
         private void EnsureInventoryGuiSpawned()
         {
@@ -279,6 +302,39 @@ namespace CityRush.UI
                 Debug.LogError("[UI] QuestServiceHost not found or Service not ready (QuestsTrackerGUI.Bind).");
         }
 
+        private void EnsureRespawnGuiSpawned()
+        {
+            if (_respawnGuiInstance != null)
+                return;
+
+            string path = SanitizeResourcesPath(respawnGuiResourcePath);
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+                Debug.LogError($"[PlayerUIController] RespawnGUI prefab not found at Resources/{path}");
+                return;
+            }
+
+            Transform parent = uiRoot != null ? uiRoot : TryFindUiRoot();
+
+            _respawnGuiInstance = Instantiate(prefab);
+
+            if (parent != null)
+            {
+                _respawnGuiInstance.transform.SetParent(parent, false);
+
+                if (_respawnGuiInstance.transform is RectTransform rt)
+                    rt.anchoredPosition = Vector2.zero;
+            }
+
+            _respawnGui = _respawnGuiInstance.GetComponent<RespawnGUI>();
+            if (_respawnGui == null)
+                _respawnGui = _respawnGuiInstance.GetComponentInChildren<RespawnGUI>(true);
+
+            if (_respawnGui == null)
+                Debug.LogError("[PlayerUIController] RespawnGUI script not found on RespawnGUI instance.");
+        }
 
         private void HandleDialogCloseClicked()
         {
