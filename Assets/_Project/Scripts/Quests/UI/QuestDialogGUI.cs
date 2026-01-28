@@ -173,10 +173,10 @@ namespace CityRush.Quests.UI
             _pageWelcome.SetActive(true);
 
             // Buttons state
-            //_btnAccept.gameObject.SetActive(false);
-            //_btnDecline.gameObject.SetActive(false);
-            //_btnComplete.gameObject.SetActive(false);
-            //_btnReturn.gameObject.SetActive(true);
+            _btnAccept.gameObject.SetActive(false);
+            _btnDecline.gameObject.SetActive(false);
+            _btnComplete.gameObject.SetActive(false);
+            _btnReturn.gameObject.SetActive(true);
 
             RefreshWelcome();
         }
@@ -237,6 +237,7 @@ namespace CityRush.Quests.UI
                 _btnAccept.gameObject.SetActive(canAccept);
                 _btnDecline.gameObject.SetActive(canAccept);
                 _btnComplete.gameObject.SetActive(canComplete);
+                _btnReturn.gameObject.SetActive(false);
             }
         }
 
