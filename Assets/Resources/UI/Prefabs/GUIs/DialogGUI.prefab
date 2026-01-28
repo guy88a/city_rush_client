@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5171800757789202473
 RectTransform:
   m_ObjectHideFlags: 0
@@ -34,9 +34,9 @@ RectTransform:
   - {fileID: 2931602364091304130}
   m_Father: {fileID: 8333732807618780663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 200, y: -40}
   m_SizeDelta: {x: 184, y: 74.666664}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8939869979035434698
@@ -635,7 +635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6168843149093485051
 RectTransform:
   m_ObjectHideFlags: 0
@@ -651,9 +651,9 @@ RectTransform:
   - {fileID: 4185838522640948851}
   m_Father: {fileID: 8333732807618780663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 92, y: -40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 184, y: 74.666664}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3072469074646367376
@@ -2250,8 +2250,9 @@ GameObject:
   - component: {fileID: 7283226206824602170}
   - component: {fileID: 260197740306165399}
   - component: {fileID: 2746162665524904919}
-  - component: {fileID: 2211922389680598182}
   - component: {fileID: 8601578155525342981}
+  - component: {fileID: 1902467735945637747}
+  - component: {fileID: 2806776477849526568}
   m_Layer: 5
   m_Name: DialogGUI
   m_TagString: Untagged
@@ -2345,20 +2346,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &2211922389680598182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7410850717506577390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
-  m_HorizontalFit: 0
-  m_VerticalFit: 0
 --- !u!114 &8601578155525342981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2373,6 +2360,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &1902467735945637747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7410850717506577390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fb66e6048541aa4ebbe86cb58829380, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Quests.UI.QuestDialogGUI
+--- !u!114 &2806776477849526568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7410850717506577390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b59df941d8c4f94bb5b658f05bdde1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.UI.NpcDialogRuntime
 --- !u!1 &7470825796793346165
 GameObject:
   m_ObjectHideFlags: 0
@@ -2391,7 +2402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3848826642894133829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2407,9 +2418,9 @@ RectTransform:
   - {fileID: 3668632929822599316}
   m_Father: {fileID: 8333732807618780663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 276, y: -40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 184, y: 74.666664}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1857702015364793326
@@ -2745,6 +2756,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: QuestListItem (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3980481726962931978, guid: 72a75ec45a43c91449a516ad462eff22, type: 3}
+      propertyPath: m_text
+      value: '{ActiveQuest Name}'
+      objectReference: {fileID: 0}
     - target: {fileID: 4308267372072831499, guid: 72a75ec45a43c91449a516ad462eff22, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2910,6 +2925,10 @@ PrefabInstance:
     - target: {fileID: 3874840958881378042, guid: 72a75ec45a43c91449a516ad462eff22, type: 3}
       propertyPath: m_Name
       value: QuestListItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 3980481726962931978, guid: 72a75ec45a43c91449a516ad462eff22, type: 3}
+      propertyPath: m_text
+      value: '{Available Quest Name}'
       objectReference: {fileID: 0}
     - target: {fileID: 4308267372072831499, guid: 72a75ec45a43c91449a516ad462eff22, type: 3}
       propertyPath: m_AnchorMax.y

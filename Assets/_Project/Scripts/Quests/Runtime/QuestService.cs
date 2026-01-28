@@ -236,5 +236,31 @@ namespace CityRush.Quests
 
             return true;
         }
+
+        public void GetNpcActiveQuests(int npcId, List<int> questIdsOut)
+        {
+            questIdsOut.Clear();
+
+            if (_db == null || _db.Quests == null)
+                return;
+
+            // “Active” here means: already started and relevant to this NPC
+            // (either started here or ends here).
+            for (int i = 0; i < _db.Quests.Count; i++)
+            {
+                var def = _db.Quests[i];
+
+                if (!_states.ContainsKey(def.QuestId))
+                    continue;
+
+                var stage = GetStage(def.QuestId);
+                if (stage != QuestStage.InProgress && stage != QuestStage.ReadyToTurnIn)
+                    continue;
+
+                if (def.StartNpcId == npcId || def.EndNpcId == npcId)
+                    questIdsOut.Add(def.QuestId);
+            }
+        }
+
     }
 }

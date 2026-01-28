@@ -17,6 +17,7 @@ namespace CityRush.Quests
         void GetNpcQuestOffers(int npcId, List<int> questIdsOut);
         void GetNpcQuestTurnIns(int npcId, List<int> questIdsOut);
         void GetActiveQuests(List<int> questIdsOut);
+        void GetNpcActiveQuests(int npcId, List<int> questIdsOut);
 
         bool TryAccept(int questId);
 

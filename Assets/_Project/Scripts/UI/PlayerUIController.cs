@@ -1,10 +1,12 @@
+using CityRush.Items;
+using CityRush.Items.UI;
+using CityRush.Quests;
+using CityRush.Quests.UI;
+using CityRush.Units;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using CityRush.Items;
-using CityRush.Items.UI;
-using CityRush.Units;
 
 namespace CityRush.UI
 {
@@ -29,6 +31,7 @@ namespace CityRush.UI
 
         private readonly List<NpcIdentity> _npcsInRange = new();
         private NpcDialogRuntime _npcDialogRuntime;
+        private QuestDialogGUI _questGui;
 
         [Header("Quest NPC Overlap")]
         [SerializeField] private int _questNpcOverlapCount;
@@ -65,6 +68,7 @@ namespace CityRush.UI
                 {
                     CurrentNpcId = nearest.Id;
                     _npcDialogRuntime.OpenForNpc(CurrentNpcId);
+                    _questGui.Open(CurrentNpcId);
                 }
             }
 
@@ -191,6 +195,18 @@ namespace CityRush.UI
             Transform parent = uiRoot != null ? uiRoot : TryFindUiRoot();
 
             _dialogGuiInstance = Instantiate(prefab);
+            _npcDialogRuntime = _dialogGuiInstance.GetComponent<NpcDialogRuntime>();
+            var questGui = _dialogGuiInstance.GetComponent<QuestDialogGUI>();
+            _questGui = questGui;
+
+            if (_questGui != null)
+            {
+                var host = Object.FindFirstObjectByType<QuestServiceHost>(FindObjectsInactive.Include);
+                if (host != null && host.Service != null)
+                    _questGui.Bind(host.Service);
+                else
+                    Debug.LogError("[UI] QuestServiceHost not found or Service not ready (QuestDialogGUI.Bind).");
+            }
 
             if (parent != null)
                 _dialogGuiInstance.transform.SetParent(parent, false);
