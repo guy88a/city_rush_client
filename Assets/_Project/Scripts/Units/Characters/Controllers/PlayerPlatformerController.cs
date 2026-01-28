@@ -156,10 +156,31 @@ namespace CityRush.Units.Characters.Controllers
 
         public void Unfreeze()
         {
-            Debug.Log("PLAYER UNFREEZE!!!");
+            //Debug.Log("PLAYER UNFREEZE!!!");
             IsFrozen = false;
             targetVelocity = Vector2.zero; // reset stale frame
         }
+
+        public void EnterDeadLock()
+        {
+            Freeze();
+            SetMovementEnabled(false);
+            ClearInteractionState();
+
+            // Stop PlayerControls input completely (Move/Jump callbacks etc.)
+            if (controls != null)
+                controls.Player.Disable();
+        }
+
+        public void ExitDeadLock()
+        {
+            if (controls != null)
+                controls.Player.Enable();
+
+            SetMovementEnabled(true);
+            Unfreeze();
+        }
+
 
         public void SetMovementEnabled(bool enabled)
         {

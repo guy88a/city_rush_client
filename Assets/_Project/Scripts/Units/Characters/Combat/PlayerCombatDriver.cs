@@ -340,5 +340,24 @@ namespace CityRush.Units.Characters.Combat
             _controller.SetMovementEnabled(true);
             IsActionLocked = false;
         }
+
+        public void EnterDeadLock()
+        {
+            // Stop loops + reset firing animation state
+            SetPrimaryHeld(false);
+            SetAltHeld(false);
+            SetUziFiring(false);
+
+            // Disable inputs so loops can't restart
+            _primaryAction?.Disable();
+            _altAction?.Disable();
+        }
+
+        public void ExitDeadLock()
+        {
+            _primaryAction?.Enable();
+            _altAction?.Enable();
+        }
+
     }
 }

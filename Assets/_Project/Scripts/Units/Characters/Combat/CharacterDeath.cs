@@ -28,6 +28,9 @@ namespace CityRush.Units.Characters.Combat
         private NpcIdentity _npcIdentity;
         private IQuestService _questService;
 
+        private PlayerPlatformerController _playerController;
+        private PlayerCombatDriver _playerCombat;
+
         private void Awake()
         {
             _health = GetComponent<Health>();
@@ -48,6 +51,9 @@ namespace CityRush.Units.Characters.Combat
 
             var host = Object.FindFirstObjectByType<QuestServiceHost>();
             _questService = host != null ? host.Service : null;
+
+            _playerController = GetComponent<PlayerPlatformerController>();
+            _playerCombat = GetComponent<PlayerCombatDriver>();
         }
 
         private void OnEnable()
@@ -119,6 +125,15 @@ namespace CityRush.Units.Characters.Combat
             if (_despawnRoutine != null)
                 StopCoroutine(_despawnRoutine);
 
+            // PLAYER: freeze + disable combat, but do NOT despawn/fade.
+            if (_playerController != null)
+            {
+                _playerController.EnterDeadLock();
+                _playerCombat?.EnterDeadLock();
+                return;
+            }
+
+            // NPC: keep existing despawn behavior.
             _despawnRoutine = StartCoroutine(DeathDespawnRoutine());
         }
 
