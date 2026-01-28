@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace CityRush.Items.UI
 {
@@ -22,6 +23,7 @@ namespace CityRush.Items.UI
             public Image Frame;
             public Image Bg;
             public Image Icon;
+            public TMP_Text Count;
         }
 
         private void Awake()
@@ -68,6 +70,7 @@ namespace CityRush.Items.UI
                 r.Frame = FindImage(go.transform, "Frame");
                 r.Bg = FindImage(go.transform, "BG");
                 r.Icon = FindImage(go.transform, "Icon");
+                r.Count = FindText(go.transform, "Count");
 
                 _slots.Add(r);
             }
@@ -102,11 +105,23 @@ namespace CityRush.Items.UI
                     if (ui.Bg != null)
                         ui.Bg.color = CityRush.Items.ItemRarityColors.Common;
 
+                    if (ui.Count != null)
+                        ui.Count.gameObject.SetActive(false);
+
                     continue;
                 }
 
                 if (!db.TryGet(s.ItemId, out var def) || def == null)
                     continue;
+
+                if (ui.Count != null)
+                {
+                    bool showCount = (def.MaxStack > 1) && (s.Count > 1);
+                    ui.Count.gameObject.SetActive(showCount);
+
+                    if (showCount)
+                        ui.Count.text = s.Count.ToString();
+                }
 
                 // Icon
                 if (ui.Icon != null)
@@ -158,6 +173,39 @@ namespace CityRush.Items.UI
 
             return t.GetComponent<Image>();
         }
+
+        private static TMP_Text FindText(Transform root, string childName)
+        {
+            // Direct child
+            Transform t = root.Find(childName);
+
+            // If prefab has an extra wrapper named "GridSlot"
+            if (t == null)
+                t = root.Find("GridSlot/" + childName);
+
+            // If you placed Count under Frame: GridSlot/Frame/Count
+            if (t == null)
+                t = root.Find("Frame/" + childName);
+
+            if (t == null)
+                t = root.Find("GridSlot/Frame/" + childName);
+
+            // Last resort: search by name anywhere under the slot
+            if (t == null)
+            {
+                var texts = root.GetComponentsInChildren<TMP_Text>(true);
+                for (int i = 0; i < texts.Length; i++)
+                {
+                    if (texts[i].name == childName)
+                        return texts[i];
+                }
+
+                return null;
+            }
+
+            return t.GetComponent<TMP_Text>();
+        }
+
 
     }
 }
