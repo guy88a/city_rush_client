@@ -63,6 +63,9 @@ namespace CityRush.Units.Characters.Combat
 
             if (health != null)
             {
+                // Track who last damaged the victim (used for player-only kill quest credit).
+                health.SetLastAttackerRoot(attackerUnit != null ? attackerUnit.gameObject : gameObject);
+
                 health.TakeDamage(finalDamage);
                 return true;
             }

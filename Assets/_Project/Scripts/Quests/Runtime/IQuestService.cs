@@ -9,6 +9,7 @@ namespace CityRush.Quests
         event Action<int> OnQuestReadyToTurnIn;
         event Action<int> OnQuestCompleted;
         event Action<int, QuestReward> OnQuestRewarded;
+        event Action<int> OnQuestProgressChanged;
 
         bool TryGetDefinition(int questId, out QuestDefinition def);
 
@@ -25,5 +26,8 @@ namespace CityRush.Quests
 
         bool CanTurnIn(int questId, int npcId);
         bool TryTurnIn(int questId, int npcId);
+
+        // Returns current progress count for a quest objective index (0-based).
+        int GetObjectiveCount(int questId, int objectiveIndex);
     }
 }

@@ -9,6 +9,7 @@ namespace CityRush.Quests
         public event Action<int> OnQuestReadyToTurnIn;
         public event Action<int> OnQuestCompleted;
         public event Action<int, QuestReward> OnQuestRewarded;
+        public event Action<int> OnQuestProgressChanged;
 
         private readonly QuestDB _db;
         private readonly Dictionary<int, QuestState> _states = new();
@@ -61,6 +62,14 @@ namespace CityRush.Quests
                 return QuestStage.InProgress;
 
             return ArePrereqsMet(def) ? QuestStage.Available : QuestStage.Locked;
+        }
+
+        public int GetObjectiveCount(int questId, int objectiveIndex)
+        {
+            if (!_states.TryGetValue(questId, out var st))
+                return 0;
+
+            return st.GetCount(objectiveIndex);
         }
 
         public void GetNpcQuestOffers(int npcId, List<int> questIdsOut)
@@ -180,6 +189,8 @@ namespace CityRush.Quests
 
                 if (st.TryApplyProgress(def, e, out bool becameReady))
                 {
+                    OnQuestProgressChanged?.Invoke(def.QuestId);
+
                     if (becameReady)
                         OnQuestReadyToTurnIn?.Invoke(def.QuestId);
                 }
