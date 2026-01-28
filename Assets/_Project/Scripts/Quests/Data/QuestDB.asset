@@ -27,5 +27,5 @@ MonoBehaviour:
       requiredCount: 2
       text: Kill targets
     reward:
-      tokens: 20
+      tokens: 50
       rewardItemIds: ba0b0000

@@ -1,3 +1,4 @@
+using System; // add this
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace CityRush.Items
     public sealed class Wallet : MonoBehaviour
     {
         private readonly Dictionary<string, int> _balances = new();
+
+        public event Action<string, int> BalanceChanged; // add this
 
         public int Get(string tokenKey)
         {
@@ -25,7 +28,11 @@ namespace CityRush.Items
                 return;
 
             _balances.TryGetValue(tokenKey, out int cur);
-            _balances[tokenKey] = cur + amount;
+            int next = cur + amount;
+
+            _balances[tokenKey] = next;
+
+            BalanceChanged?.Invoke(tokenKey, next); // add this
         }
     }
 }
