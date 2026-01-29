@@ -84,6 +84,11 @@ public class GameLoopState : IState
     private int _pendingRefY;
     private bool _pendingRefSet;
 
+    private const string HudsResourcePath = "UI/Prefabs/HUDs/HUDs";
+
+    private InGameHudBinder _hud;
+    private GameObject _hudInstance; // only if we spawned it
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -130,6 +135,9 @@ public class GameLoopState : IState
             _playerUi.RespawnRequested -= HandleRespawnRequested;
             _playerUi.RespawnRequested += HandleRespawnRequested;
         }
+
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
     }
 
     public void Exit()
@@ -168,6 +176,12 @@ public class GameLoopState : IState
 
         _prefabs = null;
         _mapManager = null;
+
+        if (_hudInstance != null)
+            Object.Destroy(_hudInstance);
+
+        _hudInstance = null;
+        _hud = null;
 
         ClearTransition();
     }
@@ -402,6 +416,9 @@ public class GameLoopState : IState
         EnsurePlayerCombatBound();
         if (_playerAim != null)
             _playerAim.enabled = true;
+
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Sniper);
     }
 
     private void ExitApartmentWindowOutWork()
@@ -435,6 +452,8 @@ public class GameLoopState : IState
             _playerAim.CancelAim();
             _playerAim.enabled = false;
         }
+
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
     }
 
     private void ExitCorridorToStreetOutWork()
@@ -879,6 +898,9 @@ public class GameLoopState : IState
         _world.SetStreetActive(true);
         _mode = LoopMode.Street;
 
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
+
         // 4) Reload current street (now it is the spawn street)
         _world.Npcs_Clear();
         _world.LoadStreet(_prefabs, _mapManager.GetCurrentStreet());
@@ -905,6 +927,45 @@ public class GameLoopState : IState
         // optional: nothing needed unless you have mode-specific camera/UI
     }
 
+    private void EnsureHudBound()
+    {
+        if (_hud == null)
+            _hud = Object.FindFirstObjectByType<InGameHudBinder>(FindObjectsInactive.Include);
+
+        if (_hud == null)
+        {
+            var prefab = Resources.Load<GameObject>(HudsResourcePath);
+            if (prefab == null)
+            {
+                _logger?.Error($"[HUD] HUDs prefab not found at Resources/{HudsResourcePath}");
+                return;
+            }
+
+            _hudInstance = Object.Instantiate(prefab);
+
+            Transform parent = null;
+
+            var ingame = GameObject.Find("InGameUI");
+            if (ingame != null)
+                parent = ingame.transform;
+            else
+            {
+                var canvas = Object.FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+                if (canvas != null)
+                    parent = canvas.transform;
+            }
+
+            if (parent != null)
+                _hudInstance.transform.SetParent(parent, false);
+
+            _hud = _hudInstance.GetComponent<InGameHudBinder>();
+            if (_hud == null)
+                _hud = _hudInstance.GetComponentInChildren<InGameHudBinder>(true);
+        }
+
+        if (_hud != null && _world != null && _world.PlayerTransform != null)
+            _hud.BindPlayer(_world.PlayerTransform);
+    }
 
 
 }

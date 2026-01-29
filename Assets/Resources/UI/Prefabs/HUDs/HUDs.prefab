@@ -26,8 +26,8 @@ RectTransform:
   m_GameObject: {fileID: 12370874425427741}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1120571062969903093}
   - {fileID: 6988676131248788294}
@@ -527,6 +527,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8688252900858627233}
+  - component: {fileID: 8600595623092007954}
   m_Layer: 5
   m_Name: HUDs
   m_TagString: Untagged
@@ -555,6 +556,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8600595623092007954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155686197258741822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6145d67738d795c48ba1ab2999cf8151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.UI.InGameHudBinder
+  playerRoot: {fileID: 0}
+  weaponSet: {fileID: 0}
+  health: {fileID: 0}
+  weaponsHudRoot: {fileID: 0}
+  platformer_0: {fileID: 0}
+  platformer_1: {fileID: 0}
+  platformer_2: {fileID: 0}
+  platformer_3: {fileID: 0}
+  sniper_0: {fileID: 0}
+  sniper_1: {fileID: 0}
+  hearthRoot: {fileID: 0}
+  hearthFull: {fileID: 0}
+  hearthHalf: {fileID: 0}
+  hearthEmpty: {fileID: 0}
 --- !u!1 &5249340785475905897
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,8 +757,8 @@ RectTransform:
   m_GameObject: {fileID: 8321596672311014606}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3794397779270770431}
   - {fileID: 5984974598531428919}
