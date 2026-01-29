@@ -100,5 +100,17 @@ namespace CityRush.Units.Characters.Combat
         {
             _lastAttackerRoot = null;
         }
+
+        public void RefillToFull(bool raiseHealedEvent = true)
+        {
+            int before = currentHp;
+            currentHp = maxHp;
+            ClearLastAttackerRoot();
+
+            int delta = currentHp - before;
+            if (raiseHealedEvent && delta > 0)
+                OnHealed?.Invoke(currentHp, delta);
+        }
+
     }
 }
