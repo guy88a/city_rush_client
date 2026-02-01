@@ -212,10 +212,14 @@ namespace CityRush.Units.Characters.Combat
         {
             EnsureInitialized();
 
+            // NEW: Shotgun locks ALL weapons (fire anim + reload)
+            if (IsShotgunGlobalFireLockActive())
+                return false;
+
             WeaponDefinition w = uziWeapon;
             if (w == null) return false;
 
-            // Same rule you wanted: no anim while reloading or when mag is empty.
+            // Existing rule: no anim while reloading or when mag is empty.
             if (_uzi.IsReloading) return false;
             if (w.MagazineSize > 0 && _uzi.Magazine <= 0) return false;
 

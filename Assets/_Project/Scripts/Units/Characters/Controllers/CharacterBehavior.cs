@@ -238,10 +238,13 @@ namespace CityRush.Units.Characters.Controllers
         {
             if (animator == null) return;
 
-            // Prevent re-triggering shotgun while the current shotgun action is still active.
-            if (IsWeaponFireLocked) return;
+            // Prevent re-triggering shotgun while the current shotgun fire action is still active.
+            // IMPORTANT: shotgun reload must NOT block this trigger right after a successful shot
+            // (mag size == 1 => reload starts immediately).
+            if (_shotgunFireLockArmed || IsInShotgunAnimatorState())
+                return;
 
-            // Shotgun must hard-cancel Uzi firing visuals immediately (layered anim / held-fire case).
+            // Hard-cancel Uzi visuals immediately.
             animator.SetBool(IsUziFiringHash, false);
             animator.ResetTrigger(UziHash);
 
