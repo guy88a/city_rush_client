@@ -478,6 +478,7 @@ GameObject:
   - component: {fileID: 4376358975332805431}
   - component: {fileID: -3936171824208857221}
   - component: {fileID: 2703299279716658985}
+  - component: {fileID: 3042947775419577165}
   - component: {fileID: 583319802776762888}
   - component: {fileID: 1994779479807403598}
   - component: {fileID: -4016052276002922149}
@@ -607,6 +608,24 @@ MonoBehaviour:
   entryId: 1
   instanceGuid: 
   displayName: Bob
+--- !u!114 &3042947775419577165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8471212319856264224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91da3d6b78ef0a04eae8285422e4a747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Controllers.CharacterBehavior
+  graphic: {fileID: 3132317168358917780}
+  spriteRenderer: {fileID: 2616505593632119745}
+  animator: {fileID: 5062496036104593026}
+  lockByAnimatorState: 1
+  lockMovementByAnimatorState: 1
+  lockActionsByAnimatorState: 1
 --- !u!114 &583319802776762888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,7 +640,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.UI.PlayerUIController
   inventoryGuiResourcePath: UI/Prefabs/GUIs/InventoryGUI
   dialogGuiResourcePath: UI/Prefabs/GUIs/DialogGUI
+  questsTrackerGuiResourcePath: UI/Prefabs/GUIs/QuestsTrackerGUI
+  respawnGuiResourcePath: UI/Prefabs/GUIs/RespawnGUI
   uiRoot: {fileID: 0}
+  _questNpcOverlapCount: 0
 --- !u!114 &1994779479807403598
 MonoBehaviour:
   m_ObjectHideFlags: 0
