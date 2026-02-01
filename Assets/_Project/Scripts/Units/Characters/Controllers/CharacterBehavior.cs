@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Units.Characters.Combat;
 
 namespace CityRush.Units.Characters.Controllers
 {
@@ -65,6 +66,9 @@ namespace CityRush.Units.Characters.Controllers
         private bool _shotgunFireLockStarted;
         private float _shotgunFireLockArmExpiresAt;
 
+        // Ammo/reload gate (needed to stop Uzi anim while shotgun is reloading).
+        private CharacterWeaponSet _weaponSet;
+
         public SpriteRenderer SpriteRenderer => spriteRenderer;
         public Animator Animator => animator;
 
@@ -100,6 +104,10 @@ namespace CityRush.Units.Characters.Controllers
             get
             {
                 if (!_alive) return true;
+
+                // Reload must also block weapon usage/weapon anims.
+                if (_weaponSet != null && _weaponSet.IsShotgunReloading) return true;
+
                 if (_shotgunFireLockArmed) return true;          // immediate lock (same-frame safety)
                 return IsInShotgunAnimatorState();               // safety if animator enters shotgun without TriggerShotgun()
             }
@@ -160,6 +168,13 @@ namespace CityRush.Units.Characters.Controllers
 
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
+
+            if (_weaponSet == null)
+            {
+                _weaponSet = GetComponent<CharacterWeaponSet>();
+                if (_weaponSet == null)
+                    _weaponSet = GetComponentInParent<CharacterWeaponSet>();
+            }
         }
 
         // -----------------
@@ -226,6 +241,10 @@ namespace CityRush.Units.Characters.Controllers
             // Prevent re-triggering shotgun while the current shotgun action is still active.
             if (IsWeaponFireLocked) return;
 
+            // Shotgun must hard-cancel Uzi firing visuals immediately (layered anim / held-fire case).
+            animator.SetBool(IsUziFiringHash, false);
+            animator.ResetTrigger(UziHash);
+
             ArmShotgunFireLock();
             animator.SetTrigger(ShotgunHash);
         }
@@ -249,6 +268,7 @@ namespace CityRush.Units.Characters.Controllers
             if (IsWeaponFireLocked)
             {
                 animator.SetBool(IsUziFiringHash, false);
+                animator.ResetTrigger(UziHash);
                 return;
             }
 
@@ -309,6 +329,13 @@ namespace CityRush.Units.Characters.Controllers
 
         private void LateUpdate()
         {
+            // While shotgun is active (or reloading), hard-cancel Uzi visual layer.
+            if (animator != null && IsWeaponFireLocked)
+            {
+                animator.SetBool(IsUziFiringHash, false);
+                animator.ResetTrigger(UziHash);
+            }
+
             if (!_shotgunFireLockArmed) return;
             if (animator == null) { _shotgunFireLockArmed = false; return; }
 
