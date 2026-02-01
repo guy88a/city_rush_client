@@ -79,7 +79,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 51
+  m_SortingOrder: 22
   m_Sprite: {fileID: 21300000, guid: 5f3cabde92761b54d83f7f1fb7e71a78, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -291,7 +291,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 50
+  m_SortingOrder: 21
   m_Sprite: {fileID: 21300000, guid: fbeb85d8a6d07e14a8c751c49526d7f1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -405,3 +405,4 @@ MonoBehaviour:
   rare: {r: 0, g: 1, b: 1, a: 1}
   epic: {r: 0.78431374, g: 0.27450982, b: 0.9254902, a: 1}
   legendary: {r: 1, g: 0.72230095, b: 0.28773582, a: 1}
+  visualRoot: {fileID: 0}

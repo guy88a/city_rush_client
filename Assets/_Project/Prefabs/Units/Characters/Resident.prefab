@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -6623481950835524620}
   - component: {fileID: -457987301196439072}
   - component: {fileID: 6602541041314397640}
+  - component: {fileID: 4005952580186518044}
   - component: {fileID: -4434741104940079437}
   - component: {fileID: 7097565147277719160}
   - component: {fileID: 7778092973846962177}
@@ -135,6 +136,24 @@ MonoBehaviour:
   entryId: 0
   instanceGuid: 
   displayName: 
+--- !u!114 &4005952580186518044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470628288414811201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91da3d6b78ef0a04eae8285422e4a747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Controllers.CharacterBehavior
+  graphic: {fileID: 7384389165543375597}
+  spriteRenderer: {fileID: 3402033130066220409}
+  animator: {fileID: 2399917813872677884}
+  lockByAnimatorState: 1
+  lockMovementByAnimatorState: 1
+  lockActionsByAnimatorState: 1
 --- !u!114 &-4434741104940079437
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -40,8 +40,8 @@ namespace CityRush.UI
 
         private GameObject _respawnGuiInstance;
         private RespawnGUI _respawnGui;
-
         public bool IsRespawnOpen => _respawnGuiInstance != null && _respawnGuiInstance.activeSelf;
+        public event System.Action RespawnRequested;
 
 
         [Header("Quest NPC Overlap")]
@@ -333,12 +333,23 @@ namespace CityRush.UI
                 _respawnGui = _respawnGuiInstance.GetComponentInChildren<RespawnGUI>(true);
 
             if (_respawnGui == null)
+            {
                 Debug.LogError("[PlayerUIController] RespawnGUI script not found on RespawnGUI instance.");
+                return;
+            }
+
+            _respawnGui.RespawnClicked -= HandleRespawnClicked;
+            _respawnGui.RespawnClicked += HandleRespawnClicked;
         }
 
         private void HandleDialogCloseClicked()
         {
             _npcDialogRuntime?.Close();
+        }
+
+        private void HandleRespawnClicked()
+        {
+            RespawnRequested?.Invoke();
         }
 
         private void OnTriggerEnter2D(Collider2D other)

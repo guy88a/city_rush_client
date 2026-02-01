@@ -200,5 +200,22 @@ namespace CityRush.Units.Characters.Combat
             _graphicSr.color = c;
         }
 
+        public void ResetForRespawn()
+        {
+            _handledDeath = false;
+
+            if (_despawnRoutine != null)
+            {
+                StopCoroutine(_despawnRoutine);
+                _despawnRoutine = null;
+            }
+
+            ResetGraphicAlpha();
+
+            if (_animator != null)
+                _animator.SetBool(isAliveParam, true);
+        }
+
+
     }
 }

@@ -2,6 +2,7 @@ using CityRush.Core;
 using CityRush.Core.Prefabs;
 using CityRush.Core.Services;    // whatever namespace ILoggerService is in
 using CityRush.Core.States;
+using CityRush.UI;
 using CityRush.Units;
 using CityRush.Units.Characters; // CombatSystem
 using CityRush.Units.Characters.Combat;
@@ -38,6 +39,10 @@ public class GameLoopState : IState
 
     private float _enterBuildingStreetT;
     private bool _enterBuildingStreetTSet;
+
+    private PlayerUIController _playerUi;
+    private Health _playerHealth;
+    private CharacterDeath _playerDeath;
 
     private enum LoopMode
     {
@@ -79,6 +84,11 @@ public class GameLoopState : IState
     private int _pendingRefY;
     private bool _pendingRefSet;
 
+    private const string HudsResourcePath = "UI/Prefabs/HUDs/HUDs";
+
+    private InGameHudBinder _hud;
+    private GameObject _hudInstance; // only if we spawned it
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -115,6 +125,19 @@ public class GameLoopState : IState
             _world.PlayerController.OnWorldObjectInteract += HandleWorldObjectInteract;
 
         EnsurePlayerCombatBound();
+
+        _playerUi = _world.PlayerTransform.GetComponent<PlayerUIController>();
+        _playerHealth = _world.PlayerTransform.GetComponent<Health>();
+        _playerDeath = _world.PlayerTransform.GetComponent<CharacterDeath>();
+
+        if (_playerUi != null)
+        {
+            _playerUi.RespawnRequested -= HandleRespawnRequested;
+            _playerUi.RespawnRequested += HandleRespawnRequested;
+        }
+
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
     }
 
     public void Exit()
@@ -130,6 +153,9 @@ public class GameLoopState : IState
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnWorldObjectInteract -= HandleWorldObjectInteract;
+
+        if (_playerUi != null)
+            _playerUi.RespawnRequested -= HandleRespawnRequested;
 
         _corridorExitTrigger = null;
 
@@ -150,6 +176,12 @@ public class GameLoopState : IState
 
         _prefabs = null;
         _mapManager = null;
+
+        if (_hudInstance != null)
+            Object.Destroy(_hudInstance);
+
+        _hudInstance = null;
+        _hud = null;
 
         ClearTransition();
     }
@@ -384,6 +416,9 @@ public class GameLoopState : IState
         EnsurePlayerCombatBound();
         if (_playerAim != null)
             _playerAim.enabled = true;
+
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Sniper);
     }
 
     private void ExitApartmentWindowOutWork()
@@ -417,6 +452,8 @@ public class GameLoopState : IState
             _playerAim.CancelAim();
             _playerAim.enabled = false;
         }
+
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
     }
 
     private void ExitCorridorToStreetOutWork()
@@ -770,5 +807,165 @@ public class GameLoopState : IState
         _logger?.Info("[Combat] AimReleased");
         _world?.ExitWindowADS();
     }
+
+    private void RespawnToPlayerSpawn()
+    {
+        if (_isTransitioning)
+            return;
+
+        StartTransition(
+            outWork: RespawnToPlayerSpawn_OutWork,
+            inDone: null,
+            freezePlayer: true,
+            unfreezePlayer: true,
+            unfreezeAtFadeInStart: true
+        );
+    }
+
+    private void RespawnToPlayerSpawn_OutWork()
+    {
+        // 1) Reset map position
+        _mapManager.ResetToPlayerSpawn();
+
+        // 2) Ensure we're back in Street mode
+        _world.Npcs_Clear();
+
+        if (_mode == LoopMode.Corridor)
+        {
+            _world.UnloadCorridor();
+            _world.SetStreetActive(true);
+        }
+        else if (_mode == LoopMode.ApartmentFull || _mode == LoopMode.ApartmentWindow)
+        {
+            _world.UnloadApartment();
+            _world.SetStreetActive(true);
+        }
+
+        _mode = LoopMode.Street;
+
+        // 3) Load home street
+        StreetRef homeStreet = _mapManager.GetCurrentStreet();
+        _world.LoadStreet(_prefabs, homeStreet);
+
+        // 4) Place player using existing street-entry placement
+        // (Pick ONE direction and keep it consistent for "home spawn")
+        _world.RepositionPlayerForStreetEntry(MapDirection.Right);
+
+        // 5) Reset death + HP + controls
+        var health = _world.PlayerTransform.GetComponent<CityRush.Units.Characters.Combat.Health>();
+        health?.RefillToFull();
+
+        var death = _world.PlayerTransform.GetComponent<CityRush.Units.Characters.Combat.CharacterDeath>();
+        death?.ResetForRespawn();
+
+        _world.PlayerController?.ExitDeadLock();
+        _playerCombat?.ExitDeadLock();
+
+        // 6) Respawn NPCs
+        _world.Npcs_SpawnStreet(DefaultNpcCount);
+
+        // 7) Refresh navigation snapshot usage
+        _navigation.Enter();
+    }
+
+    private void HandleRespawnRequested()
+    {
+        // Use your existing transition/fade mechanism (same one you use for street/corridor changes).
+        StartTransition(
+            outWork: Respawn_OutWork,
+            inDone: Respawn_InDone,
+            freezePlayer: true,
+            unfreezePlayer: false,
+            unfreezeAtFadeInStart: false
+        );
+    }
+
+    private void Respawn_OutWork()
+    {
+        // 1) Hide respawn dialog
+        _playerUi?.HideRespawnDialog();
+
+        // 2) Reset map position to PlayerSpawn (your Step A in MapManager)
+        _mapManager.ResetToPlayerSpawn();
+
+        // 3) Ensure Street mode is active (unload interior/corridor if needed)
+        if (_mode == LoopMode.Corridor)
+            _world.UnloadCorridor();
+
+        if (_mode == LoopMode.ApartmentFull || _mode == LoopMode.ApartmentWindow)
+            _world.UnloadApartment();
+
+        _world.SetStreetActive(true);
+        _mode = LoopMode.Street;
+
+        EnsureHudBound();
+        _hud?.SetWeaponMode(WeaponHudMode.Platformer);
+
+        // 4) Reload current street (now it is the spawn street)
+        _world.Npcs_Clear();
+        _world.LoadStreet(_prefabs, _mapManager.GetCurrentStreet());
+
+        // 5) Reposition player to the street entry (simple + consistent)
+        _world.RepositionPlayerForStreetEntry(MapDirection.Right);
+
+        // 6) Revive: HP full + clear death lock
+        _playerHealth?.RefillToFull();
+        _playerDeath?.ResetForRespawn();
+
+        _world.PlayerController?.ExitDeadLock();
+        _world.PlayerCombatDriver?.ExitDeadLock(); // use your actual reference if named differently
+
+        // 7) Respawn NPCs
+        _world.Npcs_SpawnStreet(DefaultNpcCount);
+
+        // 8) Reset nav state
+        _navigation.Enter();
+    }
+
+    private void Respawn_InDone()
+    {
+        // optional: nothing needed unless you have mode-specific camera/UI
+    }
+
+    private void EnsureHudBound()
+    {
+        if (_hud == null)
+            _hud = Object.FindFirstObjectByType<InGameHudBinder>(FindObjectsInactive.Include);
+
+        if (_hud == null)
+        {
+            var prefab = Resources.Load<GameObject>(HudsResourcePath);
+            if (prefab == null)
+            {
+                _logger?.Error($"[HUD] HUDs prefab not found at Resources/{HudsResourcePath}");
+                return;
+            }
+
+            _hudInstance = Object.Instantiate(prefab);
+
+            Transform parent = null;
+
+            var ingame = GameObject.Find("InGameUI");
+            if (ingame != null)
+                parent = ingame.transform;
+            else
+            {
+                var canvas = Object.FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+                if (canvas != null)
+                    parent = canvas.transform;
+            }
+
+            if (parent != null)
+                _hudInstance.transform.SetParent(parent, false);
+
+            _hud = _hudInstance.GetComponent<InGameHudBinder>();
+            if (_hud == null)
+                _hud = _hudInstance.GetComponentInChildren<InGameHudBinder>(true);
+        }
+
+        if (_hud != null && _world != null && _world.PlayerTransform != null)
+            _hud.BindPlayer(_world.PlayerTransform);
+    }
+
 
 }

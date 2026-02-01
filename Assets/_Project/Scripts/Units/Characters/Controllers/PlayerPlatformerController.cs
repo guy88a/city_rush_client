@@ -7,6 +7,7 @@ using CityRush.Items.World;
 
 namespace CityRush.Units.Characters.Controllers
 {
+    [RequireComponent(typeof(CharacterBehavior))]
     public class PlayerPlatformerController : PhysicsObject
     {
         public float maxSpeed = 10;
@@ -19,7 +20,7 @@ namespace CityRush.Units.Characters.Controllers
 
         private PlayerControls controls;
         private SpriteRenderer spriteRenderer;
-        private Animator animator;
+        private CharacterBehavior _behavior;
 
         private BuildingDoor _currentBuildingDoor;
         public BuildingDoor CurrentBuildingDoor => _currentBuildingDoor;
@@ -51,9 +52,9 @@ namespace CityRush.Units.Characters.Controllers
 
         private void Awake()
         {
-            Transform graphic = transform.Find("Graphic");
-            spriteRenderer = graphic.GetComponent<SpriteRenderer>();
-            animator = graphic.GetComponent<Animator>();
+            _behavior = GetComponent<CharacterBehavior>();
+            spriteRenderer = _behavior.SpriteRenderer;
+
             _itemsRuntime = GetComponent<PlayerItemsRuntime>();
         }
 
@@ -111,14 +112,16 @@ namespace CityRush.Units.Characters.Controllers
             Vector2 input = controls.Player.Move.ReadValue<Vector2>();
             MoveInputX = input.x;
 
-            // Always read input for logic, but optionally prevent applying it to movement.
-            move.x = IsMovementEnabled ? MoveInputX : 0f;
+            bool canMoveNow = IsMovementEnabled && _behavior.CanMove;
 
-            if (jumpPressed && grounded)
+            // Always read input for logic, but optionally prevent applying it to movement.
+            move.x = canMoveNow ? MoveInputX : 0f;
+
+            if (canMoveNow && jumpPressed && grounded)
             {
                 velocity.y = jumpTakeoffSpeed;
                 jumpPressed = false;
-                animator.SetTrigger("takeOff");
+                _behavior.TriggerTakeOff();
             }
             else if (jumpReleased)
             {
@@ -128,15 +131,16 @@ namespace CityRush.Units.Characters.Controllers
                 jumpReleased = false;
             }
 
-            if(!grounded || velocity.y > 0)
+            if (!grounded || velocity.y > 0)
             {
-                animator.SetBool("isJumping", true);
-            } else
+                _behavior.SetJumping(true);
+            }
+            else
             {
-                animator.SetBool("isJumping", false);
+                _behavior.SetJumping(false);
             }
 
-                bool flipSprite = (spriteRenderer.flipX ? (move.x > 0) : (move.x < 0));
+            bool flipSprite = (spriteRenderer.flipX ? (move.x > 0) : (move.x < 0));
             if (flipSprite)
             {
                 spriteRenderer.flipX = !spriteRenderer.flipX;
@@ -144,7 +148,7 @@ namespace CityRush.Units.Characters.Controllers
 
             targetVelocity = move * maxSpeed;
 
-            animator.SetFloat("speed", Math.Abs(move.x * maxSpeed));
+            _behavior.SetSpeed(Math.Abs(move.x * maxSpeed));
         }
 
         public void Freeze()
@@ -180,7 +184,6 @@ namespace CityRush.Units.Characters.Controllers
             SetMovementEnabled(true);
             Unfreeze();
         }
-
 
         public void SetMovementEnabled(bool enabled)
         {

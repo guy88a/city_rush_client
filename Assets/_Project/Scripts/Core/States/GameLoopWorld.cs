@@ -72,6 +72,7 @@ internal sealed class GameLoopWorld
     public Transform PlayerTransform { get; private set; }
     public BoxCollider2D PlayerCollider { get; private set; }
     public PlayerPlatformerController PlayerController { get; private set; }
+    public PlayerCombatDriver PlayerCombatDriver { get; private set; }
     public WeaponShooter PlayerShooter { get; private set; }
     public CharacterWeaponSet PlayerWeapons { get; private set; }
 
@@ -146,6 +147,7 @@ internal sealed class GameLoopWorld
 
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
+        PlayerCombatDriver = PlayerInstance.GetComponent<PlayerCombatDriver>();
         PlayerPOV = PlayerInstance.GetComponent<PlayerPOVController>();
         PlayerUnit = PlayerInstance.GetComponent<CharacterUnit>();
         PlayerWeapons = PlayerInstance.GetComponent<CharacterWeaponSet>();
@@ -206,6 +208,7 @@ internal sealed class GameLoopWorld
         PlayerTransform = null;
         PlayerCollider = null;
         PlayerController = null;
+        PlayerCombatDriver = null;
         PlayerPOV = null;
         PlayerUnit = null;
         PlayerWeapons = null;

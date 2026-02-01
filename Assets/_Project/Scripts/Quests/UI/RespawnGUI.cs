@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,43 +7,42 @@ namespace CityRush.UI
     [DisallowMultipleComponent]
     public sealed class RespawnGUI : MonoBehaviour
     {
-        private Button _btnRespawn;
+        public event Action RespawnClicked;
+
+        private Button _btn;
 
         private void Awake()
         {
-            CacheRefs();
-            WireButtons();
-            SetOpen(false);
-        }
+            var btnTf = null as Transform;
 
-        public void Open() => SetOpen(true);
-        public void Close() => SetOpen(false);
+            // Your prefab path: RespawnGUI > Button
+            btnTf = transform.Find("Button");
 
-        private void CacheRefs()
-        {
-            var btnTr = transform.Find("Button");
-            if (btnTr == null)
+            if (btnTf == null)
             {
-                Debug.LogError("[RespawnGUI] Missing child 'Button' under RespawnGUI.", this);
+                Debug.LogError("[RespawnGUI] Button not found at path: Button", this);
                 return;
             }
 
-            _btnRespawn = btnTr.GetComponent<Button>();
-            if (_btnRespawn == null)
-                Debug.LogError("[RespawnGUI] 'Button' missing Button component.", this);
-        }
-
-        private void WireButtons()
-        {
-            if (_btnRespawn == null) return;
-
-            _btnRespawn.onClick.RemoveAllListeners();
-            _btnRespawn.onClick.AddListener(() =>
+            _btn = btnTf.GetComponent<Button>();
+            if (_btn == null)
             {
-                Debug.Log("[RespawnGUI] Respawn clicked.", this);
-            });
+                Debug.LogError("[RespawnGUI] Button is missing Button component.", this);
+                return;
+            }
+
+            _btn.onClick.RemoveListener(HandleClicked);
+            _btn.onClick.AddListener(HandleClicked);
+
+            Close();
         }
 
-        private void SetOpen(bool isOpen) => gameObject.SetActive(isOpen);
+        private void HandleClicked()
+        {
+            RespawnClicked?.Invoke();
+        }
+
+        public void Open() => gameObject.SetActive(true);
+        public void Close() => gameObject.SetActive(false);
     }
 }

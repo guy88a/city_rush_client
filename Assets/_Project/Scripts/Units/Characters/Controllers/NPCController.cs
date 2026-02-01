@@ -6,6 +6,7 @@ using CityRush.Units.Characters.Movement;
 
 namespace CityRush.Units.Characters.Controllers
 {
+    [RequireComponent(typeof(CharacterBehavior))]
     public sealed class NPCController : PhysicsObject
     {
         [Header("Movement")]
@@ -20,8 +21,8 @@ namespace CityRush.Units.Characters.Controllers
 
         private int _moveDir = 1; // +1 right, -1 left
 
+        private CharacterBehavior _behavior;
         private SpriteRenderer _spriteRenderer;
-        private Animator _animator;
 
         public Action<NPCController> OnDespawn;
 
@@ -72,23 +73,16 @@ namespace CityRush.Units.Characters.Controllers
         public void ForceExitCombat()
         {
             _fightMode = false;
-
-            if (_animator != null)
-                _animator.SetBool("isUziFiring", false);
+            _behavior?.SetUziFiring(false);
         }
-
 
         private void Awake()
         {
+            _behavior = GetComponent<CharacterBehavior>();
+            _spriteRenderer = _behavior.SpriteRenderer;
+
             aggression = Mathf.Clamp(aggression, 0, 10);
             Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
-
-            Transform graphic = transform.Find("Graphic");
-            if (graphic != null)
-            {
-                _spriteRenderer = graphic.GetComponent<SpriteRenderer>();
-                _animator = graphic.GetComponent<Animator>();
-            }
 
             _combatState = GetComponent<CharacterCombatState>();
             if (_combatState != null)
@@ -132,6 +126,9 @@ namespace CityRush.Units.Characters.Controllers
 
         protected override void ComputeVelocity()
         {
+            bool canMoveNow = _behavior == null || _behavior.CanMove;
+            bool canActNow = _behavior == null || _behavior.CanAct;
+
             if (_hasStreetBounds)
             {
                 float x = transform.position.x;
@@ -181,20 +178,20 @@ namespace CityRush.Units.Characters.Controllers
                             _spriteRenderer.flipX = wantFlip;
                     }
 
-                    if (_animator != null)
+                    _behavior?.SetSpeed(0f);
+                    _behavior?.SetUziFiring(false);
+
+                    if (canActNow)
                     {
-                        _animator.SetFloat("speed", 0f);
-                        _animator.SetBool("isUziFiring", false);
+                        Vector2 fireDir = GetFacingDirectionFromDx(dx);
+                        Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * fireDir.x, shotgunSpawnOffset.y);
+
+                        bool fired = _weapons != null && _combatState.Target != null
+                            && _weapons.TryFireShotgun(origin, fireDir, _combatState.Target);
+
+                        if (fired)
+                            _behavior?.TriggerShotgun();
                     }
-
-                    Vector2 fireDir = GetFacingDirectionFromDx(dx);
-                    Vector2 origin = (Vector2)transform.position + new Vector2(shotgunSpawnOffset.x * fireDir.x, shotgunSpawnOffset.y);
-
-                    bool fired = _weapons != null && _combatState.Target != null
-                        && _weapons.TryFireShotgun(origin, fireDir, _combatState.Target);
-
-                    if (fired && _animator != null)
-                        _animator.SetTrigger("Shotgun");
 
                     return;
                 }
@@ -210,13 +207,19 @@ namespace CityRush.Units.Characters.Controllers
                         _spriteRenderer.flipX = wantFlip;
                 }
 
-                targetVelocity = moveCombat * maxSpeed;
-
-                if (_animator != null)
-                    _animator.SetFloat("speed", Mathf.Abs(moveCombat.x * maxSpeed));
+                if (canMoveNow)
+                {
+                    targetVelocity = moveCombat * maxSpeed;
+                    _behavior?.SetSpeed(Mathf.Abs(moveCombat.x * maxSpeed));
+                }
+                else
+                {
+                    targetVelocity = Vector2.zero;
+                    _behavior?.SetSpeed(0f);
+                }
 
                 // 3) If in uzi range while running => fire uzi (no stopping)
-                if (uziW != null && uziRange > 0f && absDx <= uziRange)
+                if (uziW != null && uziRange > 0f && absDx <= uziRange && canActNow)
                 {
                     Vector2 fireDir = GetFacingDirectionFromDx(dx);
                     Vector2 origin = (Vector2)transform.position + new Vector2(uziSpawnOffset.x * fireDir.x, uziSpawnOffset.y);
@@ -224,25 +227,18 @@ namespace CityRush.Units.Characters.Controllers
                     bool fired = _weapons != null && _combatState.Target != null
                         && _weapons.TryFireUzi(origin, fireDir, _combatState.Target);
 
-                    if (_animator != null)
-                    {
-                        if (fired)
-                            _animator.SetTrigger("Uzi");
+                    if (fired)
+                        _behavior?.TriggerUzi();
 
-                        // optional: if your graph also uses this bool
-                        _animator.SetBool("isUziFiring", _weapons.IsUziAnimActive());
-                    }
+                    _behavior?.SetUziFiring(_weapons != null && _weapons.IsUziAnimActive());
                 }
                 else
                 {
-                    if (_animator != null)
-                        _animator.SetBool("isUziFiring", false);
+                    _behavior?.SetUziFiring(false);
                 }
 
                 return;
             }
-
-
 
             Vector2 move = Vector2.zero;
             move.x = MoveDir;
@@ -254,10 +250,16 @@ namespace CityRush.Units.Characters.Controllers
                     _spriteRenderer.flipX = !_spriteRenderer.flipX;
             }
 
-            targetVelocity = move * maxSpeed;
-
-            if (_animator != null)
-                _animator.SetFloat("speed", Math.Abs(move.x * maxSpeed));
+            if (canMoveNow)
+            {
+                targetVelocity = move * maxSpeed;
+                _behavior?.SetSpeed(Math.Abs(move.x * maxSpeed));
+            }
+            else
+            {
+                targetVelocity = Vector2.zero;
+                _behavior?.SetSpeed(0f);
+            }
         }
 
         private float GetWeaponRange(WeaponDefinition w)

@@ -3,7 +3,7 @@ namespace CityRush.World.Map.Runtime
     public sealed class MapManager
     {
         private readonly MapData _mapData;
-
+        private readonly MapPosition _playerSpawnPosition;
         private MapPosition _currentPosition;
         private MapNavigationSnapshot _currentNavigation;
 
@@ -20,6 +20,7 @@ namespace CityRush.World.Map.Runtime
                 row: mapData.PlayerSpawn.y,
                 col: mapData.PlayerSpawn.x
             );
+            _playerSpawnPosition = _currentPosition;
 
             RebuildNavigationSnapshot();
         }
@@ -152,6 +153,12 @@ namespace CityRush.World.Map.Runtime
                 return false;
 
             return true;
+        }
+
+        public void ResetToPlayerSpawn()
+        {
+            _currentPosition = _playerSpawnPosition;
+            RebuildNavigationSnapshot();
         }
 
         // ------------------------------------------------------------
