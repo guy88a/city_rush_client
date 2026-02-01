@@ -77,6 +77,7 @@ namespace CityRush.Units.Characters.Combat
 
         public bool TryFireUzi(Vector2 origin, Vector2 direction)
         {
+            Debug.Log("TryFireUzi Runtime");
             if (equippedWeapon == null) return false;
             if (equippedWeapon.Type != WeaponType.Uzi) return false;
 

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.Characters.Combat.WeaponDefinition
   type: 1
   baseDamage: 10
-  fireInterval: 0.1
+  fireInterval: 1
   magazineSize: 1
   ammoReserveMax: 50
-  reloadTime: 0.8
+  reloadTime: 3
   projectilePrefab: {fileID: 0}
   projectilePoolSize: 40
   projectileSpeed: 18
@@ -28,3 +28,12 @@ MonoBehaviour:
   shotgunHitMask:
     serializedVersion: 2
     m_Bits: 200
+  sniperStepMeters: 100
+  sniperMaxSteps: 30
+  sniperStepInterval: 0.03
+  sniperDropPerStep: 0.05
+  sniperHitRadius: 0.12
+  sniperHitMask:
+    serializedVersion: 2
+    m_Bits: 0
+  sniperDebugMarkerPrefab: {fileID: 0}

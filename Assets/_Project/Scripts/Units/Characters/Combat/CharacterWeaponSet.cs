@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using CityRush.Units.Characters.Controllers;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -12,12 +13,21 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private WeaponDefinition sniperWeapon;
 
         private WeaponShooter _shooter;
+        private CharacterBehavior _behavior;
+        private Animator _animator;
 
         private WeaponSlotRuntime _uzi;
         private WeaponSlotRuntime _shotgun;
         private WeaponSlotRuntime _sniper;
 
         private bool _initialized;
+
+        // Shotgun-driven global fire lock (blocks ALL weapons while shotgun action is playing / reloading).
+        // Animator state name must match the Animator graph (see CharacterBehavior.cs).
+        private static readonly int FireShotgunStateHash = Animator.StringToHash("fire_shotgun");
+        private bool _shotgunFireLockArmed;
+        private bool _shotgunFireLockStarted;
+        private float _shotgunFireLockArmExpiresAt;
 
         public WeaponDefinition UziWeapon => uziWeapon;
         public WeaponDefinition ShotgunWeapon => shotgunWeapon;
@@ -40,6 +50,11 @@ namespace CityRush.Units.Characters.Combat
             EnsureInitialized();
         }
 
+        private void LateUpdate()
+        {
+            TickShotgunFireLock();
+        }
+
         private void EnsureInitialized()
         {
             if (_initialized)
@@ -48,6 +63,17 @@ namespace CityRush.Units.Characters.Combat
             _initialized = true;
 
             _shooter = GetComponent<WeaponShooter>();
+
+            _behavior = GetComponent<CharacterBehavior>();
+            if (_behavior == null)
+                _behavior = GetComponentInParent<CharacterBehavior>();
+            if (_behavior == null)
+                _behavior = GetComponentInChildren<CharacterBehavior>(includeInactive: true);
+
+            // Prefer the Animator resolved by CharacterBehavior, but fallback to a direct search.
+            _animator = (_behavior != null && _behavior.Animator != null)
+                ? _behavior.Animator
+                : GetComponentInChildren<Animator>(includeInactive: true);
 
             _uzi = new WeaponSlotRuntime(this, WeaponType.Uzi);
             _shotgun = new WeaponSlotRuntime(this, WeaponType.Shotgun);
@@ -127,6 +153,10 @@ namespace CityRush.Units.Characters.Combat
         public bool TryFireUzi(Vector2 origin, Vector2 direction)
         {
             EnsureInitialized();
+            Debug.Log("TryFireUzi Set");
+
+            if (IsShotgunGlobalFireLockActive())
+                return false;
 
             WeaponDefinition w = uziWeapon;
             if (w == null || w.Type != WeaponType.Uzi) return false;
@@ -142,19 +172,31 @@ namespace CityRush.Units.Characters.Combat
         {
             EnsureInitialized();
 
+            // Shotgun reload blocks all weapons, including shotgun itself.
+            if (_shotgun.IsReloading)
+                return false;
+
             WeaponDefinition w = shotgunWeapon;
             if (w == null || w.Type != WeaponType.Shotgun) return false;
             if (_shooter == null) return false;
 
-            return _shotgun.TryFire(
+            bool fired = _shotgun.TryFire(
                 w,
                 () => _shooter.FireShotgun(origin, direction, w)
             );
+
+            if (fired)
+                ArmShotgunFireLock();
+
+            return fired;
         }
 
         public bool TryFireSniperADS(Camera cam)
         {
             EnsureInitialized();
+
+            if (IsShotgunGlobalFireLockActive())
+                return false;
 
             WeaponDefinition w = sniperWeapon;
             if (w == null || w.Type != WeaponType.Sniper) return false;
@@ -178,6 +220,70 @@ namespace CityRush.Units.Characters.Combat
             if (w.MagazineSize > 0 && _uzi.Magazine <= 0) return false;
 
             return true;
+        }
+
+        private bool IsShotgunGlobalFireLockActive()
+        {
+            // Reload must block ALL weapons.
+            if (_shotgun.IsReloading)
+                return true;
+
+            // Immediate lock: arms on successful shotgun fire to prevent same-frame weapon swap.
+            if (_shotgunFireLockArmed)
+                return true;
+
+            // State lock: keeps blocking for the full duration of the shotgun action animation.
+            return IsInShotgunFireState();
+        }
+
+        private bool IsInShotgunFireState(int layer = 0)
+        {
+            if (_animator == null)
+                return false;
+
+            int stateHash = _animator.IsInTransition(layer)
+                ? _animator.GetNextAnimatorStateInfo(layer).shortNameHash
+                : _animator.GetCurrentAnimatorStateInfo(layer).shortNameHash;
+
+            return stateHash == FireShotgunStateHash;
+        }
+
+        private void ArmShotgunFireLock()
+        {
+            if (_animator == null && _behavior != null)
+                _animator = _behavior.Animator;
+
+            _shotgunFireLockArmed = true;
+            _shotgunFireLockStarted = false;
+
+            // Failsafe: if Animator never transitions into fire_shotgun, release the arm.
+            _shotgunFireLockArmExpiresAt = Time.time + 0.25f;
+        }
+
+        private void TickShotgunFireLock()
+        {
+            if (!_shotgunFireLockArmed)
+                return;
+
+            bool inShotgun = IsInShotgunFireState();
+
+            if (inShotgun)
+            {
+                _shotgunFireLockStarted = true;
+                return;
+            }
+
+            // If we were in shotgun and now we're out, the action finished.
+            if (_shotgunFireLockStarted)
+            {
+                _shotgunFireLockArmed = false;
+                _shotgunFireLockStarted = false;
+                return;
+            }
+
+            // Never entered shotgun state -> release the arm so we don't lock forever.
+            if (Time.time >= _shotgunFireLockArmExpiresAt)
+                _shotgunFireLockArmed = false;
         }
 
         private sealed class WeaponSlotRuntime
@@ -257,6 +363,8 @@ namespace CityRush.Units.Characters.Combat
                 float now = Time.time;
                 if (now < _nextFireTime) return false;
 
+                bool shouldAutoReload = false;
+
                 if (w.MagazineSize > 0)
                 {
                     if (Magazine <= 0)
@@ -266,11 +374,17 @@ namespace CityRush.Units.Characters.Combat
                     }
 
                     Magazine--;
+                    shouldAutoReload = (Magazine <= 0 && Reserve > 0);
                 }
 
                 _nextFireTime = now + Mathf.Max(0.01f, w.FireInterval);
 
                 doFire?.Invoke();
+
+                // Reload must start immediately after the last bullet is fired.
+                if (shouldAutoReload)
+                    _host.StartCoroutine(ReloadRoutine(w));
+
                 return true;
             }
 
@@ -311,6 +425,9 @@ namespace CityRush.Units.Characters.Combat
         {
             EnsureInitialized();
 
+            if (IsShotgunGlobalFireLockActive())
+                return false;
+
             WeaponDefinition w = uziWeapon;
             if (w == null || w.Type != WeaponType.Uzi) return false;
             if (_shooter == null) return false;
@@ -322,11 +439,20 @@ namespace CityRush.Units.Characters.Combat
         {
             EnsureInitialized();
 
+            // Shotgun reload blocks all weapons, including shotgun itself.
+            if (_shotgun.IsReloading)
+                return false;
+
             WeaponDefinition w = shotgunWeapon;
             if (w == null || w.Type != WeaponType.Shotgun) return false;
             if (_shooter == null) return false;
 
-            return _shotgun.TryFire(w, () => _shooter.FireShotgun(origin, direction, w, onlyTarget));
+            bool fired = _shotgun.TryFire(w, () => _shooter.FireShotgun(origin, direction, w, onlyTarget));
+
+            if (fired)
+                ArmShotgunFireLock();
+
+            return fired;
         }
     }
 }
