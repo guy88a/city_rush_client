@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Units.Characters.Controllers;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -11,6 +12,7 @@ namespace CityRush.Units.Characters.Combat
         private Vector2 _shotgunDebugCenter;
         private Vector2 _shotgunDebugSize;
 
+        private CharacterBehavior _behavior;
         private DamageResolver _damage;
         private Collider2D[] _ownerColliders;
 
@@ -47,12 +49,17 @@ namespace CityRush.Units.Characters.Combat
         {
             _damage = GetComponent<DamageResolver>();
             _ownerColliders = GetComponentsInChildren<Collider2D>(includeInactive: true);
+
+            _behavior = GetComponent<CharacterBehavior>();
+            if (_behavior == null)
+                _behavior = GetComponentInChildren<CharacterBehavior>(includeInactive: true);
         }
 
         public void FireUzi(Vector2 origin, Vector2 direction, WeaponDefinition weapon, CharacterUnit onlyTarget = null)
         {
             if (weapon == null) return;
             if (weapon.Type != WeaponType.Uzi) return;
+            if (IsLockedByShotgun()) return;
 
             ProjectileLinear prefab = weapon.ProjectilePrefab;
             if (prefab == null) return;
@@ -157,6 +164,11 @@ namespace CityRush.Units.Characters.Combat
             }
         }
 
+        private bool IsLockedByShotgun()
+        {
+            return _behavior != null && _behavior.IsWeaponFireLocked;
+        }
+
         private void OnDrawGizmosSelected()
         {
             if (debugDrawSniperPoint && _sniperDebugHasPoint)
@@ -210,6 +222,7 @@ namespace CityRush.Units.Characters.Combat
             if (cam == null) return;
             if (weapon == null) return;
             if (weapon.Type != WeaponType.Sniper) return;
+            if (IsLockedByShotgun()) return;
 
             float z = -cam.transform.position.z;
             Vector3 center = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, z);

@@ -189,8 +189,17 @@ namespace CityRush.Units.Characters.Controllers
                         bool fired = _weapons != null && _combatState.Target != null
                             && _weapons.TryFireShotgun(origin, fireDir, _combatState.Target);
 
-                        if (fired)
-                            _behavior?.TriggerShotgun();
+                        // Movement should be locked ONLY if fired successfully.
+                        if (fired && _behavior != null)
+                        {
+                            _behavior.TriggerShotgun();
+
+                            // Match player behavior: lock movement for the shotgun action window.
+                            // (FireInterval covers the shot cadence; ReloadTime covers the post-shot reload window if needed.)
+                            float lockSeconds = Mathf.Max(shotW.FireInterval, shotW.ReloadTime);
+                            if (lockSeconds > 0f)
+                                _behavior.LockMovementFor(lockSeconds);
+                        }
                     }
 
                     return;

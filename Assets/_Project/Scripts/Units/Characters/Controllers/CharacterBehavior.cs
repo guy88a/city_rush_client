@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Units.Characters.Combat;
 
 namespace CityRush.Units.Characters.Controllers
 {
@@ -59,6 +60,15 @@ namespace CityRush.Units.Characters.Controllers
 
         private bool _alive = true;
 
+        // Shotgun-driven weapon fire lock:
+        // Arms immediately on TriggerShotgun(), stays active until fire_shotgun ends.
+        private bool _shotgunFireLockArmed;
+        private bool _shotgunFireLockStarted;
+        private float _shotgunFireLockArmExpiresAt;
+
+        // Ammo/reload gate (needed to stop Uzi anim while shotgun is reloading).
+        private CharacterWeaponSet _weaponSet;
+
         public SpriteRenderer SpriteRenderer => spriteRenderer;
         public Animator Animator => animator;
 
@@ -89,6 +99,20 @@ namespace CityRush.Units.Characters.Controllers
             }
         }
 
+        public bool IsWeaponFireLocked
+        {
+            get
+            {
+                if (!_alive) return true;
+
+                // Reload must also block weapon usage/weapon anims.
+                if (_weaponSet != null && _weaponSet.IsShotgunReloading) return true;
+
+                if (_shotgunFireLockArmed) return true;          // immediate lock (same-frame safety)
+                return IsInShotgunAnimatorState();               // safety if animator enters shotgun without TriggerShotgun()
+            }
+        }
+
         private void Awake()
         {
             ResolveRefs();
@@ -102,6 +126,10 @@ namespace CityRush.Units.Characters.Controllers
             _alive = true;
             _moveLockedUntil = 0f;
             _actionLockedUntil = 0f;
+
+            _shotgunFireLockArmed = false;
+            _shotgunFireLockStarted = false;
+            _shotgunFireLockArmExpiresAt = 0f;
 
             if (animator == null) return;
 
@@ -140,6 +168,13 @@ namespace CityRush.Units.Characters.Controllers
 
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
+
+            if (_weaponSet == null)
+            {
+                _weaponSet = GetComponent<CharacterWeaponSet>();
+                if (_weaponSet == null)
+                    _weaponSet = GetComponentInParent<CharacterWeaponSet>();
+            }
         }
 
         // -----------------
@@ -195,12 +230,25 @@ namespace CityRush.Units.Characters.Controllers
         public void TriggerUzi()
         {
             if (animator == null) return;
+            if (IsWeaponFireLocked) return;
             animator.SetTrigger(UziHash);
         }
 
         public void TriggerShotgun()
         {
             if (animator == null) return;
+
+            // Prevent re-triggering shotgun while the current shotgun fire action is still active.
+            // IMPORTANT: shotgun reload must NOT block this trigger right after a successful shot
+            // (mag size == 1 => reload starts immediately).
+            if (_shotgunFireLockArmed || IsInShotgunAnimatorState())
+                return;
+
+            // Hard-cancel Uzi visuals immediately.
+            animator.SetBool(IsUziFiringHash, false);
+            animator.ResetTrigger(UziHash);
+
+            ArmShotgunFireLock();
             animator.SetTrigger(ShotgunHash);
         }
 
@@ -219,6 +267,14 @@ namespace CityRush.Units.Characters.Controllers
         public void SetUziFiring(bool isFiring)
         {
             if (animator == null) return;
+
+            if (IsWeaponFireLocked)
+            {
+                animator.SetBool(IsUziFiringHash, false);
+                animator.ResetTrigger(UziHash);
+                return;
+            }
+
             animator.SetBool(IsUziFiringHash, isFiring);
         }
 
@@ -265,6 +321,61 @@ namespace CityRush.Units.Characters.Controllers
         // -----------------
         // Internals
         // -----------------
+        private void ArmShotgunFireLock()
+        {
+            _shotgunFireLockArmed = true;
+            _shotgunFireLockStarted = false;
+
+            // Safety: if animator never enters fire_shotgun, release the arm after a short window.
+            _shotgunFireLockArmExpiresAt = Time.time + 0.25f;
+        }
+
+        private void LateUpdate()
+        {
+            // While shotgun is active (or reloading), hard-cancel Uzi visual layer.
+            if (animator != null && IsWeaponFireLocked)
+            {
+                animator.SetBool(IsUziFiringHash, false);
+                animator.ResetTrigger(UziHash);
+            }
+
+            if (!_shotgunFireLockArmed) return;
+            if (animator == null) { _shotgunFireLockArmed = false; return; }
+
+            bool inShotgun = IsInShotgunAnimatorState();
+
+            if (inShotgun)
+            {
+                _shotgunFireLockStarted = true;
+                return;
+            }
+
+            // If we were in shotgun and now we're not, the action finished.
+            if (_shotgunFireLockStarted)
+            {
+                _shotgunFireLockArmed = false;
+                _shotgunFireLockStarted = false;
+                return;
+            }
+
+            // Never entered shotgun state -> release arm so we don't lock forever.
+            if (Time.time >= _shotgunFireLockArmExpiresAt)
+                _shotgunFireLockArmed = false;
+        }
+
+        private bool IsInShotgunAnimatorState(int layer = 0)
+        {
+            if (animator == null) return false;
+
+            int stateHash = animator.IsInTransition(layer)
+                ? animator.GetNextAnimatorStateInfo(layer).shortNameHash
+                : animator.GetCurrentAnimatorStateInfo(layer).shortNameHash;
+
+            if (stateHash == 0)
+                return false;
+
+            return stateHash == FireShotgunStateHash;
+        }
 
         private bool IsInLockedAnimatorState(int layer = 0)
         {
