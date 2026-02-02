@@ -12,7 +12,7 @@
           "Streets": [
             { "StreetId": "ironcity_ut_0", "JsonPath": "Cities/IronCity/UT_Street_0" },
             { "StreetId": "ironcity_ut_1", "JsonPath": "Cities/IronCity/UT_Street_1" },
-            { "StreetId": "ironcity_ut_1", "JsonPath": "Cities/IronCity/UT_Street_2" }
+            { "StreetId": "ironcity_ut_2", "JsonPath": "Cities/IronCity/UT_Street_2" }
           ]
         },
         {
@@ -20,7 +20,7 @@
           "Streets": [
             { "StreetId": "ironcity_dt_0", "JsonPath": "Cities/IronCity/DT_Street_0" },
             { "StreetId": "ironcity_dt_1", "JsonPath": "Cities/IronCity/DT_Street_1" },
-            { "StreetId": "ironcity_dt_1", "JsonPath": "Cities/IronCity/DT_Street_2" }
+            { "StreetId": "ironcity_dt_2", "JsonPath": "Cities/IronCity/DT_Street_2" }
           ]
         }
       ]
