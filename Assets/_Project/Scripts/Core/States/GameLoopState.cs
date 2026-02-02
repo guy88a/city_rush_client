@@ -6,6 +6,7 @@ using CityRush.UI;
 using CityRush.Units;
 using CityRush.Units.Characters; // CombatSystem
 using CityRush.Units.Characters.Combat;
+using CityRush.World.Addresses;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
@@ -334,7 +335,7 @@ public class GameLoopState : IState
         _mapManager.CommitMove(direction);
 
         StreetRef nextStreet = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, nextStreet);
+        _world.LoadStreet(_prefabs, _mapManager, nextStreet);
 
         _world.RepositionPlayerForStreetEntry(direction);
 
@@ -464,6 +465,8 @@ public class GameLoopState : IState
         _corridorExitTrigger = null;
 
         _enterBuildingStreetTSet = false;
+
+        _world.ClearActiveBuilding();
 
         // Load the same street (no CommitMove)
         _world.UnloadCorridor();
@@ -631,6 +634,11 @@ public class GameLoopState : IState
 
         _enterBuildingStreetT = Mathf.InverseLerp(left, right, doorX);
         _enterBuildingStreetTSet = true;
+
+        _world.SetActiveBuildingDoor(door);
+
+        BuildingAddressTag buildingTag = door != null ? door.GetComponentInParent<BuildingAddressTag>() : null;
+        _world?.SetActiveBuilding(buildingTag);
 
         StartTransition(
             outWork: EnterCorridorOutWork,
@@ -845,7 +853,7 @@ public class GameLoopState : IState
 
         // 3) Load home street
         StreetRef homeStreet = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, homeStreet);
+        _world.LoadStreet(_prefabs, _mapManager, homeStreet);
 
         // 4) Place player using existing street-entry placement
         // (Pick ONE direction and keep it consistent for "home spawn")
@@ -903,7 +911,7 @@ public class GameLoopState : IState
 
         // 4) Reload current street (now it is the spawn street)
         _world.Npcs_Clear();
-        _world.LoadStreet(_prefabs, _mapManager.GetCurrentStreet());
+        _world.LoadStreet(_prefabs, _mapManager, _mapManager.GetCurrentStreet());
 
         // 5) Reposition player to the street entry (simple + consistent)
         _world.RepositionPlayerForStreetEntry(MapDirection.Right);

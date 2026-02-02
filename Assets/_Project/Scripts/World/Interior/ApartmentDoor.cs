@@ -8,6 +8,11 @@ namespace CityRush.World.Interior
 
         public string ApartmentId => apartmentId;
 
+        public void SetApartmentId(string id)
+        {
+            apartmentId = id ?? string.Empty;
+        }
+
         public override void Enter(GameObject player)
         {
             // TODO: Corridor -> Apartment

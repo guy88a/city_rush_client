@@ -92,6 +92,11 @@ namespace CityRush.World.Interior
 
         private void Start()
         {
+            // If GameLoopWorld already built the corridor, do NOT rebuild again
+            // (otherwise we destroy doors and lose runtime IDs/tags).
+            if (transform.Find(FLOOR_CHILD_NAME) != null)
+                return;
+
             Rebuild();
         }
 
@@ -118,6 +123,13 @@ namespace CityRush.World.Interior
         {
             zoomScale = Mathf.Max(0.01f, zoom);
             localOffset = offset;
+        }
+
+        public int HallwayApartments => hallwayApartments;
+
+        public void SetHallwayApartments(int apartmentsPerFloor)
+        {
+            hallwayApartments = Mathf.Max(1, apartmentsPerFloor);
         }
 
         // ------------------------------------------------------------
