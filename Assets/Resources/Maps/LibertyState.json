@@ -10,17 +10,17 @@
         {
           "ThemeId": "Uptown",
           "Streets": [
-            { "StreetId": "ironcity_ut_0", "JsonPath": "Cities/IronCity/UT_Street_0" },
-            { "StreetId": "ironcity_ut_1", "JsonPath": "Cities/IronCity/UT_Street_1" },
-            { "StreetId": "ironcity_ut_2", "JsonPath": "Cities/IronCity/UT_Street_2" }
+            { "StreetId": "ironcity_ut_0", "StreetName": "Hillmans Road", "JsonPath": "Cities/IronCity/UT_Street_0" },
+            { "StreetId": "ironcity_ut_1", "StreetName": "Broken Dreams", "JsonPath": "Cities/IronCity/UT_Street_1" },
+            { "StreetId": "ironcity_ut_2", "StreetName": "Trains Gate", "JsonPath": "Cities/IronCity/UT_Street_2" }
           ]
         },
         {
           "ThemeId": "Downtown",
           "Streets": [
-            { "StreetId": "ironcity_dt_0", "JsonPath": "Cities/IronCity/DT_Street_0" },
-            { "StreetId": "ironcity_dt_1", "JsonPath": "Cities/IronCity/DT_Street_1" },
-            { "StreetId": "ironcity_dt_2", "JsonPath": "Cities/IronCity/DT_Street_2" }
+            { "StreetId": "ironcity_dt_0", "StreetName": "Lowetemp Boulevard", "JsonPath": "Cities/IronCity/DT_Street_0" },
+            { "StreetId": "ironcity_dt_1", "StreetName": "Oldtown", "JsonPath": "Cities/IronCity/DT_Street_1" },
+            { "StreetId": "ironcity_dt_2", "StreetName": "The Founders", "JsonPath": "Cities/IronCity/DT_Street_2" }
           ]
         }
       ]

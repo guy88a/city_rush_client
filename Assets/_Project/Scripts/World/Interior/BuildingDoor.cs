@@ -17,5 +17,14 @@ namespace CityRush.World.Interior
         {
             // TODO: Street -> Corridor
         }
+
+        public string GetDisplayAddress()
+        {
+            var tag = GetComponent<CityRush.World.Addresses.BuildingAddressTag>();
+            if (tag == null)
+                tag = GetComponentInParent<CityRush.World.Addresses.BuildingAddressTag>();
+
+            return tag != null ? tag.GetDisplayAddress() : string.Empty;
+        }
     }
 }

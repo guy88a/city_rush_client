@@ -476,7 +476,7 @@ internal sealed class GameLoopWorld
         streetTag.Set(
             position: mapManager.CurrentPosition,
             id: streetRef.StreetId,
-            displayName: streetRef.StreetId,
+            displayName: string.IsNullOrWhiteSpace(streetRef.StreetName) ? streetRef.StreetId : streetRef.StreetName,
             buildingBase: 1,
             buildingStep: 1
         );
