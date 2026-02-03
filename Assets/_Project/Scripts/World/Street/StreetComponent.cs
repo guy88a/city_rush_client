@@ -103,7 +103,7 @@ namespace CityRush.World.Street
                 TILE_WIDTH,
                 GetRoadBaseY()
             );
-            builder.Build(data.street.road);
+            builder.Build(data.street.road, BLEED_TILES, BLEED_TILES);
         }
 
         private void BuildPavement(StreetData data)
@@ -120,7 +120,7 @@ namespace CityRush.World.Street
                 pavementBaseY
             );
 
-            builder.Build(data.street.pavements);
+            builder.Build(data.street.pavements, BLEED_TILES, BLEED_TILES);
         }
 
         private void AssignBuildings()
