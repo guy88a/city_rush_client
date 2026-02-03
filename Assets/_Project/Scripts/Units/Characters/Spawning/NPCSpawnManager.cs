@@ -22,6 +22,10 @@ namespace CityRush.Units.Characters.Spawning
         private float _streetLeftX;
         private float _streetRightX;
 
+        private float _bleedLeftX;
+        private float _bleedRightX;
+        private bool _hasBleedBounds;
+
         // Optional transform that converts street-space -> world-space (used for ApartmentWindow).
         private Transform _streetSpace;
 
@@ -67,6 +71,13 @@ namespace CityRush.Units.Characters.Spawning
             _streetRightX = rightX;
         }
 
+        public void SetBleedBounds(float leftX, float rightX)
+        {
+            _bleedLeftX = leftX;
+            _bleedRightX = rightX;
+            _hasBleedBounds = true;
+        }
+
         public void SetStreetSpace(Transform streetSpace)
         {
             _streetSpace = streetSpace;
@@ -92,28 +103,21 @@ namespace CityRush.Units.Characters.Spawning
         {
             if (_root == null || _agentPrefab == null) return;
 
-            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
-            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
-
-            float minX = leftLocal + _spawnMarginX;
-            float maxX = rightLocal - _spawnMarginX;
-
-            if (maxX <= minX)
-                return;
-
-            GetWorldStreetBounds(out float leftWorld, out float rightWorld);
+            GetWorldDespawnBounds(out float leftWorld, out float rightWorld);
 
             for (int i = 0; i < count; i++)
             {
                 NPCController ctrl = GetOrCreate();
                 if (ctrl == null) continue;
 
-                float xLocal = Random.Range(minX, maxX);
+                if (!TryPickSpawnInBleedGap(out float xLocal, out int moveDir))
+                    break;
+
                 ctrl.transform.position = ToWorld(xLocal, _groundY);
                 ApplyVisualScale(ctrl);
 
-                ctrl.SetStreetBounds(leftWorld, rightWorld);
-                ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
+                ctrl.SetStreetBounds(leftWorld, rightWorld); // now bleed bounds (world)
+                ctrl.MoveDir = moveDir;                      // left-spawn => right, right-spawn => left
                 ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
 
                 ctrl.gameObject.SetActive(true);
@@ -188,26 +192,19 @@ namespace CityRush.Units.Characters.Spawning
         {
             if (_root == null || _agentPrefab == null) return;
 
-            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
-            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
-
-            float minX = leftLocal + _spawnMarginX;
-            float maxX = rightLocal - _spawnMarginX;
-
-            if (maxX <= minX)
-                return;
-
             NPCController ctrl = GetOrCreate();
             if (ctrl == null) return;
 
-            float xLocal = Random.Range(minX, maxX);
+            if (!TryPickSpawnInBleedGap(out float xLocal, out int moveDir))
+                return;
+
             ctrl.transform.position = ToWorld(xLocal, _groundY);
             ApplyVisualScale(ctrl);
 
-            GetWorldStreetBounds(out float leftWorld, out float rightWorld);
+            GetWorldDespawnBounds(out float leftWorld, out float rightWorld);
 
-            ctrl.SetStreetBounds(leftWorld, rightWorld);
-            ctrl.MoveDir = Random.value < 0.5f ? -1 : 1;
+            ctrl.SetStreetBounds(leftWorld, rightWorld); // now bleed bounds (world)
+            ctrl.MoveDir = moveDir;
             ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
 
             ctrl.gameObject.SetActive(true);
@@ -241,6 +238,90 @@ namespace CityRush.Units.Characters.Spawning
                 leftWorld = rightWorld;
                 rightWorld = t;
             }
+        }
+
+        private void GetWorldDespawnBounds(out float leftWorld, out float rightWorld)
+        {
+            if (_hasBleedBounds)
+            {
+                if (_streetSpace == null)
+                {
+                    leftWorld = _bleedLeftX;
+                    rightWorld = _bleedRightX;
+                }
+                else
+                {
+                    leftWorld = _streetSpace.TransformPoint(new Vector3(_bleedLeftX, 0f, 0f)).x;
+                    rightWorld = _streetSpace.TransformPoint(new Vector3(_bleedRightX, 0f, 0f)).x;
+                }
+
+                if (leftWorld > rightWorld)
+                {
+                    float t = leftWorld;
+                    leftWorld = rightWorld;
+                    rightWorld = t;
+                }
+
+                return;
+            }
+
+            GetWorldStreetBounds(out leftWorld, out rightWorld);
+        }
+
+        private bool TryPickSpawnInBleedGap(out float xLocal, out int moveDir)
+        {
+            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
+            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
+
+            if (!_hasBleedBounds)
+            {
+                float minX = leftLocal + _spawnMarginX;
+                float maxX = rightLocal - _spawnMarginX;
+                if (maxX <= minX)
+                {
+                    xLocal = 0f;
+                    moveDir = 1;
+                    return false;
+                }
+
+                xLocal = Random.Range(minX, maxX);
+                moveDir = Random.value < 0.5f ? -1 : 1;
+                return true;
+            }
+
+            float bleedLeftLocal = Mathf.Min(_bleedLeftX, _bleedRightX);
+            float bleedRightLocal = Mathf.Max(_bleedLeftX, _bleedRightX);
+
+            float leftMin = bleedLeftLocal + _spawnMarginX;
+            float leftMax = leftLocal - _spawnMarginX;
+
+            float rightMin = rightLocal + _spawnMarginX;
+            float rightMax = bleedRightLocal - _spawnMarginX;
+
+            bool leftOk = leftMax > leftMin;
+            bool rightOk = rightMax > rightMin;
+
+            if (!leftOk && !rightOk)
+            {
+                xLocal = 0f;
+                moveDir = 1;
+                return false;
+            }
+
+            bool spawnLeft = (leftOk && rightOk) ? (Random.value < 0.5f) : leftOk;
+
+            if (spawnLeft)
+            {
+                xLocal = Random.Range(leftMin, leftMax);
+                moveDir = 1;   // left bleed => walk right
+            }
+            else
+            {
+                xLocal = Random.Range(rightMin, rightMax);
+                moveDir = -1;  // right bleed => walk left
+            }
+
+            return true;
         }
 
         private void ApplyVisualScale(NPCController ctrl)

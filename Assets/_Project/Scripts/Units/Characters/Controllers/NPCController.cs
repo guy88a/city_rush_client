@@ -23,6 +23,7 @@ namespace CityRush.Units.Characters.Controllers
 
         private CharacterBehavior _behavior;
         private SpriteRenderer _spriteRenderer;
+        private Collider2D _collider;
 
         public Action<NPCController> OnDespawn;
 
@@ -80,6 +81,7 @@ namespace CityRush.Units.Characters.Controllers
         {
             _behavior = GetComponent<CharacterBehavior>();
             _spriteRenderer = _behavior.SpriteRenderer;
+            _collider = GetComponent<Collider2D>();
 
             aggression = Mathf.Clamp(aggression, 0, 10);
             Debug.Log($"[NPC Awake] name={gameObject.name} id={GetInstanceID()} aggression={aggression}");
@@ -131,8 +133,19 @@ namespace CityRush.Units.Characters.Controllers
 
             if (_hasStreetBounds)
             {
-                float x = transform.position.x;
-                if (x < _streetMinX - despawnMargin || x > _streetMaxX + despawnMargin)
+                float minX = transform.position.x;
+                float maxX = transform.position.x;
+
+                if (_collider != null)
+                {
+                    Bounds b = _collider.bounds;
+                    minX = b.min.x;
+                    maxX = b.max.x;
+                }
+
+                // Despawn when the collider touches the configured edge bounds.
+                // (Bounds are supplied by spawner; in street mode these are bleed edges.)
+                if (minX <= _streetMinX || maxX >= _streetMaxX)
                 {
                     OnDespawn?.Invoke(this);
                     gameObject.SetActive(false);

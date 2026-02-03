@@ -28,6 +28,8 @@ namespace CityRush.World.Street
 
         public float LeftBoundX { get; private set; }
         public float RightBoundX { get; private set; }
+        public float BleedLeftX { get; private set; }
+        public float BleedRightX { get; private set; }
         private const int BLEED_TILES = 2;
 
         private Transform itemsRoot;
@@ -138,6 +140,10 @@ namespace CityRush.World.Street
 
             LeftBoundX = transform.position.x;
             RightBoundX = transform.position.x + totalWidth;
+
+            float bleedWidth = BLEED_TILES * TILE_WIDTH;
+            BleedLeftX = LeftBoundX - bleedWidth;
+            BleedRightX = RightBoundX + bleedWidth;
         }
 
         public float SpawnX

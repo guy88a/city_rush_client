@@ -156,6 +156,7 @@ internal sealed class GameLoopWorld
         _npcs = new CityRush.Units.Characters.Spawning.NPCSpawnManager();
         _npcs.Enter(prefabs.NPCPrefab);
         _npcs.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs.SetBleedBounds(Street.BleedLeftX, Street.BleedRightX);
         //_npcs.SpawnAgents(5); // ***TOREMOVE***
 
         // Player (after Street build)
@@ -332,6 +333,7 @@ internal sealed class GameLoopWorld
 
         _npcs?.SetStreetSpace(null);
         _npcs?.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs?.SetBleedBounds(Street.BleedLeftX, Street.BleedRightX);
         //_npcs?.ClearAll();
         //_npcs?.SpawnAgents(5); // ***TOREMOVE***
     }
