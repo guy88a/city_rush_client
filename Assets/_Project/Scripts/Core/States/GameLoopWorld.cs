@@ -3,6 +3,7 @@ using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
 using CityRush.Items;
 using CityRush.Items.World;
+using CityRush.Units;
 using CityRush.Units.Characters;
 using CityRush.Units.Characters.Combat;
 using CityRush.Units.Characters.Controllers;
@@ -159,6 +160,12 @@ internal sealed class GameLoopWorld
         _npcs.SetBleedBounds(Street.BleedLeftX, Street.BleedRightX);
         //_npcs.SpawnAgents(5); // ***TOREMOVE***
 
+        var npcDbHost = NpcDbHost.Instance != null ? NpcDbHost.Instance : UObject.FindAnyObjectByType<NpcDbHost>();
+        if (npcDbHost != null)
+            _npcs.SetNpcDb(npcDbHost.NpcDb);
+
+        _npcs.SetResidentPrefab(prefabs.ResidentPrefab);
+
         // Player (after Street build)
         PlayerInstance = UObject.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
@@ -168,6 +175,8 @@ internal sealed class GameLoopWorld
         .Init(itemsDb);
 
         _itemsDb = itemsDb;
+        _npcs.SpawnByNpcId(npcId: 2, count: 1); // Resident
+        _npcs.SpawnByNpcId(npcId: 1, count: 5); // Normal NPCs
 
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();

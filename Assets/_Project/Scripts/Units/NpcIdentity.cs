@@ -6,6 +6,12 @@ namespace CityRush.Units
     public sealed class NpcIdentity : MonoBehaviour
     {
         [SerializeField] private int id;
+
         public int Id => id;
+
+        public void SetId(int newId)
+        {
+            id = newId;
+        }
     }
 }

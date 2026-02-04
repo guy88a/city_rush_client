@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Units; // NpcDB, NpcCategory, NpcIdentity, NpcRuntimeData
 using CityRush.Units.Characters.Movement;
 using CityRush.Units.Characters.Controllers;
 using CityRush.Units.Characters.Combat;
@@ -31,6 +32,11 @@ namespace CityRush.Units.Characters.Spawning
 
         private GameObject _agentPrefab;
 
+        // Data-driven selection
+        private NpcDB _npcDb;
+        private GameObject _residentPrefab;
+        private readonly System.Collections.Generic.List<GameObject> _residentInstances = new();
+
         private readonly System.Collections.Generic.List<NPCController> _active = new();
         private readonly System.Collections.Generic.Stack<NPCController> _pool = new();
 
@@ -62,8 +68,14 @@ namespace CityRush.Units.Characters.Spawning
             _root = null;
             _agentPrefab = null;
             _streetSpace = null;
+
+            _npcDb = null;
+            _residentPrefab = null;
         }
 
+        public void SetNpcDb(NpcDB npcDb) => _npcDb = npcDb;
+
+        public void SetResidentPrefab(GameObject residentPrefab) => _residentPrefab = residentPrefab;
 
         public void SetStreetBounds(float leftX, float rightX)
         {
@@ -97,9 +109,44 @@ namespace CityRush.Units.Characters.Spawning
                 ReturnToPool(_active[i]);
 
             _active.Clear();
+
+            for (int i = _residentInstances.Count - 1; i >= 0; i--)
+            {
+                var go = _residentInstances[i];
+                if (go != null)
+                    Object.Destroy(go);
+            }
+            _residentInstances.Clear();
         }
 
+        // Old API kept (spawns normal NPCs with npcId=0)
         public void SpawnAgents(int count)
+        {
+            SpawnAgentsByNpcId(npcId: 0, count);
+        }
+
+        // New API (npcId + count). Prefab is chosen by NpcDB category:
+        // Resident => resident prefab in street center, idle.
+        // else => normal NPC prefab from Enter(...)
+        public void SpawnByNpcId(int npcId, int count)
+        {
+            if (_root == null)
+                return;
+
+            bool isResident = false;
+
+            if (_npcDb != null && _npcDb.TryGet(npcId, out var def) && def != null)
+                isResident = (def.Category == NpcCategory.Resident);
+
+            Debug.Log($"[NPCSpawnManager] SpawnByNpcId npcId={npcId} count={count} resident={isResident}");
+
+            if (isResident)
+                SpawnResidentsByNpcId(npcId, count);
+            else
+                SpawnAgentsByNpcId(npcId, count);
+        }
+
+        private void SpawnAgentsByNpcId(int npcId, int count)
         {
             if (_root == null || _agentPrefab == null) return;
 
@@ -113,6 +160,8 @@ namespace CityRush.Units.Characters.Spawning
                 if (!TryPickSpawnInBleedGap(out float xLocal, out int moveDir))
                     break;
 
+                ApplyNpcIdAndData(ctrl.gameObject, npcId);
+
                 ctrl.transform.position = ToWorld(xLocal, _groundY);
                 ApplyVisualScale(ctrl);
 
@@ -123,6 +172,67 @@ namespace CityRush.Units.Characters.Spawning
                 ctrl.gameObject.SetActive(true);
                 _active.Add(ctrl);
             }
+        }
+
+        private void SpawnResidentsByNpcId(int npcId, int count)
+        {
+            if (_root == null) return;
+
+            if (_residentPrefab == null)
+            {
+                Debug.LogWarning($"[NPCSpawnManager] residentPrefab is null. Cannot spawn Resident npcId={npcId}.");
+                return;
+            }
+
+            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
+            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
+            float centerLocalX = (leftLocal + rightLocal) * 0.5f;
+
+            for (int i = 0; i < count; i++)
+            {
+                var go = Object.Instantiate(_residentPrefab, _root);
+                if (go == null) continue;
+
+                ApplyNpcIdAndData(go, npcId);
+
+                go.transform.position = ToWorld(centerLocalX, _groundY);
+                ApplyVisualScale(go.transform);
+
+                // Idle: disable controller if it exists (do not patrol/travel).
+                var ctrl = go.GetComponent<NPCController>();
+                if (ctrl != null)
+                {
+                    ctrl.MoveDir = 0;
+                    ctrl.MaxSpeed = 0f;
+                }
+
+                var rb = go.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                    rb.linearVelocity = Vector2.zero;
+
+                go.SetActive(true);
+                _residentInstances.Add(go);
+            }
+        }
+
+        private void ApplyNpcIdAndData(GameObject go, int npcId)
+        {
+            if (go == null)
+                return;
+
+            if (npcId > 0)
+            {
+                var identity = go.GetComponent<NpcIdentity>();
+                if (identity != null)
+                    identity.SetId(npcId);
+                else
+                    Debug.LogWarning($"[NPCSpawnManager] Spawned object missing NpcIdentity. npcId={npcId}", go);
+            }
+
+            // Important for pooled NPCs: Start() won't re-run, so re-apply.
+            var runtime = go.GetComponent<NpcRuntimeData>();
+            if (runtime != null)
+                runtime.ApplyFromDb();
         }
 
         private NPCController GetOrCreate()
@@ -144,6 +254,8 @@ namespace CityRush.Units.Characters.Spawning
                 ctrl.OnDespawn = HandleDespawn;
                 if (ctrl.transform.parent != _root)
                     ctrl.transform.SetParent(_root, false);
+
+                ctrl.enabled = true;
             }
 
             return ctrl;
@@ -151,10 +263,19 @@ namespace CityRush.Units.Characters.Spawning
 
         private void HandleDespawn(NPCController ctrl)
         {
+            int npcId = 0;
+
+            if (ctrl != null)
+            {
+                var identity = ctrl.GetComponent<NpcIdentity>();
+                if (identity != null)
+                    npcId = identity.Id;
+            }
+
             ReturnToPool(ctrl);
             _active.Remove(ctrl);
 
-            ScheduleRespawnOne();
+            ScheduleRespawnOne(npcId);
         }
 
         private void ReturnToPool(NPCController ctrl)
@@ -169,26 +290,26 @@ namespace CityRush.Units.Characters.Spawning
             _pool.Push(ctrl);
         }
 
-        private void ScheduleRespawnOne()
+        private void ScheduleRespawnOne(int npcId)
         {
             if (_runner == null) return;
 
             int token = _spawnToken;
             float delay = Random.Range(_respawnDelayMin, _respawnDelayMax);
-            _runner.Run(RespawnAfterDelay(delay, token));
+            _runner.Run(RespawnAfterDelay(delay, token, npcId));
         }
 
-        private System.Collections.IEnumerator RespawnAfterDelay(float delay, int token)
+        private System.Collections.IEnumerator RespawnAfterDelay(float delay, int token, int npcId)
         {
             yield return new WaitForSeconds(delay);
 
             // canceled / street changed / cleared
             if (token != _spawnToken) yield break;
 
-            SpawnOne();
+            SpawnOne(npcId);
         }
 
-        private void SpawnOne()
+        private void SpawnOne(int npcId)
         {
             if (_root == null || _agentPrefab == null) return;
 
@@ -197,6 +318,8 @@ namespace CityRush.Units.Characters.Spawning
 
             if (!TryPickSpawnInBleedGap(out float xLocal, out int moveDir))
                 return;
+
+            ApplyNpcIdAndData(ctrl.gameObject, npcId);
 
             ctrl.transform.position = ToWorld(xLocal, _groundY);
             ApplyVisualScale(ctrl);
@@ -327,6 +450,12 @@ namespace CityRush.Units.Characters.Spawning
         private void ApplyVisualScale(NPCController ctrl)
         {
             if (ctrl == null) return;
+            ApplyVisualScale(ctrl.transform);
+        }
+
+        private void ApplyVisualScale(Transform t)
+        {
+            if (t == null) return;
 
             float s = 1f;
 
@@ -334,13 +463,20 @@ namespace CityRush.Units.Characters.Spawning
             if (_streetSpace != null)
                 s = _streetSpace.lossyScale.x;
 
-            ctrl.transform.localScale = new Vector3(s, s, 1f);
+            t.localScale = new Vector3(s, s, 1f);
         }
 
         public void RefreshVisualScale()
         {
             for (int i = 0; i < _active.Count; i++)
                 ApplyVisualScale(_active[i]);
+
+            for (int i = 0; i < _residentInstances.Count; i++)
+            {
+                var go = _residentInstances[i];
+                if (go != null)
+                    ApplyVisualScale(go.transform);
+            }
         }
 
         public void CacheActiveLocalX()
@@ -385,7 +521,7 @@ namespace CityRush.Units.Characters.Spawning
                 Vector3 pos = ToWorld(xLocal, _groundY);
                 ctrl.transform.position = pos;
 
-                // Optional safety: stop �fall impulse� if they had velocity (cheap + robust).
+                // Optional safety: stop fall impulse if they had velocity (cheap + robust).
                 Rigidbody2D rb = ctrl.GetComponent<Rigidbody2D>();
                 if (rb != null)
                 {
@@ -400,6 +536,5 @@ namespace CityRush.Units.Characters.Spawning
             _hasCachedLocalX = false;
             _cachedLocalX.Clear();
         }
-
     }
 }

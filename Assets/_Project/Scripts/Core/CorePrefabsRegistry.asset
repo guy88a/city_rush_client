@@ -20,3 +20,4 @@ MonoBehaviour:
   screenFadeCanvasPrefab: {fileID: 1052849499389073530, guid: 7b33bc11bc4dad1469848b9130b386bc, type: 3}
   playerPrefab: {fileID: 8471212319856264224, guid: b67fb71b0dba6594088e1be1fe77125c, type: 3}
   npcPrefab: {fileID: 470628288414811201, guid: fa99939017553614f97d134ce86d41ef, type: 3}
+  residentPrefab: {fileID: 470628288414811201, guid: fc1e3ab4eab90ed4e88af8fe475d3edd, type: 3}

@@ -114,7 +114,7 @@ public class GameLoopState : IState
         _mode = LoopMode.Street;
         _isTransitioning = false;
 
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        //_world.Npcs_SpawnStreet(DefaultNpcCount);
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
