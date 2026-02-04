@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de0d0fd4aed78124bac81916ca3d9bf7, type: 3}
+  m_Name: NpcDB
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcDB
+  npcs:
+  - npcId: 1
+    displayName: John Doe
+    category: 0
+    stats:
+      maxHealth: 40
+      armor: 0
+      power: 0
+    weapons:
+      uziItemId: 0
+      shotgunItemId: 1002
+      sniperItemId: 0
+    quests:
+      startQuestIds: 
+      endQuestIds: 
+    lootTableId: 0
+  - npcId: 2
+    displayName: Eric Eric
+    category: 2
+    stats:
+      maxHealth: 10
+      armor: 5
+      power: 0
+    weapons:
+      uziItemId: 0
+      shotgunItemId: 0
+      sniperItemId: 0
+    quests:
+      startQuestIds: 00000000
+      endQuestIds: 00000000
+    lootTableId: 0

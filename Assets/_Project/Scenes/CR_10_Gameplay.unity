@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 869081491}
   - component: {fileID: 869081490}
+  - component: {fileID: 869081492}
   m_Layer: 0
   m_Name: QuestSystem
   m_TagString: Untagged
@@ -149,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Quests.QuestServiceHost
   questDb: {fileID: 11400000, guid: 878df886f68417c42ade961352aec694, type: 2}
+  npcDb: {fileID: 11400000, guid: 0e8e955b8e5799841abdd7621a310210, type: 2}
   playerItems: {fileID: 0}
 --- !u!4 &869081491
 Transform:
@@ -165,6 +167,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &869081492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869081489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3218a2b4fa9b264cae2f6a81d35497f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcDbHost
+  npcDb: {fileID: 11400000, guid: 0e8e955b8e5799841abdd7621a310210, type: 2}
+  playerItems: {fileID: 0}
 --- !u!1 &962120209
 GameObject:
   m_ObjectHideFlags: 0
