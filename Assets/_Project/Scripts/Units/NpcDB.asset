@@ -40,6 +40,6 @@ MonoBehaviour:
       shotgunItemId: 0
       sniperItemId: 0
     quests:
-      startQuestIds: 00000000
-      endQuestIds: 00000000
+      startQuestIds: 0100000002000000
+      endQuestIds: 0100000002000000
     lootTableId: 0

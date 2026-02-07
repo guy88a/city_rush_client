@@ -29,3 +29,19 @@ MonoBehaviour:
     reward:
       tokens: 50
       rewardItemIds: ba0b0000
+  - questId: 2
+    startNpcId: 2
+    endNpcId: 2
+    title: I want my money back AGAIN!
+    descAvailable: available desc 2
+    descInProgress: in progress desc 2
+    descFinished: finished desc
+    prereqQuestIds: 01000000
+    objectives:
+    - actionType: 0
+      targetId: 1
+      requiredCount: 3
+      text: Kill targets
+    reward:
+      tokens: 70
+      rewardItemIds: ba0b0000
