@@ -599,19 +599,23 @@ internal sealed class GameLoopWorld
         _npcs.SetStreetSpace(null);
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
-        _npcs.SpawnAgents(count);
+
+        // Hardcoded test spawn:
+        _npcs.SpawnByNpcId(2, 1); // Resident
+        _npcs.SpawnByNpcId(1, 5); // None category
     }
 
     public void Npcs_SpawnApartmentWindow(int count)
     {
         if (_npcs == null || Street == null) return;
 
-        // Street already has p.y = 8f and scale = 0.5f set in LoadApartment(),
-        // so street-space -> world-space conversion will account for it.
         _npcs.SetStreetSpace(Street.transform);
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
-        _npcs.SpawnAgents(count);
+
+        // Hardcoded test spawn (same rules, still in street-space):
+        _npcs.SpawnByNpcId(2, 1); // Resident
+        _npcs.SpawnByNpcId(1, 5); // None category
     }
 
     public void EnterWindowADS()

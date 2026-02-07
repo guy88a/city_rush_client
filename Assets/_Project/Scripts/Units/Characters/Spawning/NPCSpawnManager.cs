@@ -110,11 +110,12 @@ namespace CityRush.Units.Characters.Spawning
 
             _active.Clear();
 
-            for (int i = _residentInstances.Count - 1; i >= 0; i--)
+            // Residents (destroy + clear)
+            for (int i = 0; i < _residentInstances.Count; i++)
             {
                 var go = _residentInstances[i];
                 if (go != null)
-                    Object.Destroy(go);
+                    UnityEngine.Object.Destroy(go);
             }
             _residentInstances.Clear();
         }
