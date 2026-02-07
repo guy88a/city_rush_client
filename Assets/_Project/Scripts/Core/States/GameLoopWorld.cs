@@ -175,8 +175,9 @@ internal sealed class GameLoopWorld
         .Init(itemsDb);
 
         _itemsDb = itemsDb;
-        _npcs.SpawnByNpcId(npcId: 2, count: 1); // Resident
-        _npcs.SpawnByNpcId(npcId: 1, count: 5); // Normal NPCs
+        //_npcs.SpawnByNpcId(npcId: 2, count: 1); // Resident
+        //_npcs.SpawnByNpcId(npcId: 1, count: 5); // Normal NPCs
+        Npcs_SpawnStreet();
 
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
@@ -592,30 +593,98 @@ internal sealed class GameLoopWorld
         _npcs?.ClearAll();
     }
 
-    public void Npcs_SpawnStreet(int count)
+    public void Npcs_SpawnStreet()
     {
-        if (_npcs == null) return;
+        if (_npcs == null || Street == null)
+            return;
 
         _npcs.SetStreetSpace(null);
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
 
-        // Hardcoded test spawn:
-        _npcs.SpawnByNpcId(2, 1); // Resident
-        _npcs.SpawnByNpcId(1, 5); // None category
+        var data = Street.Data;
+        var npcs = data != null ? data.npcs : null;
+
+        if (npcs == null)
+        {
+            Debug.LogWarning("[GameLoopWorld] StreetData.npcs is null. No NPCs will spawn on this street.");
+            return;
+        }
+
+        var streetTag = Street.GetComponent<StreetAddressTag>();
+
+        // Residents (fixed)
+        if (npcs.residents != null)
+        {
+            for (int i = 0; i < npcs.residents.Length; i++)
+            {
+                var r = npcs.residents[i];
+                if (r == null || r.address == null)
+                    continue;
+
+                _npcs.SpawnResidentAtAddress(
+                    npcId: r.npcId,
+                    streetTag: streetTag,
+                    buildingIndex: r.address.buildingIndex,
+                    floorIndex: r.address.floorIndex,
+                    apartmentIndex: r.address.apartmentIndex,
+                    formattedAddress: r.formattedAddress
+                );
+            }
+        }
+
+        // Pedestrians (pooled)
+        int maxCount = (npcs.pedestrians != null) ? npcs.pedestrians.maxCount : 0;
+        int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
+
+        _npcs.ConfigureStreetPedestrians(maxCount, ids);
+        _npcs.SpawnConfiguredStreetPedestrians();
     }
 
-    public void Npcs_SpawnApartmentWindow(int count)
+    public void Npcs_SpawnApartmentWindow()
     {
-        if (_npcs == null || Street == null) return;
+        if (_npcs == null || Street == null)
+            return;
 
         _npcs.SetStreetSpace(Street.transform);
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
 
-        // Hardcoded test spawn (same rules, still in street-space):
-        _npcs.SpawnByNpcId(2, 1); // Resident
-        _npcs.SpawnByNpcId(1, 5); // None category
+        var data = Street.Data;
+        var npcs = data != null ? data.npcs : null;
+
+        if (npcs == null)
+        {
+            Debug.LogWarning("[GameLoopWorld] StreetData.npcs is null. No NPCs will spawn in ApartmentWindow.");
+            return;
+        }
+
+        var streetTag = Street.GetComponent<StreetAddressTag>();
+
+        if (npcs.residents != null)
+        {
+            for (int i = 0; i < npcs.residents.Length; i++)
+            {
+                var r = npcs.residents[i];
+                if (r == null || r.address == null)
+                    continue;
+
+                _npcs.SpawnResidentAtAddress(
+                    npcId: r.npcId,
+                    streetTag: streetTag,
+                    buildingIndex: r.address.buildingIndex,
+                    floorIndex: r.address.floorIndex,
+                    apartmentIndex: r.address.apartmentIndex,
+                    formattedAddress: r.formattedAddress
+                );
+            }
+        }
+
+        int maxCount = (npcs.pedestrians != null) ? npcs.pedestrians.maxCount : 0;
+        int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
+
+        _npcs.ConfigureStreetPedestrians(maxCount, ids);
+        _npcs.SpawnConfiguredStreetPedestrians();
     }
 
     public void EnterWindowADS()

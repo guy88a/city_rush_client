@@ -22,6 +22,8 @@ namespace CityRush.World.Street
         [SerializeField] private BuildingRowComponent buildingRow;
 
         private StreetData streetData;
+        public StreetData Data => streetData;
+        public StreetNpcsData Npcs => streetData != null ? streetData.npcs : null;
 
         private Transform roadsRoot;
         private Transform pavementsRoot;

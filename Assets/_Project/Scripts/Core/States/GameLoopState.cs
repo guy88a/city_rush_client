@@ -340,7 +340,7 @@ public class GameLoopState : IState
         _world.RepositionPlayerForStreetEntry(direction);
 
         _world.RepositionPlayerForStreetEntry(direction);
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
     }
 
     private void StreetTransitionInDone()
@@ -410,7 +410,7 @@ public class GameLoopState : IState
 
     private void EnterApartmentWindowInDone()
     {
-        _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
+        _world.Npcs_SpawnApartmentWindow();
         _mode = LoopMode.ApartmentWindow;
         _world?.WindowPan_SetRootFromCamera();
 
@@ -476,7 +476,7 @@ public class GameLoopState : IState
         _world.PlayerTransform.position = _returnStreetPlayerPos;
         _game.CameraTransform.position = _returnStreetCameraPos;
 
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // Reset navigation state cleanly
         _navigation.Enter();
@@ -870,7 +870,7 @@ public class GameLoopState : IState
         _playerCombat?.ExitDeadLock();
 
         // 6) Respawn NPCs
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // 7) Refresh navigation snapshot usage
         _navigation.Enter();
@@ -924,7 +924,7 @@ public class GameLoopState : IState
         _world.PlayerCombatDriver?.ExitDeadLock(); // use your actual reference if named differently
 
         // 7) Respawn NPCs
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // 8) Reset nav state
         _navigation.Enter();

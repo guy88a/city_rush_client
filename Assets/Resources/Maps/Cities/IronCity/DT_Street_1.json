@@ -386,5 +386,17 @@
       }
     }
   ],
-  "pedestrians": {}
+  "npcs": {
+    "pedestrians": {
+      "maxCount": 10,
+      "npcIds": [1, 2]
+    },
+    "residents": [
+      {
+        "npcId": 2,
+        "address": { "buildingIndex": 4, "floorIndex": 1, "apartmentIndex": 0 },
+        "formattedAddress": ""
+      }
+    ]
+  }
 }
