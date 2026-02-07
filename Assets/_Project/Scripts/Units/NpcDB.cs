@@ -50,6 +50,9 @@ namespace CityRush.Units
         [SerializeField] private string displayName;
         [SerializeField] private NpcCategory category = NpcCategory.Generic;
 
+        [Header("Visual")]
+        [SerializeField] private string visualKey;
+
         [Header("Stats")]
         [SerializeField] private NpcStats stats;
 
@@ -65,6 +68,7 @@ namespace CityRush.Units
         public int NpcId => npcId;
         public string DisplayName => displayName;
         public NpcCategory Category => category;
+        public string VisualKey => visualKey;
         public NpcStats Stats => stats;
         public NpcWeaponSetData Weapons => weapons;
         public NpcQuestLinks Quests => quests;

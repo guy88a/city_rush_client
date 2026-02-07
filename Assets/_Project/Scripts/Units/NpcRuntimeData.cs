@@ -11,6 +11,11 @@ namespace CityRush.Units
         private NpcIdentity _id;
         private NpcDefinition _def;
 
+        private bool _visualsApplied;
+        private bool _graphicCached;
+        private SpriteRenderer _spriteRenderer;
+        private Animator _animator;
+
         private bool _weaponsApplied;
         private Coroutine _weaponsRetryCo;
 
@@ -47,6 +52,7 @@ namespace CityRush.Units
                 return;
             }
 
+            ApplyVisuals(_def, host);
             ApplyStats(_def);
 
             // Weapons may depend on PlayerItemsRuntime being spawned later -> retry.
@@ -68,6 +74,63 @@ namespace CityRush.Units
                 stats.Power = Mathf.Max(0, def.Stats.power);
                 stats.Armor = Mathf.Max(0, def.Stats.armor);
             }
+        }
+
+        private void ApplyVisuals(NpcDefinition def, NpcDbHost host)
+        {
+            if (_visualsApplied)
+                return;
+
+            // Empty key => keep prefab defaults.
+            string visualKey = def != null ? def.VisualKey : null;
+            if (string.IsNullOrWhiteSpace(visualKey))
+                return;
+
+            var visualsDb = host != null ? host.NpcVisualsDb : null;
+            if (visualsDb == null)
+            {
+                Debug.LogWarning($"[NpcRuntimeData] NpcVisualsDB missing; cannot apply visuals for npcId={NpcId} visualKey='{visualKey}'.", this);
+                _visualsApplied = true;
+                return;
+            }
+
+            if (!visualsDb.TryGet(visualKey, out var visual) || visual == null)
+            {
+                Debug.LogWarning($"[NpcRuntimeData] visualKey='{visualKey}' not found in NpcVisualsDB (npcId={NpcId}).", this);
+                _visualsApplied = true;
+                return;
+            }
+
+            CacheGraphicRefsIfNeeded();
+
+            if (_spriteRenderer != null && visual.Sprite != null)
+                _spriteRenderer.sprite = visual.Sprite;
+
+            if (_animator != null && visual.OverrideController != null)
+                _animator.runtimeAnimatorController = visual.OverrideController;
+
+            _visualsApplied = true;
+        }
+
+        private void CacheGraphicRefsIfNeeded()
+        {
+            if (_graphicCached)
+                return;
+
+            _graphicCached = true;
+
+            Transform graphic = transform.Find("Graphic");
+            if (graphic != null)
+            {
+                _spriteRenderer = graphic.GetComponent<SpriteRenderer>();
+                _animator = graphic.GetComponent<Animator>();
+            }
+
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
+
+            if (_animator == null)
+                _animator = GetComponentInChildren<Animator>(true);
         }
 
         private void TryApplyWeapons(NpcDbHost host)

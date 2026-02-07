@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcDbHost
   npcDb: {fileID: 11400000, guid: 0e8e955b8e5799841abdd7621a310210, type: 2}
+  npcVisualsDb: {fileID: 11400000, guid: 0b54aacca77e5f242878e8b5f0377572, type: 2}
   playerItems: {fileID: 0}
 --- !u!1 &962120209
 GameObject:

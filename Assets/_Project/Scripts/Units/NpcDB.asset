@@ -16,6 +16,7 @@ MonoBehaviour:
   - npcId: 1
     displayName: John Doe
     category: 0
+    visualKey: Agent
     stats:
       maxHealth: 40
       armor: 0
@@ -31,6 +32,7 @@ MonoBehaviour:
   - npcId: 2
     displayName: Eric Eric
     category: 2
+    visualKey: Generic
     stats:
       maxHealth: 10
       armor: 5

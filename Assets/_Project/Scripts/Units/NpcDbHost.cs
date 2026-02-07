@@ -7,6 +7,7 @@ namespace CityRush.Units
     public sealed class NpcDbHost : MonoBehaviour
     {
         [SerializeField] private NpcDB npcDb;
+        [SerializeField] private NpcVisualsDB npcVisualsDb;
 
         // Optional: if Player exists in the scene, you can drag it here.
         // If not, we will resolve it at runtime when the Player gets spawned.
@@ -15,6 +16,7 @@ namespace CityRush.Units
         public static NpcDbHost Instance { get; private set; }
 
         public NpcDB NpcDb => npcDb;
+        public NpcVisualsDB NpcVisualsDb => npcVisualsDb;
 
         public ItemsDb ItemsDb
         {
@@ -38,6 +40,9 @@ namespace CityRush.Units
 
             if (npcDb == null)
                 Debug.LogError("[NpcDbHost] NpcDB is not assigned.", this);
+
+            if (npcVisualsDb == null)
+                Debug.LogWarning("[NpcDbHost] NpcVisualsDB is not assigned.", this);
 
             EnsurePlayerItemsResolved();
         }
