@@ -31,7 +31,7 @@ namespace CityRush.Units.Characters.Spawning
         // Optional transform that converts street-space -> world-space (used for ApartmentWindow).
         private Transform _streetSpace;
 
-        private GameObject _agentPrefab;
+        private GameObject _pedestrianPrefab;
 
         // Data-driven selection
         private NpcDB _npcDb;
@@ -50,9 +50,9 @@ namespace CityRush.Units.Characters.Spawning
         private int[] _streetPedestriansNpcIds;
         private bool _hasStreetPedestriansPool;
 
-        public void Enter(GameObject agentPrefab)
+        public void Enter(GameObject pedestrianPrefab)
         {
-            _agentPrefab = agentPrefab;
+            _pedestrianPrefab = pedestrianPrefab;
             _root = new GameObject("NPCsRoot").transform;
             _runner = _root.gameObject.AddComponent<NPCSpawnRunner>();
             _distanceStep = _root.gameObject.AddComponent<SniperDistanceStep>();
@@ -71,7 +71,7 @@ namespace CityRush.Units.Characters.Spawning
             _runner?.CancelAll();
 
             _root = null;
-            _agentPrefab = null;
+            _pedestrianPrefab = null;
             _streetSpace = null;
 
             _npcDb = null;
@@ -123,12 +123,22 @@ namespace CityRush.Units.Characters.Spawning
                     UnityEngine.Object.Destroy(go);
             }
             _residentInstances.Clear();
+
+            _hasStreetPedestriansPool = false;
+            _streetPedestriansMaxCount = 0;
+            _streetPedestriansNpcIds = null;
         }
 
         // Old API kept (spawns normal NPCs with npcId=0)
+        public void SpawnPedestrians(int count)
+        {
+            SpawnPedestriansByNpcId(npcId: 0, count);
+        }
+
+        // Backward-compatible wrapper (optional to remove later)
         public void SpawnAgents(int count)
         {
-            SpawnAgentsByNpcId(npcId: 0, count);
+            SpawnPedestrians(count);
         }
 
         // New API (npcId + count). Prefab is chosen by NpcDB category:
@@ -149,7 +159,7 @@ namespace CityRush.Units.Characters.Spawning
             if (isResident)
                 SpawnResidentsByNpcId(npcId, count);
             else
-                SpawnAgentsByNpcId(npcId, count);
+                SpawnPedestriansByNpcId(npcId, count);
         }
 
         public void SpawnResidentAtAddress(
@@ -243,9 +253,9 @@ namespace CityRush.Units.Characters.Spawning
         }
 
 
-        private void SpawnAgentsByNpcId(int npcId, int count)
+        private void SpawnPedestriansByNpcId(int npcId, int count)
         {
-            if (_root == null || _agentPrefab == null) return;
+            if (_root == null || _pedestrianPrefab == null) return;
 
             GetWorldDespawnBounds(out float leftWorld, out float rightWorld);
 
@@ -342,7 +352,7 @@ namespace CityRush.Units.Characters.Spawning
             }
             else
             {
-                GameObject go = Object.Instantiate(_agentPrefab, _root);
+                GameObject go = Object.Instantiate(_pedestrianPrefab, _root);
                 ctrl = go.GetComponent<NPCController>();
             }
 
@@ -360,23 +370,73 @@ namespace CityRush.Units.Characters.Spawning
 
         private void HandleDespawn(NPCController ctrl)
         {
-            int npcId = 0;
+            if (ctrl == null)
+                return;
 
-            if (ctrl != null)
-            {
-                var identity = ctrl.GetComponent<NpcIdentity>();
-                if (identity != null)
-                    npcId = identity.Id;
-            }
-
-            ReturnToPool(ctrl);
-            _active.Remove(ctrl);
-
-            if (_hasStreetPedestriansPool)
-                ScheduleRespawnOne(PickRandomStreetPedestrianNpcId());
-            else
-                ScheduleRespawnOne(npcId);
+            // Keep the same instance (and same NpcIdentity) on respawn.
+            DeactivateForRespawn(ctrl);
+            ScheduleRespawnExisting(ctrl);
         }
+
+        private void DeactivateForRespawn(NPCController ctrl)
+        {
+            if (ctrl == null)
+                return;
+
+            PhysicsObject phys = ctrl.GetComponent<PhysicsObject>();
+            if (phys != null)
+                phys.ResetExternalImpulse();
+
+            var rb = ctrl.GetComponent<Rigidbody2D>();
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+
+            ctrl.gameObject.SetActive(false);
+        }
+
+        private void ScheduleRespawnExisting(NPCController ctrl)
+        {
+            if (_runner == null || ctrl == null)
+                return;
+
+            int token = _spawnToken;
+            float delay = Random.Range(_respawnDelayMin, _respawnDelayMax);
+            _runner.Run(RespawnExistingAfterDelay(delay, token, ctrl));
+        }
+
+        private System.Collections.IEnumerator RespawnExistingAfterDelay(float delay, int token, NPCController ctrl)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (token != _spawnToken)
+                yield break;
+
+            RespawnExisting(ctrl);
+        }
+
+        private void RespawnExisting(NPCController ctrl)
+        {
+            if (ctrl == null)
+                return;
+
+            if (!TryPickSpawnInBleedGap(out float xLocal, out int moveDir))
+                return;
+
+            ctrl.transform.position = ToWorld(xLocal, _groundY);
+            ApplyVisualScale(ctrl);
+
+            GetWorldDespawnBounds(out float leftWorld, out float rightWorld);
+
+            ctrl.SetStreetBounds(leftWorld, rightWorld);
+            ctrl.MoveDir = moveDir;
+            ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
+
+            ctrl.enabled = true;
+            ctrl.OnDespawn = HandleDespawn;
+
+            ctrl.gameObject.SetActive(true);
+        }
+
 
         private void ReturnToPool(NPCController ctrl)
         {
@@ -411,7 +471,7 @@ namespace CityRush.Units.Characters.Spawning
 
         private void SpawnOne(int npcId)
         {
-            if (_root == null || _agentPrefab == null) return;
+            if (_root == null || _pedestrianPrefab == null) return;
 
             NPCController ctrl = GetOrCreate();
             if (ctrl == null) return;

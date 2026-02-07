@@ -602,18 +602,12 @@ internal sealed class GameLoopWorld
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
 
-        var data = Street.Data;
-        var npcs = data != null ? data.npcs : null;
-
+        var npcs = Street.Data != null ? Street.Data.npcs : null;
         if (npcs == null)
-        {
-            Debug.LogWarning("[GameLoopWorld] StreetData.npcs is null. No NPCs will spawn on this street.");
             return;
-        }
 
         var streetTag = Street.GetComponent<StreetAddressTag>();
 
-        // Residents (fixed)
         if (npcs.residents != null)
         {
             for (int i = 0; i < npcs.residents.Length; i++)
@@ -633,13 +627,18 @@ internal sealed class GameLoopWorld
             }
         }
 
-        // Pedestrians (pooled)
         int maxCount = (npcs.pedestrians != null) ? npcs.pedestrians.maxCount : 0;
         int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
 
         _npcs.ConfigureStreetPedestrians(maxCount, ids);
         _npcs.SpawnConfiguredStreetPedestrians();
     }
+
+    public void Npcs_SpawnStreet(int count)
+    {
+        Npcs_SpawnStreet();
+    }
+
 
     public void Npcs_SpawnApartmentWindow()
     {
@@ -650,14 +649,9 @@ internal sealed class GameLoopWorld
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
 
-        var data = Street.Data;
-        var npcs = data != null ? data.npcs : null;
-
+        var npcs = Street.Data != null ? Street.Data.npcs : null;
         if (npcs == null)
-        {
-            Debug.LogWarning("[GameLoopWorld] StreetData.npcs is null. No NPCs will spawn in ApartmentWindow.");
             return;
-        }
 
         var streetTag = Street.GetComponent<StreetAddressTag>();
 
@@ -686,6 +680,12 @@ internal sealed class GameLoopWorld
         _npcs.ConfigureStreetPedestrians(maxCount, ids);
         _npcs.SpawnConfiguredStreetPedestrians();
     }
+
+    public void Npcs_SpawnApartmentWindow(int count)
+    {
+        Npcs_SpawnApartmentWindow();
+    }
+
 
     public void EnterWindowADS()
     {
