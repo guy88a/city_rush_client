@@ -9,7 +9,7 @@ namespace CityRush.Units
     public enum NpcCategory : byte
     {
         None = 0,
-        Generic = 1,
+        Pedestrian = 1,
         Resident = 2,
         Police = 3,
     }
@@ -48,7 +48,7 @@ namespace CityRush.Units
         [Header("Identity")]
         [SerializeField] private int npcId;
         [SerializeField] private string displayName;
-        [SerializeField] private NpcCategory category = NpcCategory.Generic;
+        [SerializeField] private NpcCategory category = NpcCategory.Pedestrian;
 
         [Header("Visual")]
         [SerializeField] private string visualKey;
