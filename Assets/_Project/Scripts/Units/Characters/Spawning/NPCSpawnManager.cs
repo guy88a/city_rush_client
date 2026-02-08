@@ -721,6 +721,69 @@ namespace CityRush.Units.Characters.Spawning
             }
         }
 
+        // Used only when the street is (re)loaded. Spawns inside street bounds (not on bleed).
+        public void SpawnConfiguredStreetPedestriansOnStreetLoad()
+        {
+            if (!_hasStreetPedestriansPool)
+                return;
+
+            for (int i = 0; i < _streetPedestriansMaxCount; i++)
+            {
+                int npcId = PickRandomStreetPedestrianNpcId();
+                if (npcId <= 0)
+                    continue;
+
+                SpawnOneOnStreet(npcId);
+            }
+        }
+
+        private void SpawnOneOnStreet(int npcId)
+        {
+            if (_root == null || _pedestrianPrefab == null)
+                return;
+
+            NPCController ctrl = GetOrCreate();
+            if (ctrl == null)
+                return;
+
+            if (!TryPickSpawnOnStreet(out float xLocal, out int moveDir))
+                return;
+
+            ApplyNpcIdAndData(ctrl.gameObject, npcId);
+
+            ctrl.transform.position = ToWorld(xLocal, _groundY);
+            ApplyVisualScale(ctrl);
+
+            GetWorldDespawnBounds(out float leftWorld, out float rightWorld);
+
+            ctrl.SetStreetBounds(leftWorld, rightWorld); // keep bleed bounds (world)
+            ctrl.MoveDir = moveDir;
+            ctrl.MaxSpeed = Random.Range(CharacterSpeedSettings.MinWalkSpeed, CharacterSpeedSettings.MaxWalkSpeed);
+
+            ctrl.gameObject.SetActive(true);
+            _active.Add(ctrl);
+        }
+
+        private bool TryPickSpawnOnStreet(out float xLocal, out int moveDir)
+        {
+            float leftLocal = Mathf.Min(_streetLeftX, _streetRightX);
+            float rightLocal = Mathf.Max(_streetLeftX, _streetRightX);
+
+            float minX = leftLocal + _spawnMarginX;
+            float maxX = rightLocal - _spawnMarginX;
+
+            if (maxX <= minX)
+            {
+                xLocal = 0f;
+                moveDir = 1;
+                return false;
+            }
+
+            xLocal = Random.Range(minX, maxX);
+            moveDir = Random.value < 0.5f ? -1 : 1;
+            return true;
+        }
+
         private int PickRandomStreetPedestrianNpcId()
         {
             if (_streetPedestriansNpcIds == null || _streetPedestriansNpcIds.Length == 0)
