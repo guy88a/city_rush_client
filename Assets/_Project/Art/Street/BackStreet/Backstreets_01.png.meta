@@ -1,16 +1,19 @@
 fileFormatVersion: 2
-guid: 258bee0476358494ea647dbb32a0426b
+guid: 273a76dfeec9bae43b6f662d472ddc3b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5100611478762072769
-    second: Backstreets_03_0
+      213: -1912082283153975354
+    second: Backstreets_01_0
   - first:
-      213: 1864743441314951650
-    second: Backstreets_03_1
+      213: -1809405422877817356
+    second: Backstreets_01_1
   - first:
-      213: 278147906469713049
-    second: Backstreets_03_2
+      213: -6120471668342217700
+    second: Backstreets_01_2
+  - first:
+      213: 6298588611521516916
+    second: Backstreets_01_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -132,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Backstreets_03_0
+      name: Backstreets_01_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 34
         y: 0
-        width: 976
-        height: 616
+        width: 694
+        height: 731
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -147,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1caa4e0ad1309c640800000000000000
-      internalID: 5100611478762072769
+      spriteID: 6c71a4b4b4be675e0800000000000000
+      internalID: -1912082283153975354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Backstreets_03_1
+      name: Backstreets_01_1
       rect:
         serializedVersion: 2
-        x: 972
+        x: 950
         y: 0
-        width: 1909
-        height: 725
+        width: 1356
+        height: 731
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2e131d0b746e0e910800000000000000
-      internalID: 1864743441314951650
+      spriteID: 4f5c3b2ca53b3e6e0800000000000000
+      internalID: -1809405422877817356
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Backstreets_03_2
+      name: Backstreets_01_2
       rect:
         serializedVersion: 2
-        x: 3072
+        x: 2304
         y: 0
-        width: 1024
-        height: 725
+        width: 373
+        height: 541
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,8 +194,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 99455281c0e2cd300800000000000000
-      internalID: 278147906469713049
+      spriteID: c14ae9ef177bf0ba0800000000000000
+      internalID: -6120471668342217700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Backstreets_01_3
+      rect:
+        serializedVersion: 2
+        x: 2848
+        y: 0
+        width: 993
+        height: 731
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4759f0888f4196750800000000000000
+      internalID: 6298588611521516916
       vertices: []
       indices: 
       edges: []
@@ -211,9 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Backstreets_03_0: 5100611478762072769
-      Backstreets_03_1: 1864743441314951650
-      Backstreets_03_2: 278147906469713049
+      Backstreets_01_0: -1912082283153975354
+      Backstreets_01_1: -1809405422877817356
+      Backstreets_01_2: -6120471668342217700
+      Backstreets_01_3: 6298588611521516916
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
