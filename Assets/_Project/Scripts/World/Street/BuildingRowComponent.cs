@@ -1,23 +1,34 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CityRush.World.Buildings.Data;
 using CityRush.World.Buildings.Generation;
 using CityRush.World.Addresses;
 using CityRush.World.Interior;
+using CityRush.World.Street.Data;
+using CityRush.World.Street.Generation;
 
 namespace CityRush.World.Street
 {
     public class BuildingRowComponent : MonoBehaviour
     {
         [SerializeField] private BuildingGenerator buildingGeneratorPrefab;
+        [SerializeField] private ParkGenerator parkGeneratorPrefab;
         [SerializeField] private Transform buildingsRoot;
 
         private BuildingDefinition[] buildings;
+        private ParkDefinition[] parks;
 
         private const float ModuleWidth = 160f / 48f;
 
         public void SetBuildings(BuildingDefinition[] buildingDefinitions)
         {
+            SetBuildings(buildingDefinitions, null);
+        }
+
+        public void SetBuildings(BuildingDefinition[] buildingDefinitions, ParkDefinition[] parkDefinitions)
+        {
             buildings = buildingDefinitions;
+            parks = parkDefinitions;
             RebuildRow();
         }
 
@@ -31,6 +42,12 @@ namespace CityRush.World.Street
             StreetAddressTag streetTag = GetComponentInParent<StreetAddressTag>();
 
             float currentX = 0f;
+
+            Dictionary<int, List<ParkDefinition>> parksByAfterIndex = BuildParksLookup();
+
+            // Optional: parks before the first building (AfterBuildingIndex = -1)
+            if (parksByAfterIndex != null && parksByAfterIndex.TryGetValue(-1, out var preParks))
+                SpawnParks(preParks, ref currentX);
 
             for (int i = 0; i < buildings.Length; i++)
             {
@@ -86,6 +103,58 @@ namespace CityRush.World.Street
                 }
 
                 currentX += definition.Width * ModuleWidth;
+
+                // Parks after this building index
+                if (parksByAfterIndex != null && parksByAfterIndex.TryGetValue(i, out var afterParks))
+                    SpawnParks(afterParks, ref currentX);
+            }
+        }
+
+        private Dictionary<int, List<ParkDefinition>> BuildParksLookup()
+        {
+            if (parks == null || parks.Length == 0 || parkGeneratorPrefab == null)
+                return null;
+
+            var map = new Dictionary<int, List<ParkDefinition>>();
+
+            for (int i = 0; i < parks.Length; i++)
+            {
+                ParkDefinition p = parks[i];
+                if (p == null)
+                    continue;
+
+                if (p.WidthBlocks <= 0)
+                    continue;
+
+                if (!map.TryGetValue(p.AfterBuildingIndex, out var list))
+                {
+                    list = new List<ParkDefinition>();
+                    map.Add(p.AfterBuildingIndex, list);
+                }
+
+                list.Add(p);
+            }
+
+            return map;
+        }
+
+        private void SpawnParks(List<ParkDefinition> list, ref float currentX)
+        {
+            if (list == null || list.Count == 0)
+                return;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                ParkDefinition p = list[i];
+                if (p == null || p.WidthBlocks <= 0)
+                    continue;
+
+                var park = Instantiate(parkGeneratorPrefab, buildingsRoot);
+                park.transform.localPosition = new Vector3(currentX, 0f, 0f);
+
+                park.Build(p);
+
+                currentX += p.WidthBlocks * ModuleWidth;
             }
         }
 

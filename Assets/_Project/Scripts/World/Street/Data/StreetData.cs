@@ -15,8 +15,27 @@ namespace CityRush.World.Street.Data
         public StreetSpawnData spawn;
         public StreetVisualData street;
         public BuildingDefinition[] buildings;
+        public ParkDefinition[] parks;
         public StreetNpcsData npcs;
         public PedestriansData pedestrians;
+    }
+
+    [Serializable]
+    public class ParkDefinition
+    {
+        // 0-based, index into StreetData.buildings[]. The park will be inserted AFTER this building.
+        public int AfterBuildingIndex;
+
+        // Park width in building modules (1 module = 160px).
+        public int WidthBlocks;
+
+        // Reserved for future use (entrance + navigation).
+        public bool HasEntrance;
+
+        // Key lookup into ParkAssetsRegistry (implementation later).
+        public string GroundKey;
+        public string FenceKey;
+        public string[] PropKeys;
     }
 
     [Serializable]

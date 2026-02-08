@@ -172,4 +172,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.BuildingRowComponent
   buildingGeneratorPrefab: {fileID: 9040531106886747194, guid: a8146c9d96002fe4085d807ed996fdec, type: 3}
+  parkGeneratorPrefab: {fileID: 6748340081506478320, guid: bcb42b21354837d48924a13f77368822, type: 3}
   buildingsRoot: {fileID: 4578705423585432260}

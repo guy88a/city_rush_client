@@ -132,7 +132,7 @@ namespace CityRush.World.Street
             if (buildingRow == null || streetData == null)
                 return;
 
-            buildingRow.SetBuildings(streetData.buildings);
+            buildingRow.SetBuildings(streetData.buildings, streetData.parks);
         }
 
         private void SetBoundaries()

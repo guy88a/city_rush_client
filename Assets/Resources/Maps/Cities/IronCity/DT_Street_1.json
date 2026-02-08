@@ -386,6 +386,24 @@
       }
     }
   ],
+  "parks": [
+    {
+      "AfterBuildingIndex": 0,
+      "WidthBlocks": 4,
+      "HasEntrance": false,
+      "GroundKey": "Soil_01",
+      "FenceKey": "Wood_Light",
+      "PropKeys": ["Tree_Big_Green", "Tree_Small_Yellow"]
+    },
+    {
+      "AfterBuildingIndex": 1,
+      "WidthBlocks": 3,
+      "HasEntrance": false,
+      "GroundKey": "Grass_01",
+      "FenceKey": "Wood_Medium",
+      "PropKeys": ["Tree_Big_Yellow"]
+    }
+  ],
   "npcs": {
     "pedestrians": {
       "maxCount": 10,
