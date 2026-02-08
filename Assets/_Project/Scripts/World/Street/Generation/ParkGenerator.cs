@@ -19,7 +19,7 @@ namespace CityRush.World.Street.Generation
         [Header("Props Placement")]
         [SerializeField] private float propsY = 0.5f;
         [SerializeField] private float propsXStep = 1f;
-        [SerializeField] private float propsEdgePadding = 1f;
+        [SerializeField] private float propsEdgePadding = -1f;
 
         [Header("Prefab Structure (Auto-Filled)")]
         [SerializeField] private SpriteRenderer groundRenderer;
@@ -95,6 +95,7 @@ namespace CityRush.World.Street.Generation
             Vector2 size = groundRenderer.size;
             size.x = totalWidth;
             groundRenderer.size = size;
+            groundRenderer.sortingOrder = StreetSorting.Ground;
         }
 
         private void ApplyFences(float totalWidth)
@@ -154,6 +155,9 @@ namespace CityRush.World.Street.Generation
             fenceLeftRenderer.transform.localPosition = Vector3.zero;
             fenceRightRenderer.transform.localPosition = new Vector3(leftWidth + gapWidth, 0f, 0f);
 
+            fenceLeftRenderer.sortingOrder = StreetSorting.Fences;
+            fenceRightRenderer.sortingOrder = StreetSorting.Fences;
+
             if (rightBlocks <= 0)
                 fenceRightRenderer.gameObject.SetActive(false);
         }
@@ -168,16 +172,15 @@ namespace CityRush.World.Street.Generation
             if (Definition.PropKeys == null || Definition.PropKeys.Length == 0)
                 return;
 
+            int count = Definition.PropKeys.Length;
+
+            // If positions are missing/mismatched, we still spawn but default X = 0
+            bool hasPositions = Definition.PropPosition != null && Definition.PropPosition.Length == count;
+
             float xMin = propsEdgePadding;
             float xMax = totalWidth - propsEdgePadding;
 
-            if (xMax < xMin)
-            {
-                xMin = totalWidth * 0.5f;
-                xMax = xMin;
-            }
-
-            for (int i = 0; i < Definition.PropKeys.Length; i++)
+            for (int i = 0; i < count; i++)
             {
                 string key = Definition.PropKeys[i];
                 if (string.IsNullOrWhiteSpace(key))
@@ -189,12 +192,24 @@ namespace CityRush.World.Street.Generation
 
                 Transform t = Instantiate(prefab, propsRoot).transform;
 
-                float x = Random.Range(xMin, xMax);
-                if (propsXStep > 0f)
-                    x = Mathf.Round(x / propsXStep) * propsXStep;
+                // PropPosition is in "block steps" (0..WidthBlocks). Convert to world units.
+                float x = hasPositions ? (Definition.PropPosition[i] * moduleWidth) : 0f;
+
+                // Keep deterministic but safe
+                if (xMax >= xMin)
+                    x = Mathf.Clamp(x, xMin, xMax);
 
                 t.localPosition = new Vector3(x, propsY, 0f);
+
+                ApplySortingToProp(t);
             }
+        }
+
+        private void ApplySortingToProp(Transform t)
+        {
+            var srs = t.GetComponentsInChildren<SpriteRenderer>(true);
+            for (int i = 0; i < srs.Length; i++)
+                srs[i].sortingOrder = StreetSorting.Props;
         }
 
         private void ApplySpriteRendererTemplate(SpriteRenderer target, GameObject prefab)

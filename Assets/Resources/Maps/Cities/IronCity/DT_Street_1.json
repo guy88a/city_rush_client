@@ -390,10 +390,11 @@
     {
       "AfterBuildingIndex": 0,
       "WidthBlocks": 4,
-      "HasEntrance": false,
+      "HasEntrance": true,
       "GroundKey": "Soil_01",
       "FenceKey": "Wood_Light",
-      "PropKeys": ["Tree_Big_Green", "Tree_Small_Yellow"]
+      "PropKeys": ["Tree_Big_Green", "Tree_Small_Yellow"],
+      "PropPosition": [-0.5, 2.0]
     },
     {
       "AfterBuildingIndex": 1,
@@ -401,7 +402,8 @@
       "HasEntrance": false,
       "GroundKey": "Grass_01",
       "FenceKey": "Wood_Medium",
-      "PropKeys": ["Tree_Big_Yellow"]
+      "PropKeys": ["Tree_Big_Yellow"],
+      "PropPosition": [0.5]
     }
   ],
   "npcs": {

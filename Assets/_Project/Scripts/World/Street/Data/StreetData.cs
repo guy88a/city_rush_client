@@ -36,6 +36,7 @@ namespace CityRush.World.Street.Data
         public string GroundKey;
         public string FenceKey;
         public string[] PropKeys;
+        public float[] PropPosition;
     }
 
     [Serializable]
