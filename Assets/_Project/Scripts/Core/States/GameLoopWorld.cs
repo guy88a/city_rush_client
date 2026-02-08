@@ -3,19 +3,25 @@ using CityRush.Core.Prefabs;
 using CityRush.Core.Transitions;
 using CityRush.Items;
 using CityRush.Items.World;
+using CityRush.Units;
 using CityRush.Units.Characters;
 using CityRush.Units.Characters.Combat;
 using CityRush.Units.Characters.Controllers;
 using CityRush.Units.Characters.View;
+using CityRush.World.Addresses;
 using CityRush.World.Background;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using CityRush.World.Street;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.U2D;
+using UObject = UnityEngine.Object;
+
 
 internal sealed class GameLoopWorld
 {
@@ -67,6 +73,24 @@ internal sealed class GameLoopWorld
     private Transform InteriorRoot;
     public CorridorComponent Corridor { get; private set; }
     public ApartmentComponent Apartment { get; private set; }
+    public BuildingAddressTag ActiveBuildingTag { get; private set; }
+
+    public void SetActiveBuilding(BuildingAddressTag buildingTag)
+    {
+        ActiveBuildingTag = buildingTag;
+    }
+
+    public void ClearActiveBuilding()
+    {
+        ActiveBuildingTag = null;
+    }
+
+    private string _activeBuildingDoorId;
+
+    public void SetActiveBuildingDoor(BuildingDoor door)
+    {
+        _activeBuildingDoorId = door != null ? door.DoorId : null;
+    }
 
     public GameObject PlayerInstance { get; private set; }
     public Transform PlayerTransform { get; private set; }
@@ -96,19 +120,19 @@ internal sealed class GameLoopWorld
     public void Enter(CorePrefabsRegistry prefabs, MapManager mapManager, ItemsDb itemsDb)
     {
         // Fade Screen
-        GameObject fadeGO = Object.Instantiate(prefabs.ScreenFadeCanvasPrefab);
+        GameObject fadeGO = UObject.Instantiate(prefabs.ScreenFadeCanvasPrefab);
         ScreenFade = fadeGO.GetComponent<ScreenFadeController>();
 
         // Background
-        Background = Object.Instantiate(prefabs.BackgroundPrefab);
+        Background = UObject.Instantiate(prefabs.BackgroundPrefab);
         Background.CameraTransform = _game.CameraTransform;
 
         // Street
-        Street = Object.Instantiate(prefabs.StreetPrefab);
+        Street = UObject.Instantiate(prefabs.StreetPrefab);
         Street.Initialize(_game.GlobalCamera);
 
         StreetRef streetRef = mapManager.GetCurrentStreet();
-        BuildStreet(streetRef);
+        BuildStreet(mapManager, streetRef);
 
         // Interior Root (Corridor + Apartment live here, not under Background)
         InteriorRoot = new GameObject("InteriorRoot").transform;
@@ -133,10 +157,17 @@ internal sealed class GameLoopWorld
         _npcs = new CityRush.Units.Characters.Spawning.NPCSpawnManager();
         _npcs.Enter(prefabs.NPCPrefab);
         _npcs.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs.SetBleedBounds(Street.BleedLeftX, Street.BleedRightX);
         //_npcs.SpawnAgents(5); // ***TOREMOVE***
 
+        var npcDbHost = NpcDbHost.Instance != null ? NpcDbHost.Instance : UObject.FindAnyObjectByType<NpcDbHost>();
+        if (npcDbHost != null)
+            _npcs.SetNpcDb(npcDbHost.NpcDb);
+
+        _npcs.SetResidentPrefab(prefabs.ResidentPrefab);
+
         // Player (after Street build)
-        PlayerInstance = Object.Instantiate(prefabs.PlayerPrefab);
+        PlayerInstance = UObject.Instantiate(prefabs.PlayerPrefab);
         PlayerTransform = PlayerInstance.transform;
 
         PlayerInstance
@@ -144,6 +175,9 @@ internal sealed class GameLoopWorld
         .Init(itemsDb);
 
         _itemsDb = itemsDb;
+        //_npcs.SpawnByNpcId(npcId: 2, count: 1); // Resident
+        //_npcs.SpawnByNpcId(npcId: 1, count: 5); // Normal NPCs
+        Npcs_SpawnStreet();
 
         PlayerCollider = PlayerInstance.GetComponent<BoxCollider2D>();
         PlayerController = PlayerInstance.GetComponent<PlayerPlatformerController>();
@@ -175,25 +209,25 @@ internal sealed class GameLoopWorld
     public void Exit()
     {
         if (Background != null)
-            Object.Destroy(Background.gameObject);
+            UObject.Destroy(Background.gameObject);
 
         if (Street != null)
-            Object.Destroy(Street.gameObject);
+            UObject.Destroy(Street.gameObject);
 
         if (Corridor != null)
-            Object.Destroy(Corridor.gameObject);
+            UObject.Destroy(Corridor.gameObject);
 
         if (PlayerInstance != null)
-            Object.Destroy(PlayerInstance);
+            UObject.Destroy(PlayerInstance);
 
         if (Apartment != null)
-            Object.Destroy(Apartment.gameObject);
+            UObject.Destroy(Apartment.gameObject);
 
         if (ScreenFade != null)
-            Object.Destroy(ScreenFade.gameObject);
+            UObject.Destroy(ScreenFade.gameObject);
 
         if (InteriorRoot != null)
-            Object.Destroy(InteriorRoot.gameObject);
+            UObject.Destroy(InteriorRoot.gameObject);
 
         _npcs?.Exit();
 
@@ -229,7 +263,7 @@ internal sealed class GameLoopWorld
         _npcs?.ClearAll();
 
         if (Street != null)
-            Object.Destroy(Street.gameObject);
+            UObject.Destroy(Street.gameObject);
 
         Street = null;
         StreetLeftX = 0f;
@@ -250,15 +284,21 @@ internal sealed class GameLoopWorld
     public void LoadCorridor(CorridorComponent corridorPrefab)
     {
         if (Corridor != null)
-            Object.Destroy(Corridor.gameObject);
+            UObject.Destroy(Corridor.gameObject);
 
         Transform parent = InteriorRoot;
 
         Corridor = parent != null
-            ? Object.Instantiate(corridorPrefab, parent)
-            : Object.Instantiate(corridorPrefab);
+            ? UObject.Instantiate(corridorPrefab, parent)
+            : UObject.Instantiate(corridorPrefab);
+
+        if (ActiveBuildingTag != null)
+            Corridor.SetHallwayApartments(ActiveBuildingTag.ApartmentsPerFloor);
 
         Corridor.Rebuild();
+        AssignCorridorApartmentDoorIds();
+
+        TagCorridorApartmentDoors(Corridor, ActiveBuildingTag, floorIndex: 0);
 
         if (Background != null)
             Background.SetLayersActive(false);
@@ -267,7 +307,7 @@ internal sealed class GameLoopWorld
     public void UnloadCorridor()
     {
         if (Corridor != null)
-            Object.Destroy(Corridor.gameObject);
+            UObject.Destroy(Corridor.gameObject);
 
         Corridor = null;
     }
@@ -276,21 +316,21 @@ internal sealed class GameLoopWorld
     /// Destroys current Street (if any), instantiates a new Street, builds it from JSON, and refreshes bounds.
     /// MapManager.CommitMove(...) should be done by the caller (navigation layer), not here.
     /// </summary>
-    public void LoadStreet(CorePrefabsRegistry prefabs, StreetRef streetRef)
+    public void LoadStreet(CorePrefabsRegistry prefabs, MapManager mapManager, StreetRef streetRef)
     {
         if (Corridor != null)
         {
-            Object.Destroy(Corridor.gameObject);
+            UObject.Destroy(Corridor.gameObject);
             Corridor = null;
         }
 
         if (Street != null)
-            Object.Destroy(Street.gameObject);
+            UObject.Destroy(Street.gameObject);
 
-        Street = Object.Instantiate(prefabs.StreetPrefab);
+        Street = UObject.Instantiate(prefabs.StreetPrefab);
         Street.Initialize(_game.GlobalCamera);
 
-        BuildStreet(streetRef);
+        BuildStreet(mapManager, streetRef);
 
         if (Background != null)
             Background.SetLayersActive(true);
@@ -303,6 +343,7 @@ internal sealed class GameLoopWorld
 
         _npcs?.SetStreetSpace(null);
         _npcs?.SetStreetBounds(StreetLeftX, StreetRightX);
+        _npcs?.SetBleedBounds(Street.BleedLeftX, Street.BleedRightX);
         //_npcs?.ClearAll();
         //_npcs?.SpawnAgents(5); // ***TOREMOVE***
     }
@@ -310,7 +351,7 @@ internal sealed class GameLoopWorld
     public void LoadApartment(ApartmentComponent apartmentPrefab, float streetT)
     {
         if (Apartment != null)
-            Object.Destroy(Apartment.gameObject);
+            UObject.Destroy(Apartment.gameObject);
 
         if (!_apartmentBgStreetPosCached)
         {
@@ -334,8 +375,8 @@ internal sealed class GameLoopWorld
         Transform parent = InteriorRoot;
 
         Apartment = parent != null
-            ? Object.Instantiate(apartmentPrefab, parent)
-            : Object.Instantiate(apartmentPrefab);
+            ? UObject.Instantiate(apartmentPrefab, parent)
+            : UObject.Instantiate(apartmentPrefab);
 
         if (Corridor != null)
             Corridor.gameObject.SetActive(false);
@@ -389,7 +430,7 @@ internal sealed class GameLoopWorld
         PlayerShooter?.CancelSniperBullet();
 
         if (Apartment != null)
-            Object.Destroy(Apartment.gameObject);
+            UObject.Destroy(Apartment.gameObject);
 
         Apartment = null;
 
@@ -434,9 +475,31 @@ internal sealed class GameLoopWorld
         return spawnX;
     }
 
-    private void BuildStreet(StreetRef streetRef)
+    private void BuildStreet(MapManager mapManager, StreetRef streetRef)
     {
+        if (Street == null || mapManager == null || streetRef == null)
+            return;
+
+        // Tag street BEFORE build (so BuildingRowComponent can read it while instantiating).
+        var streetTag = Street.GetComponent<StreetAddressTag>();
+        if (streetTag == null)
+            streetTag = Street.gameObject.AddComponent<StreetAddressTag>();
+
+        streetTag.Set(
+            position: mapManager.CurrentPosition,
+            id: streetRef.StreetId,
+            displayName: string.IsNullOrWhiteSpace(streetRef.StreetName) ? streetRef.StreetId : streetRef.StreetName,
+            buildingBase: 1,
+            buildingStep: 1
+        );
+
         TextAsset jsonAsset = Resources.Load<TextAsset>($"Maps/{streetRef.JsonPath}");
+
+        if (jsonAsset == null)
+        {
+            Debug.LogError($"[GameLoopWorld] Street JSON not found at Resources/Maps/{streetRef.JsonPath}");
+            return;
+        }
 
         Street.Build(new StreetLoadRequest(
             streetRef.StreetId,
@@ -530,27 +593,99 @@ internal sealed class GameLoopWorld
         _npcs?.ClearAll();
     }
 
-    public void Npcs_SpawnStreet(int count)
+    public void Npcs_SpawnStreet()
     {
-        if (_npcs == null) return;
+        if (_npcs == null || Street == null)
+            return;
 
         _npcs.SetStreetSpace(null);
         _npcs.SetGroundY(0f);
         _npcs.ClearAll();
-        _npcs.SpawnAgents(count);
+
+        var npcs = Street.Data != null ? Street.Data.npcs : null;
+        if (npcs == null)
+            return;
+
+        var streetTag = Street.GetComponent<StreetAddressTag>();
+
+        if (npcs.residents != null)
+        {
+            for (int i = 0; i < npcs.residents.Length; i++)
+            {
+                var r = npcs.residents[i];
+                if (r == null || r.address == null)
+                    continue;
+
+                _npcs.SpawnResidentAtAddress(
+                    npcId: r.npcId,
+                    streetTag: streetTag,
+                    buildingIndex: r.address.buildingIndex,
+                    floorIndex: r.address.floorIndex,
+                    apartmentIndex: r.address.apartmentIndex,
+                    formattedAddress: r.formattedAddress
+                );
+            }
+        }
+
+        int maxCount = (npcs.pedestrians != null) ? npcs.pedestrians.maxCount : 0;
+        int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
+
+        _npcs.ConfigureStreetPedestrians(maxCount, ids);
+        _npcs.SpawnConfiguredStreetPedestrians();
+    }
+
+    public void Npcs_SpawnStreet(int count)
+    {
+        Npcs_SpawnStreet();
+    }
+
+
+    public void Npcs_SpawnApartmentWindow()
+    {
+        if (_npcs == null || Street == null)
+            return;
+
+        _npcs.SetStreetSpace(Street.transform);
+        _npcs.SetGroundY(0f);
+        _npcs.ClearAll();
+
+        var npcs = Street.Data != null ? Street.Data.npcs : null;
+        if (npcs == null)
+            return;
+
+        var streetTag = Street.GetComponent<StreetAddressTag>();
+
+        if (npcs.residents != null)
+        {
+            for (int i = 0; i < npcs.residents.Length; i++)
+            {
+                var r = npcs.residents[i];
+                if (r == null || r.address == null)
+                    continue;
+
+                _npcs.SpawnResidentAtAddress(
+                    npcId: r.npcId,
+                    streetTag: streetTag,
+                    buildingIndex: r.address.buildingIndex,
+                    floorIndex: r.address.floorIndex,
+                    apartmentIndex: r.address.apartmentIndex,
+                    formattedAddress: r.formattedAddress
+                );
+            }
+        }
+
+        int maxCount = (npcs.pedestrians != null) ? npcs.pedestrians.maxCount : 0;
+        int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
+
+        _npcs.ConfigureStreetPedestrians(maxCount, ids);
+        _npcs.SpawnConfiguredStreetPedestrians();
     }
 
     public void Npcs_SpawnApartmentWindow(int count)
     {
-        if (_npcs == null || Street == null) return;
-
-        // Street already has p.y = 8f and scale = 0.5f set in LoadApartment(),
-        // so street-space -> world-space conversion will account for it.
-        _npcs.SetStreetSpace(Street.transform);
-        _npcs.SetGroundY(0f);
-        _npcs.ClearAll();
-        _npcs.SpawnAgents(count);
+        Npcs_SpawnApartmentWindow();
     }
+
 
     public void EnterWindowADS()
     {
@@ -771,7 +906,7 @@ internal sealed class GameLoopWorld
 
         Transform parent = Street.ItemsRoot != null ? Street.ItemsRoot : Street.transform;
 
-        GameObject go = Object.Instantiate(prefab, parent);
+        GameObject go = UObject.Instantiate(prefab, parent);
         go.transform.position = worldPos;
 
         ItemPickup pickup = go.GetComponent<ItemPickup>();
@@ -785,5 +920,67 @@ internal sealed class GameLoopWorld
         return go;
     }
 
+    private static void TagCorridorApartmentDoors(CorridorComponent corridor, BuildingAddressTag buildingTag, int floorIndex)
+    {
+        if (corridor == null || buildingTag == null)
+            return;
+
+        ApartmentDoor[] found = corridor.GetComponentsInChildren<ApartmentDoor>(true);
+
+        var doors = new List<ApartmentDoor>(found.Length);
+        for (int i = 0; i < found.Length; i++)
+        {
+            if (found[i] != null)
+                doors.Add(found[i]);
+        }
+
+        doors.Sort(static (a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
+
+        for (int i = 0; i < doors.Count; i++)
+        {
+            ApartmentDoor door = doors[i];
+
+            ApartmentAddressTag tag = door.GetComponent<ApartmentAddressTag>();
+            if (tag == null)
+                tag = door.gameObject.AddComponent<ApartmentAddressTag>();
+
+            tag.Set(buildingTag, floorIndex, i);
+
+            door.SetApartmentId(tag.ApartmentNumber.ToString());
+            door.SetDoorId($"{buildingTag.Street.Address}|B{buildingTag.BuildingIndex}|F{floorIndex}|A{tag.ApartmentNumber}");
+
+            door.gameObject.name = $"ApartmentDoor_{tag.ApartmentNumber}";
+        }
+    }
+
+    private void AssignCorridorApartmentDoorIds()
+    {
+        if (Corridor == null)
+            return;
+
+        ApartmentDoor[] doors = Corridor.GetComponentsInChildren<ApartmentDoor>(true);
+        if (doors == null || doors.Length == 0)
+            return;
+
+        var list = new System.Collections.Generic.List<ApartmentDoor>(doors);
+        list.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
+
+        string baseDoorId = _activeBuildingDoorId;
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            int apartmentNumber = i + 1;
+
+            ApartmentDoor d = list[i];
+            d.SetApartmentId(apartmentNumber.ToString());
+
+            if (!string.IsNullOrEmpty(baseDoorId))
+                d.SetDoorId($"{baseDoorId} A{apartmentNumber}");
+            else
+                d.SetDoorId($"A{apartmentNumber}");
+
+            d.gameObject.name = $"ApartmentDoor_{apartmentNumber}";
+        }
+    }
 
 }

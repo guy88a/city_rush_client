@@ -21,9 +21,10 @@ namespace CityRush.Core.Prefabs
         [Header("Core UI / Transitions")]
         [SerializeField] private GameObject screenFadeCanvasPrefab;
 
-        [Header("Player")]
+        [Header("Player / NPCs")]
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject npcPrefab;
+        [SerializeField] private GameObject residentPrefab;
 
         public Camera GlobalCameraPrefab => globalCameraPrefab;
         public BackgroundRoot BackgroundPrefab => backgroundPrefab;
@@ -32,7 +33,9 @@ namespace CityRush.Core.Prefabs
         public ApartmentComponent ApartmentPrefab => apartmentPrefab;
 
         public GameObject ScreenFadeCanvasPrefab => screenFadeCanvasPrefab;
+
         public GameObject PlayerPrefab => playerPrefab;
         public GameObject NPCPrefab => npcPrefab;
+        public GameObject ResidentPrefab => residentPrefab;
     }
 }

@@ -38,6 +38,7 @@ namespace CityRush.World.Map
     public class StreetRef
     {
         public string StreetId;
-        public string JsonPath; // Resources path to StreetData JSON
+        public string StreetName;   // NEW (display)
+        public string JsonPath;     // Resources path to StreetData JSON
     }
 }

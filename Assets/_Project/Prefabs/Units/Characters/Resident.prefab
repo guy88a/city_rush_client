@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 1029451010479163912}
   - component: {fileID: 8477157425209339775}
   - component: {fileID: 8277982260494675459}
+  - component: {fileID: 4367979110173796723}
+  - component: {fileID: 1654751621974485821}
   m_Layer: 12
   m_Name: Resident
   m_TagString: QuestNPC
@@ -300,6 +302,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcIdentity
   id: 2
+--- !u!114 &4367979110173796723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470628288414811201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728f762aa5db66a498097b1b630e3832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcRuntimeData
+--- !u!114 &1654751621974485821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470628288414811201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396913256022cf3488ce7497d780c328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.Units.NpcHomeAddress
+  streetId: 
+  zoneIndex: 0
+  row: 0
+  col: 0
+  buildingIndex: 0
+  floorIndex: 0
+  apartmentIndex: 0
+  formattedAddress: 
 --- !u!1 &2115936644869400929
 GameObject:
   m_ObjectHideFlags: 0

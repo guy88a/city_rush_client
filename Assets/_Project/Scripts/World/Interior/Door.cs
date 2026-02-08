@@ -8,6 +8,11 @@ namespace CityRush.World.Interior
 
         public string DoorId => doorId;
 
+        public void SetDoorId(string id)
+        {
+            doorId = id ?? string.Empty;
+        }
+
         public abstract void Enter(GameObject player);
     }
 }

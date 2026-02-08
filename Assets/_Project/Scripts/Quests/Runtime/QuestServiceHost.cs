@@ -1,4 +1,5 @@
 using CityRush.Items;
+using CityRush.Units;
 using UnityEngine;
 
 namespace CityRush.Quests
@@ -8,6 +9,9 @@ namespace CityRush.Quests
     {
         [Header("Quest DB")]
         [SerializeField] private QuestDB questDb;
+
+        [Header("NPC DB")]
+        [SerializeField] private NpcDB npcDb;
 
         [Header("Runtime Refs (optional)")]
         [SerializeField] private PlayerItemsRuntime playerItems;
@@ -26,7 +30,8 @@ namespace CityRush.Quests
             if (playerItems == null)
                 playerItems = FindFirstObjectByType<PlayerItemsRuntime>();
 
-            _service = new QuestService(questDb);
+            // npcDb is optional for now (QuestService will fallback to full DB scan if it's null).
+            _service = new QuestService(questDb, npcDb);
             _service.OnQuestRewarded += HandleQuestRewarded;
         }
 

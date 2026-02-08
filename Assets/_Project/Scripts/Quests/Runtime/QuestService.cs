@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CityRush.Units;
 
 namespace CityRush.Quests
 {
@@ -12,11 +13,15 @@ namespace CityRush.Quests
         public event Action<int> OnQuestProgressChanged;
 
         private readonly QuestDB _db;
+        private readonly NpcDB _npcDb;
         private readonly Dictionary<int, QuestState> _states = new();
 
-        public QuestService(QuestDB db)
+        public QuestService(QuestDB db) : this(db, null) { }
+
+        public QuestService(QuestDB db, NpcDB npcDb)
         {
             _db = db;
+            _npcDb = npcDb;
 
             if (_db == null)
                 return;
@@ -82,6 +87,28 @@ namespace CityRush.Quests
             if (_db == null)
                 return;
 
+            // Prefer NPC-authored quest links (fast path).
+            if (_npcDb != null && _npcDb.TryGet(npcId, out var npcDef))
+            {
+                var ids = npcDef.Quests.startQuestIds;
+                if (ids != null && ids.Length > 0)
+                {
+                    for (int i = 0; i < ids.Length; i++)
+                    {
+                        int questId = ids[i];
+                        if (questId <= 0)
+                            continue;
+
+                        var stage = GetStage(questId);
+                        if (stage == QuestStage.Available)
+                            questIdsOut.Add(questId);
+                    }
+                }
+
+                return; // authoritative when NPC exists in DB
+            }
+
+            // Fallback: old full scan (until NPC DB is populated).
             var quests = _db.Quests;
             if (quests == null)
                 return;
@@ -109,6 +136,28 @@ namespace CityRush.Quests
             if (_db == null)
                 return;
 
+            // Prefer NPC-authored quest links (fast path).
+            if (_npcDb != null && _npcDb.TryGet(npcId, out var npcDef))
+            {
+                var ids = npcDef.Quests.endQuestIds;
+                if (ids != null && ids.Length > 0)
+                {
+                    for (int i = 0; i < ids.Length; i++)
+                    {
+                        int questId = ids[i];
+                        if (questId <= 0)
+                            continue;
+
+                        var stage = GetStage(questId);
+                        if (stage == QuestStage.ReadyToTurnIn)
+                            questIdsOut.Add(questId);
+                    }
+                }
+
+                return; // authoritative when NPC exists in DB
+            }
+
+            // Fallback: old full scan
             var quests = _db.Quests;
             if (quests == null)
                 return;
@@ -221,7 +270,6 @@ namespace CityRush.Quests
 
             st.MarkCompleted();
 
-            // Reward is signaled (UI / gameplay systems decide how to grant items/tokens).
             OnQuestRewarded?.Invoke(questId, def.Reward);
             OnQuestCompleted?.Invoke(questId);
 
@@ -250,13 +298,51 @@ namespace CityRush.Quests
 
         public void GetNpcActiveQuests(int npcId, List<int> questIdsOut)
         {
-            questIdsOut.Clear();
-
-            if (_db == null || _db.Quests == null)
+            if (questIdsOut == null)
                 return;
 
-            // “Active” here means: already started and relevant to this NPC
-            // (either started here or ends here).
+            questIdsOut.Clear();
+
+            if (_db == null)
+                return;
+
+            // Prefer NPC-authored quest links.
+            if (_npcDb != null && _npcDb.TryGet(npcId, out var npcDef))
+            {
+                void AddIfActive(int questId)
+                {
+                    if (questId <= 0)
+                        return;
+
+                    var stage = GetStage(questId);
+                    if (stage != QuestStage.InProgress && stage != QuestStage.ReadyToTurnIn)
+                        return;
+
+                    if (!questIdsOut.Contains(questId))
+                        questIdsOut.Add(questId);
+                }
+
+                var startIds = npcDef.Quests.startQuestIds;
+                if (startIds != null)
+                {
+                    for (int i = 0; i < startIds.Length; i++)
+                        AddIfActive(startIds[i]);
+                }
+
+                var endIds = npcDef.Quests.endQuestIds;
+                if (endIds != null)
+                {
+                    for (int i = 0; i < endIds.Length; i++)
+                        AddIfActive(endIds[i]);
+                }
+
+                return;
+            }
+
+            // Fallback: old scan (started + relevant to this NPC).
+            if (_db.Quests == null)
+                return;
+
             for (int i = 0; i < _db.Quests.Count; i++)
             {
                 var def = _db.Quests[i];
@@ -272,6 +358,5 @@ namespace CityRush.Quests
                     questIdsOut.Add(def.QuestId);
             }
         }
-
     }
 }

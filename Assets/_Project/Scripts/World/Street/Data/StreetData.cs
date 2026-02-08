@@ -15,6 +15,7 @@ namespace CityRush.World.Street.Data
         public StreetSpawnData spawn;
         public StreetVisualData street;
         public BuildingDefinition[] buildings;
+        public StreetNpcsData npcs;
         public PedestriansData pedestrians;
     }
 
@@ -36,4 +37,37 @@ namespace CityRush.World.Street.Data
     {
         // reserved for future use
     }
+
+    [Serializable]
+    public class StreetNpcsData
+    {
+        public StreetPedestriansSpawnData pedestrians;
+        public StreetNpcAddressEntry[] residents;
+    }
+
+    [Serializable]
+    public class StreetPedestriansSpawnData
+    {
+        public int maxCount;
+        public int[] npcIds;
+    }
+
+    [Serializable]
+    public class StreetNpcAddressEntry
+    {
+        public int npcId;
+        public StreetNpcAddressData address;
+
+        // Optional. Can be empty and computed later from tags.
+        public string formattedAddress;
+    }
+
+    [Serializable]
+    public class StreetNpcAddressData
+    {
+        public int buildingIndex;    // 0-based, index into StreetData.buildings[]
+        public int floorIndex;       // 0-based
+        public int apartmentIndex;   // 0-based
+    }
+
 }

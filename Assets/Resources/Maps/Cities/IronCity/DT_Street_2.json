@@ -178,5 +178,11 @@
       }
     }
   ],
-  "pedestrians": {}
+  "npcs": {
+    "pedestrians": {
+      "maxCount": 0,
+      "npcIds": []
+    },
+    "residents": []
+  }
 }

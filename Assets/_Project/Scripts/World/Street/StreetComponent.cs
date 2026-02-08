@@ -22,12 +22,16 @@ namespace CityRush.World.Street
         [SerializeField] private BuildingRowComponent buildingRow;
 
         private StreetData streetData;
+        public StreetData Data => streetData;
+        public StreetNpcsData Npcs => streetData != null ? streetData.npcs : null;
 
         private Transform roadsRoot;
         private Transform pavementsRoot;
 
         public float LeftBoundX { get; private set; }
         public float RightBoundX { get; private set; }
+        public float BleedLeftX { get; private set; }
+        public float BleedRightX { get; private set; }
         private const int BLEED_TILES = 2;
 
         private Transform itemsRoot;
@@ -103,7 +107,7 @@ namespace CityRush.World.Street
                 TILE_WIDTH,
                 GetRoadBaseY()
             );
-            builder.Build(data.street.road);
+            builder.Build(data.street.road, BLEED_TILES, BLEED_TILES);
         }
 
         private void BuildPavement(StreetData data)
@@ -120,7 +124,7 @@ namespace CityRush.World.Street
                 pavementBaseY
             );
 
-            builder.Build(data.street.pavements);
+            builder.Build(data.street.pavements, BLEED_TILES, BLEED_TILES);
         }
 
         private void AssignBuildings()
@@ -138,6 +142,10 @@ namespace CityRush.World.Street
 
             LeftBoundX = transform.position.x;
             RightBoundX = transform.position.x + totalWidth;
+
+            float bleedWidth = BLEED_TILES * TILE_WIDTH;
+            BleedLeftX = LeftBoundX - bleedWidth;
+            BleedRightX = RightBoundX + bleedWidth;
         }
 
         public float SpawnX

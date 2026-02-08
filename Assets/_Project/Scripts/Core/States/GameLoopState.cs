@@ -6,6 +6,7 @@ using CityRush.UI;
 using CityRush.Units;
 using CityRush.Units.Characters; // CombatSystem
 using CityRush.Units.Characters.Combat;
+using CityRush.World.Addresses;
 using CityRush.World.Interior;
 using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
@@ -24,8 +25,6 @@ public class GameLoopState : IState
     private GameLoopNavigation _navigation;
 
     private ApartmentDoor _activeApartmentDoor;
-
-    private const int DefaultNpcCount = 5;
 
     private ILoggerService _logger;
 
@@ -112,8 +111,6 @@ public class GameLoopState : IState
 
         _mode = LoopMode.Street;
         _isTransitioning = false;
-
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
@@ -334,12 +331,12 @@ public class GameLoopState : IState
         _mapManager.CommitMove(direction);
 
         StreetRef nextStreet = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, nextStreet);
+        _world.LoadStreet(_prefabs, _mapManager, nextStreet);
 
         _world.RepositionPlayerForStreetEntry(direction);
 
         _world.RepositionPlayerForStreetEntry(direction);
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
     }
 
     private void StreetTransitionInDone()
@@ -409,7 +406,7 @@ public class GameLoopState : IState
 
     private void EnterApartmentWindowInDone()
     {
-        _world.Npcs_SpawnApartmentWindow(DefaultNpcCount);
+        _world.Npcs_SpawnApartmentWindow();
         _mode = LoopMode.ApartmentWindow;
         _world?.WindowPan_SetRootFromCamera();
 
@@ -465,6 +462,8 @@ public class GameLoopState : IState
 
         _enterBuildingStreetTSet = false;
 
+        _world.ClearActiveBuilding();
+
         // Load the same street (no CommitMove)
         _world.UnloadCorridor();
         _world.SetStreetActive(true);
@@ -473,7 +472,7 @@ public class GameLoopState : IState
         _world.PlayerTransform.position = _returnStreetPlayerPos;
         _game.CameraTransform.position = _returnStreetCameraPos;
 
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // Reset navigation state cleanly
         _navigation.Enter();
@@ -631,6 +630,11 @@ public class GameLoopState : IState
 
         _enterBuildingStreetT = Mathf.InverseLerp(left, right, doorX);
         _enterBuildingStreetTSet = true;
+
+        _world.SetActiveBuildingDoor(door);
+
+        BuildingAddressTag buildingTag = door != null ? door.GetComponentInParent<BuildingAddressTag>() : null;
+        _world?.SetActiveBuilding(buildingTag);
 
         StartTransition(
             outWork: EnterCorridorOutWork,
@@ -845,7 +849,7 @@ public class GameLoopState : IState
 
         // 3) Load home street
         StreetRef homeStreet = _mapManager.GetCurrentStreet();
-        _world.LoadStreet(_prefabs, homeStreet);
+        _world.LoadStreet(_prefabs, _mapManager, homeStreet);
 
         // 4) Place player using existing street-entry placement
         // (Pick ONE direction and keep it consistent for "home spawn")
@@ -862,7 +866,7 @@ public class GameLoopState : IState
         _playerCombat?.ExitDeadLock();
 
         // 6) Respawn NPCs
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // 7) Refresh navigation snapshot usage
         _navigation.Enter();
@@ -903,7 +907,7 @@ public class GameLoopState : IState
 
         // 4) Reload current street (now it is the spawn street)
         _world.Npcs_Clear();
-        _world.LoadStreet(_prefabs, _mapManager.GetCurrentStreet());
+        _world.LoadStreet(_prefabs, _mapManager, _mapManager.GetCurrentStreet());
 
         // 5) Reposition player to the street entry (simple + consistent)
         _world.RepositionPlayerForStreetEntry(MapDirection.Right);
@@ -916,7 +920,7 @@ public class GameLoopState : IState
         _world.PlayerCombatDriver?.ExitDeadLock(); // use your actual reference if named differently
 
         // 7) Respawn NPCs
-        _world.Npcs_SpawnStreet(DefaultNpcCount);
+        _world.Npcs_SpawnStreet();
 
         // 8) Reset nav state
         _navigation.Enter();

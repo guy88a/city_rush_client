@@ -9,7 +9,6 @@ namespace CityRush.World.Street.Generation
         private readonly GameObject[] _tiles;
         private readonly float _tileWidth;
         private readonly float _y;
-        private readonly float xOffset = 0;
 
         public RoadBuilder(
             Transform parent,
@@ -25,42 +24,54 @@ namespace CityRush.World.Street.Generation
 
         public void Build(StreetPatternData patternData)
         {
-            if (patternData == null || patternData.pattern == null)
+            Build(patternData, 0, 0);
+        }
+
+        public void Build(StreetPatternData patternData, int leftBleedTiles, int rightBleedTiles)
+        {
+            if (patternData == null || patternData.pattern == null || patternData.pattern.Length == 0)
                 return;
 
             int repeat = Mathf.Max(1, patternData.repeat);
-            int index = 0;
+            int patternLen = patternData.pattern.Length;
 
-            for (int r = 0; r < repeat; r++)
+            int mainCount = repeat * patternLen;
+            int totalCount = Mathf.Max(0, leftBleedTiles) + mainCount + Mathf.Max(0, rightBleedTiles);
+
+            int firstTileIndex = patternData.pattern[0];
+            int lastTileIndex = patternData.pattern[patternLen - 1];
+
+            float startXLocal = -Mathf.Max(0, leftBleedTiles) * _tileWidth;
+            float yLocal = _y - _parent.position.y;
+
+            for (int i = 0; i < totalCount; i++)
             {
-                for (int i = 0; i < patternData.pattern.Length; i++)
+                int tileIndex;
+
+                if (i < leftBleedTiles)
                 {
-                    int tileIndex = patternData.pattern[i];
-
-                    if (tileIndex < 0 || tileIndex >= _tiles.Length)
-                        continue;
-
-                    Vector3 position = new Vector3(
-                        (index * _tileWidth) + xOffset,
-                        _y,
-                        0f
-                    );
-
-                    var instance = Object.Instantiate(
-                        _tiles[tileIndex],
-                        position,
-                        Quaternion.identity,
-                        _parent
-                    );
-
-                    var sr = instance.GetComponent<SpriteRenderer>();
-                    if (sr != null)
-                    {
-                        sr.sortingOrder = StreetSorting.Road;
-                    }
-
-                    index++;
+                    tileIndex = firstTileIndex;
                 }
+                else if (i >= leftBleedTiles + mainCount)
+                {
+                    tileIndex = lastTileIndex;
+                }
+                else
+                {
+                    int mainIndex = i - leftBleedTiles;
+                    int local = mainIndex % patternLen;
+                    tileIndex = patternData.pattern[local];
+                }
+
+                if (tileIndex < 0 || tileIndex >= _tiles.Length)
+                    continue;
+
+                var instance = Object.Instantiate(_tiles[tileIndex], _parent);
+                instance.transform.localPosition = new Vector3(startXLocal + (i * _tileWidth), yLocal, 0f);
+
+                var sr = instance.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                    sr.sortingOrder = StreetSorting.Road;
             }
         }
     }
