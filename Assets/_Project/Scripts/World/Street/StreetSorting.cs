@@ -10,5 +10,9 @@ namespace CityRush.World.Street
         // reserved for future use
         // public const int StreetPropsMin = 12;
         // public const int StreetPropsMax = 14;
+
+        public const int Ground = -3;
+        public const int Props = -2;
+        public const int Fences = -1;
     }
 }

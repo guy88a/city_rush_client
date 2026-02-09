@@ -631,7 +631,7 @@ internal sealed class GameLoopWorld
         int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
 
         _npcs.ConfigureStreetPedestrians(maxCount, ids);
-        _npcs.SpawnConfiguredStreetPedestrians();
+        _npcs.SpawnConfiguredStreetPedestriansOnStreetLoad();
     }
 
     public void Npcs_SpawnStreet(int count)
@@ -678,7 +678,7 @@ internal sealed class GameLoopWorld
         int[] ids = (npcs.pedestrians != null) ? npcs.pedestrians.npcIds : null;
 
         _npcs.ConfigureStreetPedestrians(maxCount, ids);
-        _npcs.SpawnConfiguredStreetPedestrians();
+        _npcs.SpawnConfiguredStreetPedestriansOnStreetLoad();
     }
 
     public void Npcs_SpawnApartmentWindow(int count)

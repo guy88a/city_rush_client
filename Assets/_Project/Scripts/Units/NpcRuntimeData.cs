@@ -11,6 +11,13 @@ namespace CityRush.Units
         private NpcIdentity _id;
         private NpcDefinition _def;
 
+        private int _appliedNpcId;
+        private string _appliedVisualKey;
+
+        private bool _defaultsCached;
+        private Sprite _defaultSprite;
+        private RuntimeAnimatorController _defaultController;
+
         private bool _visualsApplied;
         private bool _graphicCached;
         private SpriteRenderer _spriteRenderer;
@@ -38,6 +45,22 @@ namespace CityRush.Units
         {
             if (_id == null || _id.Id <= 0)
                 return;
+
+            if (_appliedNpcId != _id.Id)
+            {
+                _appliedNpcId = _id.Id;
+
+                _visualsApplied = false;
+                _appliedVisualKey = null;
+
+                _weaponsApplied = false;
+
+                if (_weaponsRetryCo != null)
+                {
+                    StopCoroutine(_weaponsRetryCo);
+                    _weaponsRetryCo = null;
+                }
+            }
 
             var host = NpcDbHost.Instance != null ? NpcDbHost.Instance : FindFirstObjectByType<NpcDbHost>();
             if (host == null || host.NpcDb == null)
@@ -78,19 +101,33 @@ namespace CityRush.Units
 
         private void ApplyVisuals(NpcDefinition def, NpcDbHost host)
         {
-            if (_visualsApplied)
+            // Empty key => keep prefab defaults (and revert if pooled NPC had other visuals before).
+            string visualKey = def != null ? def.VisualKey : null;
+
+            if (_visualsApplied && string.Equals(_appliedVisualKey, visualKey))
                 return;
 
-            // Empty key => keep prefab defaults.
-            string visualKey = def != null ? def.VisualKey : null;
+            CacheGraphicRefsIfNeeded();
+
             if (string.IsNullOrWhiteSpace(visualKey))
+            {
+                if (_spriteRenderer != null)
+                    _spriteRenderer.sprite = _defaultSprite;
+
+                if (_animator != null)
+                    _animator.runtimeAnimatorController = _defaultController;
+
+                _visualsApplied = true;
+                _appliedVisualKey = visualKey;
                 return;
+            }
 
             var visualsDb = host != null ? host.NpcVisualsDb : null;
             if (visualsDb == null)
             {
                 Debug.LogWarning($"[NpcRuntimeData] NpcVisualsDB missing; cannot apply visuals for npcId={NpcId} visualKey='{visualKey}'.", this);
                 _visualsApplied = true;
+                _appliedVisualKey = visualKey;
                 return;
             }
 
@@ -98,10 +135,9 @@ namespace CityRush.Units
             {
                 Debug.LogWarning($"[NpcRuntimeData] visualKey='{visualKey}' not found in NpcVisualsDB (npcId={NpcId}).", this);
                 _visualsApplied = true;
+                _appliedVisualKey = visualKey;
                 return;
             }
-
-            CacheGraphicRefsIfNeeded();
 
             if (_spriteRenderer != null && visual.Sprite != null)
                 _spriteRenderer.sprite = visual.Sprite;
@@ -110,6 +146,7 @@ namespace CityRush.Units
                 _animator.runtimeAnimatorController = visual.OverrideController;
 
             _visualsApplied = true;
+            _appliedVisualKey = visualKey;
         }
 
         private void CacheGraphicRefsIfNeeded()
@@ -131,6 +168,17 @@ namespace CityRush.Units
 
             if (_animator == null)
                 _animator = GetComponentInChildren<Animator>(true);
+
+            if (!_defaultsCached)
+            {
+                _defaultsCached = true;
+
+                if (_spriteRenderer != null)
+                    _defaultSprite = _spriteRenderer.sprite;
+
+                if (_animator != null)
+                    _defaultController = _animator.runtimeAnimatorController;
+            }
         }
 
         private void TryApplyWeapons(NpcDbHost host)

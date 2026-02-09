@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2870003e9567743a8ae1cbce839490, type: 3}
+  m_Name: ParkRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::CityRush.World.Street.Registry.ParkRegistry
+  Grounds:
+  - Key: Soil_01
+    Prefab: {fileID: 2828202658433963217, guid: 460de9b341c8fa04e9d3d72e832af7c1, type: 3}
+  - Key: Grass_01
+    Prefab: {fileID: 475591701036951746, guid: 5d90ecc9c334aee4b80be247ec89979a, type: 3}
+  Fences:
+  - Key: Wood_Light
+    Prefab: {fileID: 1005364394494959512, guid: ea50318a1d9fb6c408cbcb907cb2505e, type: 3}
+  - Key: Wood_Medium
+    Prefab: {fileID: 4881689912033145987, guid: ad21c198271e6c9498dfa4569308e4c6, type: 3}
+  Props:
+  - Key: Tree_Small_Green
+    Prefab: {fileID: 6032251616056695854, guid: 4077b865a311ecd4688022ba0f6ce1ca, type: 3}
+  - Key: Tree_Small_Yellow
+    Prefab: {fileID: 8137074574896096460, guid: 77cd362c3f9ee9a4cb7a24d10c214ccd, type: 3}
+  - Key: Tree_Big_Green
+    Prefab: {fileID: 7383492545942939918, guid: f2b4070880ab0964cbf7958118311620, type: 3}
+  - Key: Tree_Big_Yellow
+    Prefab: {fileID: 6973095205055426122, guid: 89a5a8e493a1d564f9f045cbe2033cf8, type: 3}
