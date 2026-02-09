@@ -21,6 +21,17 @@ namespace CityRush.Units.Characters.Combat
 
         private readonly Collider2D[] _shotgunHits = new Collider2D[32];
 
+        [Header("Punch")]
+        [SerializeField] private LayerMask punchHitMask;
+        [SerializeField] private int punchBaseDamage = 1;
+        [SerializeField] private Vector2 punchCircleOffset = new Vector2(0.6f, 0f);
+        [SerializeField] private float punchHitRadius = 0.45f;
+        [SerializeField] private float punchKnockbackImpulse = 6f;
+        [SerializeField, Range(0f, 1f)] private float punchStunChance = 0.25f;
+        [SerializeField] private float punchStunDuration = 0.35f;
+
+        private readonly Collider2D[] _punchHits = new Collider2D[32];
+
         [SerializeField] private bool debugDrawSniperPoint = true;
         [SerializeField] private float debugSniperRadius = 0.15f;
         [SerializeField] private Color debugSniperColor = new Color(0.2f, 1f, 0.8f, 0.9f);
@@ -162,6 +173,91 @@ namespace CityRush.Units.Characters.Combat
                         phys.AddImpulse(direction * impulse);
                 }
             }
+        }
+
+        public float PunchMaxReach => Mathf.Abs(punchCircleOffset.x) + punchHitRadius;
+
+        public bool TryPunch(Vector2 origin, Vector2 direction, CharacterUnit onlyTarget = null)
+        {
+            if (_damage == null) return false;
+            if (_behavior != null && !_behavior.CanAct) return false;
+
+            if (direction.sqrMagnitude < 0.0001f)
+                direction = Vector2.right;
+            direction.Normalize();
+
+            Vector2 offset = punchCircleOffset;
+            Vector2 center = origin + new Vector2(offset.x * direction.x, offset.y);
+
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = punchHitMask,
+                useTriggers = true
+            };
+
+            int count = Physics2D.OverlapCircle(center, punchHitRadius, filter, _punchHits);
+            if (count <= 0) return false;
+
+            Collider2D bestHit = null;
+            CharacterUnit bestUnit = null;
+            float bestDist = float.PositiveInfinity;
+
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D hit = _punchHits[i];
+                _punchHits[i] = null;
+
+                if (hit == null) continue;
+                if (IsOwnerCollider(hit)) continue;
+
+                CharacterUnit unit = hit.GetComponentInParent<CharacterUnit>();
+                if (unit == null) continue;
+
+                if (onlyTarget != null && unit != onlyTarget)
+                    continue;
+
+                Vector2 p = hit.bounds.ClosestPoint(center);
+                float d = (p - center).sqrMagnitude;
+
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestHit = hit;
+                    bestUnit = unit;
+                }
+            }
+
+            if (bestHit == null) return false;
+
+            _damage.TryApplyDamage(bestHit, punchBaseDamage);
+
+            if (punchKnockbackImpulse > 0f)
+            {
+                var phys = bestHit.GetComponentInParent<PhysicsObject>();
+                if (phys != null)
+                    phys.AddImpulse(direction * punchKnockbackImpulse);
+            }
+
+            if (punchStunChance > 0f && punchStunDuration > 0f && Random.value <= punchStunChance)
+            {
+                CharacterBehavior targetBehavior = null;
+
+                if (bestUnit != null)
+                {
+                    targetBehavior = bestUnit.GetComponent<CharacterBehavior>();
+                    if (targetBehavior == null)
+                        targetBehavior = bestUnit.GetComponentInChildren<CharacterBehavior>(includeInactive: true);
+                }
+
+                if (targetBehavior != null)
+                {
+                    targetBehavior.TriggerWhacked();
+                    targetBehavior.LockAllFor(punchStunDuration);
+                }
+            }
+
+            return true;
         }
 
         private bool IsLockedByShotgun()
