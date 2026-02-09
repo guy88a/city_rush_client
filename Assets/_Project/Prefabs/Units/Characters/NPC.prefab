@@ -263,7 +263,7 @@ MonoBehaviour:
     m_Bits: 200
   punchBaseDamage: 1
   punchCircleOffset: {x: 1, y: 0}
-  punchHitRadius: 1
+  punchHitRadius: 2
   punchKnockbackImpulse: 6
   punchStunChance: 0.25
   punchStunDuration: 0.35

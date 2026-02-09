@@ -263,8 +263,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 200
   punchBaseDamage: 2
-  punchCircleOffset: {x: 0.6, y: 0}
-  punchHitRadius: 0.45
+  punchCircleOffset: {x: 1, y: 0}
+  punchHitRadius: 2
   punchKnockbackImpulse: 6
   punchStunChance: 0.25
   punchStunDuration: 0.35
