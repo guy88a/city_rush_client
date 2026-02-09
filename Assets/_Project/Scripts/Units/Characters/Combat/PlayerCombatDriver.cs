@@ -50,6 +50,11 @@ namespace CityRush.Units.Characters.Combat
 
         private CharacterWeaponSet _weapons;
 
+        private CharacterBehavior _behavior;
+        private WeaponShooter _shooter;
+
+        private float _nextPunchTime;
+
         private InputAction _primaryAction;
         private InputAction _altAction;
 
@@ -66,6 +71,9 @@ namespace CityRush.Units.Characters.Combat
         {
             _controller = GetComponent<PlayerPlatformerController>();
             _weapons = GetComponent<CharacterWeaponSet>();
+
+            _behavior = GetComponent<CharacterBehavior>();
+            _shooter = GetComponent<WeaponShooter>();
 
             _graphic = transform.Find("Graphic");
             if (_graphic != null)
@@ -169,6 +177,27 @@ namespace CityRush.Units.Characters.Combat
             if (_controller.IsFrozen) return;
 
             float now = Time.time;
+
+            if (_behavior != null && !_behavior.CanAct)
+            {
+                _behavior.SetUziFiring(false);
+                return;
+            }
+
+            // LMB punch:
+            // - Melee mode => always punch
+            // - Gun mode => Alt + LMB punches
+            bool wantsPunch = !isAlt && (selectedMode == WeaponMode.Melee || IsPunchModifierHeld());
+            if (wantsPunch)
+            {
+                if (now < _nextPunchTime) return;
+
+                FirePunch();
+                _nextPunchTime = now + punchCooldown;
+                return;
+            }
+
+            // Regular cooldown gates (guns / throw)
             if (isAlt)
             {
                 if (now < _nextAltTime) return;
@@ -229,17 +258,19 @@ namespace CityRush.Units.Characters.Combat
                 return;
             }
 
-            // Melee selected
+            // Melee selected: RMB = Throw (LMB punch handled above)
             if (isAlt)
             {
                 FireThrow(lockDuration: throwLockDuration);
                 _nextAltTime = now + throwCooldown;
             }
-            else
-            {
-                FirePunch(lockDuration: meleeLockDuration);
-                _nextPrimaryTime = now + punchCooldown;
-            }
+
+        }
+
+        private bool IsPunchModifierHeld()
+        {
+            if (Keyboard.current == null) return false;
+            return Keyboard.current.leftAltKey.isPressed || Keyboard.current.rightAltKey.isPressed;
         }
 
         private Vector2 GetFacingDirection()
@@ -284,10 +315,22 @@ namespace CityRush.Units.Characters.Combat
                 StartActionLock(lockDuration);
         }
 
-        private void FirePunch(float lockDuration)
+        private void FirePunch()
         {
-            Trigger(trigPunch);
-            StartActionLock(lockDuration);
+            // Stop uzi visuals immediately when punching
+            if (_behavior != null)
+                _behavior.SetUziFiring(false);
+
+            // Anim
+            if (_behavior != null) _behavior.TriggerPunch();
+            else Trigger(trigPunch);
+
+            // Hit (closest in range, single target)
+            Vector2 dir = GetFacingDirection();
+            Vector2 origin = transform.position;
+
+            if (_shooter != null)
+                _shooter.TryPunch(origin, dir);
         }
 
         private void FireThrow(float lockDuration)
