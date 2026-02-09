@@ -12,6 +12,7 @@ namespace CityRush.Core.States
         private readonly GameStateMachine _gameStateMachine;
         private readonly GameContext _context;
 
+        private static bool DevSkipMainMenu = false;
 
         public BootstrapState(GameStateMachine gameStateMachine, GameContext context)
         {
@@ -70,7 +71,10 @@ namespace CityRush.Core.States
             _context.Set(mapManager);
 
 
-            _gameStateMachine.Enter<LoadLevelState>();
+            if (DevSkipMainMenu)
+                _gameStateMachine.Enter<LoadLevelState>();
+            else
+                _gameStateMachine.Enter<MainMenuState>();
         }
 
 

@@ -438,15 +438,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Quest Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2602cc9bbbfe26448b017bae7b086a8a, type: 2}
+  m_sharedMaterial: {fileID: -1338597372728129241, guid: 2602cc9bbbfe26448b017bae7b086a8a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4279943166
+  m_fontColor: {r: 0.9960785, g: 0.7490196, b: 0.10196079, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
