@@ -39,6 +39,12 @@ namespace CityRush.Units.Characters.Controllers
         [SerializeField] private Vector2 uziSpawnOffset = new Vector2(0.6f, 0.15f);
         [SerializeField] private Vector2 shotgunSpawnOffset = new Vector2(0.8f, 0.15f);
 
+        [Header("Punch")]
+        [SerializeField] private float punchCooldownSeconds = 0.25f; // set to punch anim duration
+
+        private WeaponShooter _shooter;
+        private float _nextPunchTime;
+
         public int Aggression
         {
             get => aggression;
@@ -94,6 +100,7 @@ namespace CityRush.Units.Characters.Controllers
             }
 
             _weapons = GetComponent<CharacterWeaponSet>();
+            _shooter = GetComponent<WeaponShooter>();
         }
 
         private void OnDestroy()
@@ -178,8 +185,50 @@ namespace CityRush.Units.Characters.Controllers
                 float uziRange = GetWeaponRange(uziW);
                 float shotRange = GetWeaponRange(shotW);
 
+                bool hasShotgunAmmo = _weapons != null && (_weapons.ShotgunMagazine > 0 || _weapons.ShotgunReserve > 0);
+                float punchRange = _shooter != null ? _shooter.PunchMaxReach : chaseStopDistance;
+
+                // Fallback: if no shotgun OR no shotgun ammo -> punch at close range.
+                bool shouldUsePunchFallback = (shotW == null) || !hasShotgunAmmo;
+
+                if (shouldUsePunchFallback && absDx <= punchRange)
+                {
+                    targetVelocity = Vector2.zero;
+
+                    // Face target
+                    if (_spriteRenderer != null)
+                    {
+                        bool wantFlip = dx < 0f;
+                        if (_spriteRenderer.flipX != wantFlip)
+                            _spriteRenderer.flipX = wantFlip;
+                    }
+
+                    _behavior?.SetSpeed(0f);
+                    _behavior?.SetUziFiring(false);
+
+                    if (canActNow && Time.time >= _nextPunchTime)
+                    {
+                        Vector2 punchDir = GetFacingDirectionFromDx(dx);
+
+                        if (_shooter != null && _combatState.Target != null)
+                            _shooter.TryPunch((Vector2)transform.position, punchDir, _combatState.Target);
+
+                        if (_behavior != null)
+                        {
+                            _behavior.TriggerPunch();
+
+                            if (punchCooldownSeconds > 0f)
+                                _behavior.LockAllFor(punchCooldownSeconds);
+                        }
+
+                        _nextPunchTime = Time.time + Mathf.Max(0.01f, punchCooldownSeconds);
+                    }
+
+                    return;
+                }
+
                 // 1) If in shotgun range => STOP + shotgun
-                if (shotW != null && shotRange > 0f && absDx <= shotRange)
+                if (shotW != null && hasShotgunAmmo && shotRange > 0f && absDx <= shotRange)
                 {
                     targetVelocity = Vector2.zero;
 
