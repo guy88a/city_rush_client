@@ -4,7 +4,6 @@ using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using UnityEngine;
 
-
 namespace CityRush.Core.States
 {
     public class BootstrapState : IState
@@ -20,11 +19,12 @@ namespace CityRush.Core.States
             _context = context;
         }
 
-
         public void Enter()
         {
             _context.Get<ILoggerService>()?.Info("[BootstrapState] Entered.");
 
+            // Audio service (persistent DontDestroyOnLoad root)
+            _context.Register<IAudioService>(new AudioService());
 
             // Load ItemsDB (Resources/Items/ItemsDB.json)
             TextAsset itemsJson = Resources.Load<TextAsset>("Items/ItemsDB");
@@ -57,19 +57,15 @@ namespace CityRush.Core.States
                 }
             }
 
-
             // Load raw map data
             TextAsset json = Resources.Load<TextAsset>("Maps/LibertyState");
             var mapData = JsonUtility.FromJson<MapData>(json.text);
 
-
             // Create map runtime manager
             var mapManager = new MapManager(mapData);
 
-
             // Register into context
             _context.Set(mapManager);
-
 
             if (DevSkipMainMenu)
                 _gameStateMachine.Enter<LoadLevelState>();
@@ -77,12 +73,10 @@ namespace CityRush.Core.States
                 _gameStateMachine.Enter<MainMenuState>();
         }
 
-
         public void Exit()
         {
             Debug.Log("[BootstrapState] Exited.");
         }
-
 
         public void Update(float deltaTime) { }
     }

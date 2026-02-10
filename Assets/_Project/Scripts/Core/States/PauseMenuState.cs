@@ -1,3 +1,4 @@
+using CityRush.Core.Services;
 using UnityEngine;
 
 namespace CityRush.Core.States
@@ -5,16 +6,21 @@ namespace CityRush.Core.States
     public class PauseMenuState : IState
     {
         private readonly GameStateMachine _gameStateMachine;
+        private readonly GameContext _context;
+
         private float _prevTimeScale;
 
-        public PauseMenuState(GameStateMachine gameStateMachine)
+        public PauseMenuState(GameStateMachine gameStateMachine, GameContext context)
         {
             _gameStateMachine = gameStateMachine;
+            _context = context;
         }
 
         public void Enter()
         {
             Debug.Log("[PauseMenuState] Entered.");
+
+            _context.Get<IAudioService>().PauseAllAmbient(true);
 
             _prevTimeScale = Time.timeScale;
             Time.timeScale = 0f;
@@ -28,8 +34,9 @@ namespace CityRush.Core.States
         {
             Time.timeScale = _prevTimeScale;
 
-            // Later: destroy Pause Menu UI root here.
+            _context.Get<IAudioService>().PauseAllAmbient(false);
 
+            // Later: destroy Pause Menu UI root here.
             Debug.Log("[PauseMenuState] Exited.");
         }
 

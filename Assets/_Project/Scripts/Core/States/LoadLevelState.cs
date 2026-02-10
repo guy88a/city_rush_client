@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using CityRush.Core.Services;
 
 namespace CityRush.Core.States
@@ -8,8 +7,11 @@ namespace CityRush.Core.States
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly GameContext _context;
+
         private const string SceneToLoad = "CR_10_Gameplay";
         private readonly ISceneLoaderService _sceneLoader;
+
+        private const string IngameBgmPath = "Audio/Ingame/BGM/MS_KC_BGM";
 
         public LoadLevelState(GameStateMachine gameStateMachine, GameContext context)
         {
@@ -20,11 +22,13 @@ namespace CityRush.Core.States
 
         public void Enter()
         {
-
             Debug.Log("[LoadLevelState] Loading scene: " + SceneToLoad);
 
-            _sceneLoader.Load(SceneToLoad, () => {
+            _sceneLoader.Load(SceneToLoad, () =>
+            {
                 Debug.Log("[LoadLevelState] Scene loaded (via service).");
+
+                TryStartIngameMusic();
                 _gameStateMachine.Enter<GameLoopState>();
             });
         }
@@ -34,16 +38,24 @@ namespace CityRush.Core.States
             // probably no update needed here yet
         }
 
-
-        private void OnSceneLoaded(AsyncOperation _)
-        {
-            Debug.Log("[LoadLevelState] Scene loaded.");
-            _gameStateMachine.Enter<GameLoopState>();
-        }
-
         public void Exit()
         {
             Debug.Log("[LoadLevelState] Exiting...");
+        }
+
+        private void TryStartIngameMusic()
+        {
+            var audio = _context.Get<IAudioService>();
+
+            var clip = Resources.Load<AudioClip>(IngameBgmPath);
+            if (clip == null)
+            {
+                Debug.LogWarning($"[LoadLevelState] Ingame BGM not found at Resources/{IngameBgmPath}");
+                return;
+            }
+
+            audio.SetMusicPlaylist(new[] { clip }, loopPlaylist: true);
+            audio.PlayMusic();
         }
     }
 }

@@ -12,6 +12,8 @@ namespace CityRush.Core.States
         private const string SceneToLoad = "CR_05_MainMenu";
         private readonly ISceneLoaderService _sceneLoader;
 
+        private const string MenuBgmPath = "Audio/Menu/BGM/GTA3_BGM";
+
         private Button _playButton;
 
         public MainMenuState(GameStateMachine gameStateMachine, GameContext context)
@@ -23,6 +25,8 @@ namespace CityRush.Core.States
 
         public void Enter()
         {
+            TryStartMenuMusic();
+
             Debug.Log("[MainMenuState] Loading scene: " + SceneToLoad);
 
             _sceneLoader.Load(SceneToLoad, () =>
@@ -47,6 +51,21 @@ namespace CityRush.Core.States
         private void OnPlayClicked()
         {
             _gameStateMachine.Enter<LoadLevelState>();
+        }
+
+        private void TryStartMenuMusic()
+        {
+            var audio = _context.Get<IAudioService>();
+
+            var clip = Resources.Load<AudioClip>(MenuBgmPath);
+            if (clip == null)
+            {
+                Debug.LogWarning($"[MainMenuState] Menu BGM not found at Resources/{MenuBgmPath}");
+                return;
+            }
+
+            audio.SetMusicPlaylist(new[] { clip }, loopPlaylist: true);
+            audio.PlayMusic();
         }
 
         private void BindPlayButton()

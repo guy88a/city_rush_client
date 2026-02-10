@@ -15,7 +15,7 @@ public class GameStateMachine
             { typeof(MainMenuState), new MainMenuState(this, context) },
             { typeof(LoadLevelState), new LoadLevelState(this, context) },
             { typeof(GameLoopState), new GameLoopState(game, context) },
-            { typeof(PauseMenuState), new PauseMenuState(this) }
+            { typeof(PauseMenuState), new PauseMenuState(this, context) }
         };
     }
 
