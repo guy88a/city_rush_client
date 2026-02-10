@@ -560,6 +560,23 @@ namespace CityRush.Core.Services
             return true;
         }
 
+        public static bool TryGetExisting(out IAudioService audio)
+        {
+            audio = null;
+
+            var root = GameObject.Find("__AudioRoot");
+            if (root == null)
+                return false;
+
+            var host = root.GetComponent<AudioServiceHost>();
+            if (host == null)
+                return false;
+
+            audio = host.GetAudio();
+            return audio != null;
+        }
+
+
         private sealed class CategoryPool
         {
             public readonly SoundCategory Category;

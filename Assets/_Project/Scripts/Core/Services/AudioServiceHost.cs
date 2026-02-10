@@ -15,5 +15,10 @@ namespace CityRush.Core.Services
         {
             _owner?.Tick();
         }
+
+        public IAudioService GetAudio()
+        {
+            return _owner;
+        }
     }
 }
