@@ -16,32 +16,41 @@ MonoBehaviour:
   - questId: 1
     startNpcId: 2
     endNpcId: 2
-    title: I want my money back!
-    descAvailable: available desc
-    descInProgress: in progress desc
-    descFinished: finished desc
+    title: Unwelcome Walkers
+    descAvailable: "\u201CBeen seeing unfamiliar faces around here.\nThey walk like
+      they own the place \u2014 they don\u2019t.\n\nI can\u2019t touch this myself.\nIf
+      things get loud, that\u2019s on you. Just make a couple of them stop coming
+      back.\u201D"
+    descInProgress: "\u201CStill seeing them around.\nHandle it clean. The less attention,
+      the better.\u201D"
+    descFinished: "\u201CGood. They noticed.\nWord spreads fast when people don\u2019t
+      come home.\n\nHere \u2014 take this. You earned it.\u201D"
     prereqQuestIds: 
     objectives:
     - actionType: 0
       targetId: 1
       requiredCount: 2
-      text: Kill targets
+      text: Eliminate Agents
     reward:
       tokens: 50
       rewardItemIds: ba0b0000
   - questId: 2
     startNpcId: 2
     endNpcId: 2
-    title: I want my money back AGAIN!
-    descAvailable: available desc 2
-    descInProgress: in progress desc 2
-    descFinished: finished desc
+    title: Make It Clear
+    descAvailable: "\u201CKilling a couple helped.\nBut they\u2019re stubborn. Thought
+      they could test us again.\n\nThis time, make it clear.\nThey don\u2019t belong
+      here. At all.\u201D"
+    descInProgress: "\u201CThey\u2019re still showing their faces.\nFinish it. After
+      this, they should get the message.\u201D"
+    descFinished: "\u201CThat did it.\nThey\u2019ll find somewhere else to walk.\n\nYou
+      kept things quiet. That matters.\nHere \u2014 take this.\u201D"
     prereqQuestIds: 01000000
     objectives:
     - actionType: 0
       targetId: 1
       requiredCount: 3
-      text: Kill targets
+      text: Eliminate Agents
     reward:
       tokens: 70
       rewardItemIds: ba0b0000
