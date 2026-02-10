@@ -88,6 +88,10 @@ public class GameLoopState : IState
     private InGameHudBinder _hud;
     private GameObject _hudInstance; // only if we spawned it
 
+    private AudioAreaProfile _ambStreet;
+    private AudioAreaProfile _ambCorridor;
+    private AudioAreaProfile _ambApartment;
+
     public GameLoopState(Game game, GameContext context)
     {
         _game = game;
@@ -109,8 +113,11 @@ public class GameLoopState : IState
         _navigation = new GameLoopNavigation(_game, _world, _prefabs, _mapManager);
         _navigation.Enter();
 
-        _mode = LoopMode.Street;
+        SetMode(LoopMode.Street);
         _isTransitioning = false;
+
+        BuildDefaultAmbientProfiles();
+        ApplyAmbientForMode(_mode);
 
         if (_world?.PlayerController != null)
             _world.PlayerController.OnBuildingDoorInteract += HandleBuildingDoorInteract;
@@ -359,7 +366,7 @@ public class GameLoopState : IState
 
     private void EnterCorridorInDone()
     {
-        _mode = LoopMode.Corridor;
+        SetMode(LoopMode.Corridor);
         BindCorridorExitTrigger();
     }
 
@@ -380,7 +387,7 @@ public class GameLoopState : IState
 
     private void DoorPOVEnterApartmentInDone()
     {
-        _mode = LoopMode.ApartmentFull;
+        SetMode(LoopMode.ApartmentFull);
     }
 
     private void ExitApartmentToCorridorOutWork()
@@ -401,13 +408,13 @@ public class GameLoopState : IState
 
     private void ExitApartmentToCorridorInDone()
     {
-        _mode = LoopMode.Corridor;
+        SetMode(LoopMode.Corridor);
     }
 
     private void EnterApartmentWindowInDone()
     {
         _world.Npcs_SpawnApartmentWindow();
-        _mode = LoopMode.ApartmentWindow;
+        SetMode(LoopMode.ApartmentWindow);
         _world?.WindowPan_SetRootFromCamera();
 
         EnsurePlayerCombatBound();
@@ -441,7 +448,7 @@ public class GameLoopState : IState
 
     private void ExitApartmentWindowInDone()
     {
-        _mode = LoopMode.ApartmentFull;
+        SetMode(LoopMode.ApartmentFull);
         _world?.WindowPan_ClearRoot();
 
         if (_playerAim != null)
@@ -480,7 +487,7 @@ public class GameLoopState : IState
 
     private void ExitCorridorToStreetInDone()
     {
-        _mode = LoopMode.Street;
+        SetMode(LoopMode.Street);
     }
 
 
@@ -510,7 +517,7 @@ public class GameLoopState : IState
         {
             ApplyPOVExitRules();
             _world.ExitCorridorDoorPOV();
-            _mode = LoopMode.Corridor;
+            SetMode(LoopMode.Corridor);
 
             _activeApartmentDoor = null;
             return;
@@ -678,7 +685,7 @@ public class GameLoopState : IState
         _returnCorridorCameraPos = _game.CameraTransform.position;
 
         _world.EnterCorridorDoorPOV(focus);
-        _mode = LoopMode.DoorPOV;
+        SetMode(LoopMode.DoorPOV);
 
         ApplyPOVEnterRules();
     }
@@ -690,7 +697,7 @@ public class GameLoopState : IState
 
         ApplyPOVExitRules();
         _world.ExitCorridorDoorPOV();
-        _mode = LoopMode.Corridor;
+        SetMode(LoopMode.Corridor);
     }
 
     private void HandleApartmentDoorInteract(ApartmentDoor door)
@@ -700,6 +707,74 @@ public class GameLoopState : IState
 
         _activeApartmentDoor = door;
         EnterCorridorDoorPOV(door.transform);
+    }
+
+    private void BuildDefaultAmbientProfiles()
+    {
+        _ambStreet = new AudioAreaProfile
+        {
+            Id = "Street",
+            AmbientLayers = new[]
+            {
+            new AudioAreaProfile.AmbientLayer
+            {
+                Type = AmbientType.Birds,
+                Clip = Resources.Load<AudioClip>("Audio/Ingame/Ambience/birds_a"),
+                Volume01 = 0.6f
+            },
+            new AudioAreaProfile.AmbientLayer
+            {
+                Type = AmbientType.Cars,
+                Clip = Resources.Load<AudioClip>("Audio/Ingame/Ambience/street_a"),
+                Volume01 = 0.5f
+            }
+        }
+        };
+
+        _ambCorridor = new AudioAreaProfile
+        {
+            Id = "Corridor",
+            AmbientLayers = System.Array.Empty<AudioAreaProfile.AmbientLayer>()
+        };
+
+        _ambApartment = new AudioAreaProfile
+        {
+            Id = "Apartment",
+            AmbientLayers = System.Array.Empty<AudioAreaProfile.AmbientLayer>()
+        };
+    }
+
+    private void SetMode(LoopMode mode)
+    {
+        if (_mode == mode)
+            return;
+
+        _mode = mode;
+        ApplyAmbientForMode(mode);
+    }
+
+    private void ApplyAmbientForMode(LoopMode mode)
+    {
+        var audio = _context.Get<IAudioService>();
+        if (audio == null)
+            return;
+
+        switch (mode)
+        {
+            case LoopMode.Street:
+                audio.ApplyAreaAmbient(_ambStreet);
+                break;
+
+            case LoopMode.Corridor:
+            case LoopMode.DoorPOV:
+                audio.ApplyAreaAmbient(_ambCorridor);
+                break;
+
+            case LoopMode.ApartmentFull:
+            case LoopMode.ApartmentWindow:
+                audio.ApplyAreaAmbient(_ambApartment);
+                break;
+        }
     }
 
     private void HandleWorldObjectInteract(WorldObjectUnit worldObject)
@@ -845,7 +920,7 @@ public class GameLoopState : IState
             _world.SetStreetActive(true);
         }
 
-        _mode = LoopMode.Street;
+        SetMode(LoopMode.Street);
 
         // 3) Load home street
         StreetRef homeStreet = _mapManager.GetCurrentStreet();
@@ -900,7 +975,7 @@ public class GameLoopState : IState
             _world.UnloadApartment();
 
         _world.SetStreetActive(true);
-        _mode = LoopMode.Street;
+        SetMode(LoopMode.Street);
 
         EnsureHudBound();
         _hud?.SetWeaponMode(WeaponHudMode.Platformer);

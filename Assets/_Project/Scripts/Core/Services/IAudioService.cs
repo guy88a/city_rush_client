@@ -54,6 +54,7 @@ namespace CityRush.Core.Services
         void StopAmbient(AmbientType type);
         void StopAllAmbient();
         void PauseAllAmbient(bool paused);
+        void ApplyAreaAmbient(AudioAreaProfile profile);
 
         // Music (playlist)
         void SetMusicPlaylist(IReadOnlyList<AudioClip> tracks, bool loopPlaylist);

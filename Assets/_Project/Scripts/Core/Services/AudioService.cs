@@ -176,6 +176,29 @@ namespace CityRush.Core.Services
             }
         }
 
+        public void ApplyAreaAmbient(AudioAreaProfile profile)
+        {
+            // 1) Clear current ambient
+            StopAllAmbient();
+
+            if (profile == null || profile.AmbientLayers == null)
+                return;
+
+            // 2) Apply new layers
+            for (int i = 0; i < profile.AmbientLayers.Length; i++)
+            {
+                var layer = profile.AmbientLayers[i];
+                if (layer.Clip == null)
+                    continue;
+
+                StartAmbient(layer.Type, layer.Clip, layer.Volume01);
+            }
+
+            // 3) Respect current pause rules
+            if (_ambientPaused || _globalPaused)
+                PauseAllAmbient(true);
+        }
+
         public void SetMusicPlaylist(IReadOnlyList<AudioClip> tracks, bool loopPlaylist)
         {
             _musicPlaylist = tracks;
