@@ -1,4 +1,5 @@
 using UnityEngine;
+using CityRush.Core.Services;
 using CityRush.Units.Characters.Controllers;
 
 namespace CityRush.Units.Characters.Combat
@@ -35,6 +36,16 @@ namespace CityRush.Units.Characters.Combat
         [SerializeField] private bool debugDrawSniperPoint = true;
         [SerializeField] private float debugSniperRadius = 0.15f;
         [SerializeField] private Color debugSniperColor = new Color(0.2f, 1f, 0.8f, 0.9f);
+
+        private const string UziShotSfxPath = "Audio/Ingame/SFX/shot_uzi";
+        private const string ShotgunShotSfxPath = "Audio/Ingame/SFX/shot_shotgun";
+        private const string SniperShotSfxPath = "Audio/Ingame/SFX/shot_sniper";
+
+        private IAudioService _audio;
+        private AudioClip _uziShotClip;
+        private AudioClip _shotgunShotClip;
+        private AudioClip _sniperShotClip;
+
 
         private bool _sniperDebugHasPoint;
         private Vector2 _sniperDebugPoint;
@@ -99,6 +110,8 @@ namespace CityRush.Units.Characters.Combat
                 _uziPool.Despawn,
                 onlyTarget
             );
+
+            PlayShotSfx(WeaponType.Uzi);
         }
 
         public void FireShotgun(Vector2 origin, Vector2 direction, WeaponDefinition weapon, CharacterUnit onlyTarget = null)
@@ -109,6 +122,8 @@ namespace CityRush.Units.Characters.Combat
             if (direction.sqrMagnitude < 0.0001f)
                 direction = Vector2.right;
             direction.Normalize();
+
+            PlayShotSfx(WeaponType.Shotgun);
 
             // Compute overlap box center in front of the shooter.
             Vector2 offset = weapon.ShotgunBoxOffset;
@@ -331,6 +346,8 @@ namespace CityRush.Units.Characters.Combat
             _sniperStep = 0;
             _sniperStepTimer = 0f;
 
+            PlayShotSfx(WeaponType.Sniper);
+
             // optional: immediate hit check at step 0
             TrySniperHitAtCurrentStep();
         }
@@ -483,6 +500,56 @@ namespace CityRush.Units.Characters.Combat
             _uziPrefabCached = prefab;
             _uziPool = new ProjectilePool(prefab, poolSize, transform);
         }
+
+        private void TryBindAudio()
+        {
+            if (_audio != null)
+                return;
+
+            AudioService.TryGetExisting(out _audio);
+        }
+
+        private void PlayShotSfx(WeaponType type)
+        {
+            TryBindAudio();
+            if (_audio == null)
+                return;
+
+            AudioClip clip = null;
+
+            switch (type)
+            {
+                case WeaponType.Uzi:
+                    if (_uziShotClip == null)
+                        _uziShotClip = Resources.Load<AudioClip>(UziShotSfxPath);
+                    clip = _uziShotClip;
+                    break;
+
+                case WeaponType.Shotgun:
+                    if (_shotgunShotClip == null)
+                        _shotgunShotClip = Resources.Load<AudioClip>(ShotgunShotSfxPath);
+                    clip = _shotgunShotClip;
+                    break;
+
+                case WeaponType.Sniper:
+                    if (_sniperShotClip == null)
+                        _sniperShotClip = Resources.Load<AudioClip>(SniperShotSfxPath);
+                    clip = _sniperShotClip;
+                    break;
+            }
+
+            if (clip == null)
+                return;
+
+            if (type == WeaponType.Uzi)
+            {
+                _audio.PlayOneShot(SoundCategory.SFX, clip, 1f, 0.8f, 1.2f);
+                return;
+            }
+
+            _audio.PlayOneShot(SoundCategory.SFX, clip);
+        }
+
 
         private sealed class ProjectilePool
         {
