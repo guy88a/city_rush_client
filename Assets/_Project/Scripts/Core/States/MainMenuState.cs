@@ -16,6 +16,10 @@ namespace CityRush.Core.States
 
         private Button _playButton;
 
+        private Button _controlsButton;
+        private Button _returnButton;
+        private GameObject _controlsRoot;
+
         public MainMenuState(GameStateMachine gameStateMachine, GameContext context)
         {
             _gameStateMachine = gameStateMachine;
@@ -33,6 +37,7 @@ namespace CityRush.Core.States
             {
                 Debug.Log("[MainMenuState] Scene loaded (via service).");
                 BindPlayButton();
+                BindControlsUI();
             });
         }
 
@@ -41,7 +46,16 @@ namespace CityRush.Core.States
             if (_playButton != null)
                 _playButton.onClick.RemoveListener(OnPlayClicked);
 
+            if (_controlsButton != null)
+                _controlsButton.onClick.RemoveListener(OnControlsClicked);
+
+            if (_returnButton != null)
+                _returnButton.onClick.RemoveListener(OnReturnClicked);
+
             _playButton = null;
+            _controlsButton = null;
+            _returnButton = null;
+            _controlsRoot = null;
 
             Debug.Log("[MainMenuState] Exiting...");
         }
@@ -51,6 +65,18 @@ namespace CityRush.Core.States
         private void OnPlayClicked()
         {
             _gameStateMachine.Enter<LoadLevelState>();
+        }
+
+        private void OnControlsClicked()
+        {
+            if (_controlsRoot != null)
+                _controlsRoot.SetActive(true);
+        }
+
+        private void OnReturnClicked()
+        {
+            if (_controlsRoot != null)
+                _controlsRoot.SetActive(false);
         }
 
         private void TryStartMenuMusic()
@@ -70,12 +96,10 @@ namespace CityRush.Core.States
 
         private void BindPlayButton()
         {
-            // Matches your hierarchy: Canvas/MainMenu/Menu/Buttons/Play
             var playGO = GameObject.Find("Canvas/MainMenu/Menu/Buttons/Play");
 
             if (playGO == null)
             {
-                // Fallback: search by name
                 var buttons = Object.FindObjectsOfType<Button>(true);
                 for (int i = 0; i < buttons.Length; i++)
                 {
@@ -101,6 +125,49 @@ namespace CityRush.Core.States
             _playButton.onClick.AddListener(OnPlayClicked);
 
             Debug.Log("[MainMenuState] Play button bound.");
+        }
+
+        private void BindControlsUI()
+        {
+            _controlsRoot = GameObject.Find("Canvas/MainMenu/Controls");
+            if (_controlsRoot == null)
+            {
+                Debug.LogError("[MainMenuState] Controls root not found at Canvas/MainMenu/Controls");
+                return;
+            }
+
+            var controlsBtnGO = GameObject.Find("Canvas/MainMenu/Menu/Buttons/Controls");
+            if (controlsBtnGO == null)
+            {
+                Debug.LogError("[MainMenuState] Controls button not found at Canvas/MainMenu/Menu/Buttons/Controls");
+                return;
+            }
+
+            var returnBtnGO = GameObject.Find("Canvas/MainMenu/Controls/Return");
+            if (returnBtnGO == null)
+            {
+                Debug.LogError("[MainMenuState] Return button not found at Canvas/MainMenu/Controls/Return");
+                return;
+            }
+
+            _controlsButton = controlsBtnGO.GetComponent<Button>();
+            _returnButton = returnBtnGO.GetComponent<Button>();
+
+            if (_controlsButton == null || _returnButton == null)
+            {
+                Debug.LogError("[MainMenuState] Controls/Return Button component missing.");
+                return;
+            }
+
+            _controlsRoot.SetActive(false);
+
+            _controlsButton.onClick.RemoveListener(OnControlsClicked);
+            _controlsButton.onClick.AddListener(OnControlsClicked);
+
+            _returnButton.onClick.RemoveListener(OnReturnClicked);
+            _returnButton.onClick.AddListener(OnReturnClicked);
+
+            Debug.Log("[MainMenuState] Controls UI bound.");
         }
     }
 }

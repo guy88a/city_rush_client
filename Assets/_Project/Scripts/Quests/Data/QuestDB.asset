@@ -18,13 +18,13 @@ MonoBehaviour:
     endNpcId: 2
     title: Unwelcome Walkers
     descAvailable: "\u201CBeen seeing unfamiliar faces around here.\nThey walk like
-      they own the place \u2014 they don\u2019t.\n\nI can\u2019t touch this myself.\nIf
+      they own the place - they don\u2019t.\n\nI can\u2019t touch this myself.\nIf
       things get loud, that\u2019s on you. Just make a couple of them stop coming
       back.\u201D"
     descInProgress: "\u201CStill seeing them around.\nHandle it clean. The less attention,
       the better.\u201D"
     descFinished: "\u201CGood. They noticed.\nWord spreads fast when people don\u2019t
-      come home.\n\nHere \u2014 take this. You earned it.\u201D"
+      come home.\n\nHere - take this. You earned it.\u201D"
     prereqQuestIds: 
     objectives:
     - actionType: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
     descInProgress: "\u201CThey\u2019re still showing their faces.\nFinish it. After
       this, they should get the message.\u201D"
     descFinished: "\u201CThat did it.\nThey\u2019ll find somewhere else to walk.\n\nYou
-      kept things quiet. That matters.\nHere \u2014 take this.\u201D"
+      kept things quiet. That matters.\nHere - take this.\u201D"
     prereqQuestIds: 01000000
     objectives:
     - actionType: 0
