@@ -26,6 +26,13 @@ namespace CityRush.Core.States
             // Audio service (persistent DontDestroyOnLoad root)
             _context.Register<IAudioService>(new AudioService());
 
+            var audio = _context.Get<IAudioService>();
+            audio.SetCategoryVolume(SoundCategory.Music, 0.15f);
+            audio.SetCategoryVolume(SoundCategory.UI, 0.35f);
+            audio.SetCategoryVolume(SoundCategory.SFX, 0.25f);
+            audio.SetCategoryVolume(SoundCategory.Ambient, 0.20f);
+            audio.SetCategoryVolume(SoundCategory.Voice, 0.25f);
+
             // Load ItemsDB (Resources/Items/ItemsDB.json)
             TextAsset itemsJson = Resources.Load<TextAsset>("Items/ItemsDB");
             if (itemsJson == null)
