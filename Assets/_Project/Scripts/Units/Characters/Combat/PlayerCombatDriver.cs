@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using CityRush.Units.Characters.Controllers;
+using CityRush.UI;
 
 namespace CityRush.Units.Characters.Combat
 {
@@ -67,6 +68,8 @@ namespace CityRush.Units.Characters.Combat
         private float _nextPrimaryTime;
         private float _nextAltTime;
 
+        private PlayerUIController _ui;
+
         private void Awake()
         {
             _controller = GetComponent<PlayerPlatformerController>();
@@ -74,6 +77,8 @@ namespace CityRush.Units.Characters.Combat
 
             _behavior = GetComponent<CharacterBehavior>();
             _shooter = GetComponent<WeaponShooter>();
+
+            _ui = GetComponent<PlayerUIController>();
 
             _graphic = transform.Find("Graphic");
             if (_graphic != null)
@@ -85,6 +90,12 @@ namespace CityRush.Units.Characters.Combat
             // Self-contained actions so we do not depend on generated PlayerControls yet.
             _primaryAction = new InputAction("FirePrimary", InputActionType.Button, "<Mouse>/leftButton");
             _altAction = new InputAction("FireAlt", InputActionType.Button, "<Mouse>/rightButton");
+        }
+
+        private bool IsUiBlockingCombat()
+        {
+            if (_ui == null) return false;
+            return _ui.IsInventoryOpen || _ui.IsDialogOpen || _ui.IsRespawnOpen;
         }
 
         private void OnEnable()
@@ -124,6 +135,14 @@ namespace CityRush.Units.Characters.Combat
 
         public void SetPrimaryHeld(bool held)
         {
+            if (held && IsUiBlockingCombat())
+            {
+                _isPrimaryHeld = false;
+                SetUziFiring(false);
+                if (_behavior != null) _behavior.SetUziFiring(false);
+                return;
+            }
+
             _isPrimaryHeld = held;
 
             if (held)
@@ -145,6 +164,14 @@ namespace CityRush.Units.Characters.Combat
 
         public void SetAltHeld(bool held)
         {
+            if (held && IsUiBlockingCombat())
+            {
+                _isAltHeld = false;
+                SetUziFiring(false);
+                if (_behavior != null) _behavior.SetUziFiring(false);
+                return;
+            }
+
             _isAltHeld = held;
 
             if (held)
@@ -175,6 +202,13 @@ namespace CityRush.Units.Characters.Combat
         {
             if (_controller == null) return;
             if (_controller.IsFrozen) return;
+
+            if (IsUiBlockingCombat())
+            {
+                SetUziFiring(false);
+                if (_behavior != null) _behavior.SetUziFiring(false);
+                return;
+            }
 
             float now = Time.time;
 

@@ -12,8 +12,10 @@ public class GameStateMachine
     {
         _states = new Dictionary<Type, IState> {
             { typeof(BootstrapState), new BootstrapState(this, context) },
+            { typeof(MainMenuState), new MainMenuState(this, context) },
             { typeof(LoadLevelState), new LoadLevelState(this, context) },
-            { typeof(GameLoopState), new GameLoopState(game, context) }
+            { typeof(GameLoopState), new GameLoopState(game, context) },
+            { typeof(PauseMenuState), new PauseMenuState(this, context) }
         };
     }
 

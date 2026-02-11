@@ -4,7 +4,6 @@ using CityRush.World.Map;
 using CityRush.World.Map.Runtime;
 using UnityEngine;
 
-
 namespace CityRush.Core.States
 {
     public class BootstrapState : IState
@@ -12,6 +11,7 @@ namespace CityRush.Core.States
         private readonly GameStateMachine _gameStateMachine;
         private readonly GameContext _context;
 
+        private static bool DevSkipMainMenu = false;
 
         public BootstrapState(GameStateMachine gameStateMachine, GameContext context)
         {
@@ -19,11 +19,19 @@ namespace CityRush.Core.States
             _context = context;
         }
 
-
         public void Enter()
         {
             _context.Get<ILoggerService>()?.Info("[BootstrapState] Entered.");
 
+            // Audio service (persistent DontDestroyOnLoad root)
+            _context.Register<IAudioService>(new AudioService());
+
+            var audio = _context.Get<IAudioService>();
+            audio.SetCategoryVolume(SoundCategory.Music, 0.15f);
+            audio.SetCategoryVolume(SoundCategory.UI, 0.35f);
+            audio.SetCategoryVolume(SoundCategory.SFX, 0.25f);
+            audio.SetCategoryVolume(SoundCategory.Ambient, 0.20f);
+            audio.SetCategoryVolume(SoundCategory.Voice, 0.25f);
 
             // Load ItemsDB (Resources/Items/ItemsDB.json)
             TextAsset itemsJson = Resources.Load<TextAsset>("Items/ItemsDB");
@@ -56,29 +64,26 @@ namespace CityRush.Core.States
                 }
             }
 
-
             // Load raw map data
             TextAsset json = Resources.Load<TextAsset>("Maps/LibertyState");
             var mapData = JsonUtility.FromJson<MapData>(json.text);
 
-
             // Create map runtime manager
             var mapManager = new MapManager(mapData);
-
 
             // Register into context
             _context.Set(mapManager);
 
-
-            _gameStateMachine.Enter<LoadLevelState>();
+            if (DevSkipMainMenu)
+                _gameStateMachine.Enter<LoadLevelState>();
+            else
+                _gameStateMachine.Enter<MainMenuState>();
         }
-
 
         public void Exit()
         {
             Debug.Log("[BootstrapState] Exited.");
         }
-
 
         public void Update(float deltaTime) { }
     }
