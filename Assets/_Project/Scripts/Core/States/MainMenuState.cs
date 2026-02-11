@@ -20,6 +20,37 @@ namespace CityRush.Core.States
         private Button _returnButton;
         private GameObject _controlsRoot;
 
+        private Button _exitButton;
+
+        private void OnExitClicked()
+        {
+        #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+        }
+
+        private void BindExitButton()
+        {
+            var exitGO = GameObject.Find("Canvas/MainMenu/Menu/Buttons/Exit");
+            if (exitGO == null)
+            {
+                Debug.LogError("[MainMenuState] Exit button not found at Canvas/MainMenu/Menu/Buttons/Exit");
+                return;
+            }
+
+            _exitButton = exitGO.GetComponent<Button>();
+            if (_exitButton == null)
+            {
+                Debug.LogError("[MainMenuState] Exit Button component missing.");
+                return;
+            }
+
+            _exitButton.onClick.RemoveListener(OnExitClicked);
+            _exitButton.onClick.AddListener(OnExitClicked);
+        }
+
         public MainMenuState(GameStateMachine gameStateMachine, GameContext context)
         {
             _gameStateMachine = gameStateMachine;
@@ -38,6 +69,7 @@ namespace CityRush.Core.States
                 Debug.Log("[MainMenuState] Scene loaded (via service).");
                 BindPlayButton();
                 BindControlsUI();
+                BindExitButton();
             });
         }
 
@@ -51,6 +83,9 @@ namespace CityRush.Core.States
 
             if (_returnButton != null)
                 _returnButton.onClick.RemoveListener(OnReturnClicked);
+
+            if (_exitButton != null)
+                _exitButton.onClick.RemoveListener(OnExitClicked);
 
             _playButton = null;
             _controlsButton = null;
